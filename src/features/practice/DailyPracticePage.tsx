@@ -15,6 +15,7 @@ import {
 import { selectDailyFocus } from './dailyFocusEngine';
 import { getResolvedDailyPracticeTimeZone } from './dailyPracticeEngine';
 import { getMeditationPracticeStats, type MeditationPracticeStats } from './dailyPracticeStorage';
+import { loadDailyQuickAccessMiddleSlot } from './dailyQuickAccess';
 
 type DailyPracticePageProps = {
   now?: Date;
@@ -47,6 +48,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const [clockOverride] = useState(() => loadDailyPracticeClockOverride());
   const fallbackTimeZone = useMemo(() => timeZone ?? getResolvedDailyPracticeTimeZone(), [timeZone]);
   const resolvedNow = useMemo(() => (now ? now : resolveDailyPracticeNow(new Date(), clockOverride)), [clockOverride, now]);
+  const middleQuickAccessSlot = useMemo(() => loadDailyQuickAccessMiddleSlot(), []);
   const resolvedTimeZone = useMemo(
     () => resolveDailyPracticeTimeZone(fallbackTimeZone, clockOverride),
     [clockOverride, fallbackTimeZone],
@@ -195,31 +197,20 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
         </article>
       </PageSection>
 
-      <PageSection description="Open common local reading surfaces quickly." title="Quick access">
+      <PageSection title="Quick access">
         <div className="daily-quick-access" data-testid="daily-quick-access">
-          <Link className="settings-link-card" data-testid="daily-quick-access-jedi-code" to="/library/doctrine/code">
-            <span className="settings-link-card__content">
-              <span className="field-label">Doctrine</span>
-              <span className="daily-quick-access__title">Jedi Code</span>
-            </span>
-            <span className="settings-link-card__summary">Open the doctrine code.</span>
-            <span className="settings-link-card__action">Open</span>
+          <Link className="daily-quick-access__button" data-testid="daily-quick-access-jedi-code" to="/library/doctrine/code">
+            Jedi Code
           </Link>
-          <Link className="settings-link-card" data-testid="daily-quick-access-knights-code" to="/library/supplemental/knights-code">
-            <span className="settings-link-card__content">
-              <span className="field-label">Default slot</span>
-              <span className="daily-quick-access__title">Knight’s Code</span>
-            </span>
-            <span className="settings-link-card__summary">Open the study text.</span>
-            <span className="settings-link-card__action">Open</span>
+          <Link
+            className="daily-quick-access__button"
+            data-testid="daily-quick-access-middle-slot"
+            to={middleQuickAccessSlot?.href ?? '/settings/focus-practice'}
+          >
+            {middleQuickAccessSlot?.title ?? 'Default slot'}
           </Link>
-          <Link className="settings-link-card" data-testid="daily-quick-access-bookmarks" to="/library/bookmarks">
-            <span className="settings-link-card__content">
-              <span className="field-label">Saved</span>
-              <span className="daily-quick-access__title">Bookmarks</span>
-            </span>
-            <span className="settings-link-card__summary">Open saved sermons, bookmarks, and notes.</span>
-            <span className="settings-link-card__action">Open</span>
+          <Link className="daily-quick-access__button" data-testid="daily-quick-access-bookmarks" to="/library/bookmarks">
+            Bookmarks
           </Link>
         </div>
       </PageSection>
