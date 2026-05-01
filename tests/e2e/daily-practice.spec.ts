@@ -132,10 +132,15 @@ test.describe('daily focus route', () => {
     await page.goto('/daily');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('daily-meditation-card')).toContainText('Center yourself.');
+    const meditationCard = page.getByTestId('daily-meditation-card');
+
+    await expect(meditationCard).toContainText('Center yourself.');
+    await expect(meditationCard.getByText('Center yourself.', { exact: true })).toHaveCount(1);
+    await expect(page.getByText('Center yourself.', { exact: true })).toHaveCount(1);
+    await expect(page.getByText('Quick meditation', { exact: true })).toHaveCount(0);
     await expect(page.getByTestId('meditation-total-days')).toContainText('0 days');
     await expect(page.getByTestId('meditation-current-streak')).toContainText('0 days');
-    await expect(page.getByTestId('daily-meditation-card')).not.toContainText(/Duration|1 minute|5 minutes|30 minutes|Cancel/);
+    await expect(meditationCard).not.toContainText(/Duration|1 minute|5 minutes|30 minutes|Cancel/);
     await expect(page.getByTestId('daily-meditation-presets')).toHaveCount(0);
     await expect(page.getByTestId('daily-meditation-preset-60')).toHaveCount(0);
     await expect(page.getByTestId('daily-meditation-preset-300')).toHaveCount(0);
