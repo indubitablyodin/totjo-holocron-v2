@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "policy": {
+    "summary": "Audio release stays blocked until provenance, license, and approval details are recorded.",
+    "releaseBlockers": [
+      "Audio assets must not ship without explicit provenance.",
+      "Audio assets must not ship without explicit open-source or otherwise approved license data.",
+      "Audio assets must not ship without recorded approval status."
+    ]
+  },
+  "allowedLicenseFamilies": [
+    "CC0-1.0",
+    "CC-BY-4.0",
+    "CC-BY-SA-4.0",
+    "MIT",
+    "Apache-2.0"
+  ],
+  "approvalStatuses": ["approved", "review-required", "blocked"],
+  "provenanceStatuses": ["recorded", "needs-review", "blocked"],
+  "assets": [
+    {
+      "id": "default-gong",
+      "title": "Default gong",
+      "attribution": "trigramaton via SoundSpool / Freesound",
+      "approvalStatus": "approved",
+      "provenanceStatus": "recorded",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "provenance": "Bundled from the CC0 recording 'Tibetan bowl 1' by trigramaton, surfaced through SoundSpool with direct download hosted from Freesound.",
+      "sourceUrls": [
+        "https://soundspool.com/sounds/tibetan-bowl-1",
+        "https://cdn.freesound.org/previews/626/626946_13871388-hq.mp3",
+        "/audio/default-gong-start.mp3",
+        "/audio/default-gong-interval.mp3",
+        "/audio/default-gong-complete.mp3"
+      ],
+      "files": [
+        {
+          "cue": "start",
+          "path": "/audio/default-gong-start.mp3"
+        },
+        {
+          "cue": "interval",
+          "path": "/audio/default-gong-interval.mp3"
+        },
+        {
+          "cue": "complete",
+          "path": "/audio/default-gong-complete.mp3"
+        }
+      ],
+      "notes": "Short real meditation-bowl hit bundled for timer start, interval, and completion cues."
+    }
+  ]
+}

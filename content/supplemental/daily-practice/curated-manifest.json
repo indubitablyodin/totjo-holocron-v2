@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "anchorDate": "2026-04-26",
+  "entries": [
+    {
+      "id": "daily-jedi-believe",
+      "sourceKind": "doctrine-passage",
+      "documentSlug": "jedi-believe",
+      "title": "Practice the beliefs",
+      "summary": "Read the statement of belief slowly and carry one belief into the rest of the day.",
+      "reflectionPrompt": "Choose a single line from Jedi Believe to remember when your attention gets scattered.",
+      "sourceActionLabel": "Open doctrine"
+    },
+    {
+      "id": "daily-three-tenets",
+      "sourceKind": "doctrine-passage",
+      "documentSlug": "three-tenets",
+      "title": "Return to Focus, Knowledge, and Wisdom",
+      "summary": "Revisit the Three Tenets and notice which one best fits today’s responsibilities.",
+      "reflectionPrompt": "Name the tenet you most need today before you open the full source reading.",
+      "sourceActionLabel": "Open doctrine"
+    },
+    {
+      "id": "daily-code",
+      "sourceKind": "doctrine-passage",
+      "documentSlug": "code",
+      "title": "Sit with the Jedi Code",
+      "summary": "Read both public formulations of the Code and pay attention to the line that feels most active today.",
+      "reflectionPrompt": "Compare the two formulations and keep one line as a practical anchor for the day.",
+      "sourceActionLabel": "Open doctrine"
+    },
+    {
+      "id": "daily-meditation",
+      "sourceKind": "doctrine-passage",
+      "documentSlug": "a-meditation-for-jedi",
+      "title": "Meditate with the prayer",
+      "summary": "Use the public meditation text as a slow reading practice before moving into the rest of your routine.",
+      "reflectionPrompt": "Read one stanza out loud or in silence, then continue to the full source text if you want the whole prayer.",
+      "sourceActionLabel": "Open doctrine"
+    },
+    {
+      "id": "daily-16-teachings",
+      "sourceKind": "doctrine-passage",
+      "documentSlug": "16-teachings",
+      "title": "Read one teaching with care",
+      "summary": "Open the teachings and spend time with just one numbered teaching instead of racing through the list.",
+      "reflectionPrompt": "Pick one teaching to revisit at the end of the day and notice whether it changed your choices.",
+      "sourceActionLabel": "Open doctrine"
+    },
+    {
+      "id": "daily-21-maxims",
+      "sourceKind": "doctrine-passage",
+      "documentSlug": "21-maxims",
+      "title": "Study one maxim in context",
+      "summary": "Choose a maxim, read its note, and let that pairing shape the day’s practice.",
+      "reflectionPrompt": "Notice whether the maxim’s note deepens or complicates the surface reading.",
+      "sourceActionLabel": "Open doctrine"
+    },
+    {
+      "id": "daily-knights-code",
+      "sourceKind": "supplemental-text",
+      "documentSlug": "knights-code",
+      "title": "Hold the Knight’s Code lightly",
+      "summary": "Use the Knight’s Code as bonus study for companion reflection alongside doctrine reading.",
+      "reflectionPrompt": "Read it as companion material and hold it as supplemental reading while you reflect.",
+      "sourceActionLabel": "Open supplemental text"
+    },
+    {
+      "id": "daily-sermon-force-works-all-things-out",
+      "sourceKind": "sermon-reference",
+      "documentSlug": "daily-practice-the-force-works-all-things-out",
+      "title": "Practice courage with a selected sermon",
+      "summary": "Use this sermon reference to reflect on fear, courage, and one action you can take with more honesty today.",
+      "reflectionPrompt": "Name one place where fear has slowed you down, then carry one concrete act of courage into the day.",
+      "sourceActionLabel": "Open sermon reference"
+    }
+  ]
+}

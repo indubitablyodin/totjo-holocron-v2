@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "classes": ["canonical", "supplemental", "sermon"],
+  "governance": {
+    "privateContentAllowed": false,
+    "sourceOfTruthRules": [
+      "Public TOTJO text pages may be used in V1 when attribution and source review records are recorded.",
+      "Member-only or private TOTJO content must not be bundled, synced, or shipped in V1.",
+        "Knight's Code and other bonus materials stay in the supplemental reading collection for companion study.",
+      "Bundled doctrine, sermons, and sounds must not ship without recorded source review details.",
+      "Personalized text is display-only and must never replace stored source text."
+    ],
+    "releaseBlockers": [
+        "Missing source review details for any shippable text or sound asset.",
+        "Missing recorded attribution for any shippable text or sound asset.",
+        "Any bundled doctrine entry that is not sourced from the recorded public doctrine material.",
+      "Any use of private or member-only TOTJO content."
+    ]
+  },
+  "approvalStatuses": ["approved", "review-required", "blocked"],
+  "provenanceStatuses": ["recorded", "needs-review", "blocked"],
+  "entries": [
+    {
+      "id": "totjo-doctrine",
+      "title": "Doctrine Text",
+      "authorityClass": "canonical",
+      "description": "Public doctrine pages used in the app as bundled doctrine source material.",
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/doctrine"
+      ],
+      "approvalStatus": "approved",
+      "provenanceStatus": "recorded",
+      "attribution": "Temple of the Jedi Order"
+    },
+    {
+      "id": "knights-code",
+      "title": "Knight's Code",
+      "authorityClass": "supplemental",
+      "description": "Public TOTJO text included in the app for reflection and study.",
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/doctrine"
+      ],
+      "approvalStatus": "approved",
+      "provenanceStatus": "recorded",
+      "attribution": "Temple of the Jedi Order",
+      "notes": [
+        "This entry is included in the app for reflection and study."
+      ]
+    },
+    {
+      "id": "totjo-sermons",
+      "title": "TOTJO Sermons",
+      "authorityClass": "sermon",
+      "description": "Public sermon archive content governed separately from doctrine.",
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons"
+      ],
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded",
+      "attribution": "Temple of the Jedi Order",
+      "shipBlockers": [
+        "Individual sermon payloads must record source review details before shipping."
+      ]
+    },
+    {
+      "id": "daily-practice-sermon-the-force-works-all-things-out",
+      "title": "Daily Practice Sermon Reference: The Force Works All Things Out",
+      "authorityClass": "sermon",
+      "description": "A public sermon reference bundled for deterministic daily-practice rotation.",
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/the-force-works-all-things-out"
+      ],
+      "approvalStatus": "approved",
+      "provenanceStatus": "recorded",
+      "attribution": "Temple of the Jedi Order",
+      "notes": [
+        "This source is used for the bundled daily-practice sermon reference path and does not broaden the bundled sermon archive."
+      ]
+    }
+  ]
+}
