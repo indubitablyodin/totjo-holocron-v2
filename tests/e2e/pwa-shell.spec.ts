@@ -68,7 +68,7 @@ test.describe('PWA shell', () => {
     if (!bottomNavBox) {
       throw new Error('Expected bottom navigation bounds to be available.');
     }
-    expect(bottomNavBox.x).toBeGreaterThanOrEqual(navBox.x + navBox.width - 1);
+    expect(bottomNavBox.y + bottomNavBox.height).toBeLessThanOrEqual(Math.min(navBox.y, mainBox.y) + 1);
     expect(consoleErrors).toEqual([]);
     await page.screenshot({ path: '.sisyphus/evidence/task-2-mobile-nav-phone.png' });
   });

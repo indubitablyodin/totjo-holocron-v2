@@ -49,6 +49,7 @@ test.describe('responsive QA matrix', () => {
       return {
         navLeft: navRect.left,
         navRight: navRect.right,
+        navTop: navRect.top,
         mainLeft: mainRect.left,
         navHeight: navRect.height,
         viewportHeight: window.innerHeight,
@@ -63,7 +64,7 @@ test.describe('responsive QA matrix', () => {
     if (!bottomNavMetrics) {
       throw new Error('Expected bottom navigation bounds to be available.');
     }
-    expect(bottomNavMetrics.x).toBeGreaterThanOrEqual(navMetrics.navRight - 1);
+    expect(bottomNavMetrics.y + bottomNavMetrics.height).toBeLessThanOrEqual(navMetrics.navTop + 1);
     await expectNoHorizontalOverflow(page, '.nav-link');
 
     await page.screenshot({ path: '.sisyphus/evidence/task-8-mobile-nav-phone.png' });

@@ -49,6 +49,22 @@ async function mockDailyClock(page: Page, initialIsoString: string) {
   }, { initialValue: initialIsoString, storageKey: '__daily-practice-test-now__' });
 }
 
+async function expectBottomNavDoesNotOverlay(page: Page, testId: string) {
+  await expect(page.getByTestId('bottom-nav')).not.toHaveCSS('position', 'fixed');
+  await page.getByTestId(testId).scrollIntoViewIfNeeded();
+
+  const elementBox = await page.getByTestId(testId).boundingBox();
+
+  expect(elementBox).not.toBeNull();
+
+  if (!elementBox) {
+    throw new Error(`Expected ${testId} bounds to be available.`);
+  }
+
+  expect(elementBox.y).toBeGreaterThanOrEqual(0);
+  expect(elementBox.y + elementBox.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+}
+
 test.describe('daily focus route', () => {
   test.use({ timezoneId: 'America/Chicago' });
 
@@ -121,6 +137,8 @@ test.describe('daily focus route', () => {
     await expect(page.getByTestId('daily-quick-access-jedi-code')).toHaveAttribute('href', '/library/doctrine/code');
     await expect(page.getByTestId('daily-quick-access-knights-code')).toHaveAttribute('href', '/library/supplemental/knights-code');
     await expect(page.getByTestId('daily-quick-access-bookmarks')).toHaveAttribute('href', '/library/bookmarks');
+    await expectBottomNavDoesNotOverlay(page, 'daily-begin-meditation');
+    await expectBottomNavDoesNotOverlay(page, 'daily-quick-access-bookmarks');
 
     await page.getByTestId('daily-meditation-preset-60').click();
     await page.getByTestId('daily-begin-meditation').click();

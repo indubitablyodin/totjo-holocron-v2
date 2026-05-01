@@ -5,6 +5,22 @@ function parseClockToSeconds(clockText: string): number {
   return minutes * 60 + seconds;
 }
 
+async function expectBottomNavDoesNotOverlay(page: import('@playwright/test').Page, testId: string) {
+  await expect(page.getByTestId('bottom-nav')).not.toHaveCSS('position', 'fixed');
+  await page.getByTestId(testId).scrollIntoViewIfNeeded();
+
+  const elementBox = await page.getByTestId(testId).boundingBox();
+
+  expect(elementBox).not.toBeNull();
+
+  if (!elementBox) {
+    throw new Error(`Expected ${testId} bounds to be available.`);
+  }
+
+  expect(elementBox.y).toBeGreaterThanOrEqual(0);
+  expect(elementBox.y + elementBox.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+}
+
 test.describe('meditation timer', () => {
   test('timer-phone keeps live controls primary and hides session setup until requested', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -57,6 +73,7 @@ test.describe('meditation timer', () => {
     await page.getByTestId('timer-start').click();
 
     await expect(page.getByTestId('timer-status')).toHaveText('Complete', { timeout: 10000 });
+    await expectBottomNavDoesNotOverlay(page, 'timer-details-toggle');
     await page.getByTestId('timer-details-toggle').click();
     await expect(page.getByTestId('timer-last-cue')).toContainText('Complete cue');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-8-timer-offline.png' });
