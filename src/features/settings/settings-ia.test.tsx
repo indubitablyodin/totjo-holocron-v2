@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -133,14 +133,18 @@ describe('settings information architecture', () => {
 
     await user.click(screen.getByTestId('nav-daily'));
 
-    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('The Three Tenets');
-    expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/doctrine/three-tenets');
+    await waitFor(() => {
+      expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveTextContent('The Three Tenets');
+      expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/doctrine/three-tenets');
+    });
 
     unmount();
     render(<AppTestRouter initialEntries={['/daily']} />);
 
-    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('The Three Tenets');
-    expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/doctrine/three-tenets');
+    await waitFor(() => {
+      expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveTextContent('The Three Tenets');
+      expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/doctrine/three-tenets');
+    });
   });
 
   it('shows saved offline sermons in Focus quick-access choices and can select one', async () => {
