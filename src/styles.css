@@ -153,7 +153,7 @@
 
 html {
   background: var(--color-background);
-  scroll-padding-bottom: var(--space-6);
+  scroll-padding-bottom: calc(var(--shell-bottom-nav-height) + var(--space-6));
 }
 
 body {
@@ -740,6 +740,7 @@ input {
 
 .shell-main {
   min-width: 0;
+  padding-bottom: calc(var(--shell-bottom-nav-height) + var(--space-5));
 }
 
 .page-header {
