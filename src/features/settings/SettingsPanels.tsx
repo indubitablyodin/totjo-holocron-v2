@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
@@ -12,13 +12,15 @@ import {
   type DailyPracticeClockOverride,
 } from '@/features/practice/dailyPracticeClock';
 import {
-  DAILY_QUICK_ACCESS_CHOICES,
-  loadDailyQuickAccessMiddleSlot,
+  createDailyQuickAccessChoices,
+  loadDailyQuickAccessMiddleSlotId,
   saveDailyQuickAccessMiddleSlot,
+  type DailyQuickAccessChoice,
 } from '@/features/practice/dailyQuickAccess';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
 import { getBundledAudioRightsAssets, SOUND_PROFILES, type AudioRightsAsset } from '@/features/timer/audioProfiles';
+import { appDb, ensureStorageReady } from '@/lib/db';
 import {
   clampTimerDurationPreference,
   clampTimerIntervalPreference,
@@ -194,7 +196,8 @@ export function ReadingDisplaySettingsPage() {
 export function FocusPracticeSettingsPage() {
   const resolvedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   const [clockOverride, setClockOverride] = useState<DailyPracticeClockOverride>(() => loadDailyPracticeClockOverride());
-  const [middleSlotChoiceId, setMiddleSlotChoiceId] = useState(() => loadDailyQuickAccessMiddleSlot()?.id ?? '');
+  const [middleSlotChoiceId, setMiddleSlotChoiceId] = useState(() => loadDailyQuickAccessMiddleSlotId());
+  const [quickAccessChoices, setQuickAccessChoices] = useState<DailyQuickAccessChoice[]>([]);
 
   const updateClockOverride = (nextOverride: DailyPracticeClockOverride) => {
     setClockOverride(nextOverride);
@@ -205,6 +208,28 @@ export function FocusPracticeSettingsPage() {
     setMiddleSlotChoiceId(choiceId);
     saveDailyQuickAccessMiddleSlot(choiceId.length > 0 ? choiceId : null);
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void ensureStorageReady(appDb)
+      .then(async () => {
+        const [documents, downloads] = await Promise.all([appDb.documents.toArray(), appDb.downloads.toArray()]);
+
+        if (isMounted) {
+          setQuickAccessChoices(createDailyQuickAccessChoices(documents, downloads));
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setQuickAccessChoices([]);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <PageLayout
@@ -312,7 +337,7 @@ export function FocusPracticeSettingsPage() {
               value={middleSlotChoiceId}
             >
               <option value="">Default slot</option>
-              {DAILY_QUICK_ACCESS_CHOICES.map((choice) => (
+              {quickAccessChoices.map((choice) => (
                 <option key={choice.id} value={choice.id}>
                   {choice.title}
                 </option>

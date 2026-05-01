@@ -50,15 +50,15 @@ describe('settings information architecture', () => {
     render(<AppTestRouter initialEntries={['/settings/focus-practice']} />);
 
     expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('');
-    expect(screen.getByRole('option', { name: 'Knight’s Code' })).toBeInTheDocument();
+    expect(await screen.findByRole('option', { name: "Knight's Code" })).toBeInTheDocument();
 
-    await user.selectOptions(screen.getByTestId('setting-daily-quick-access-middle-slot'), 'knights-code');
-    expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('knights-code');
+    await user.selectOptions(screen.getByTestId('setting-daily-quick-access-middle-slot'), 'document:supplemental-knights-code');
+    expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('document:supplemental-knights-code');
 
     await user.click(screen.getByText('Back to settings'));
     await user.click(screen.getByTestId('nav-daily'));
 
-    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Knight’s Code');
+    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent("Knight's Code");
     expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/supplemental/knights-code');
 
     await user.click(screen.getByTestId('nav-focus-practice'));
