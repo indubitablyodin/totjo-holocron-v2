@@ -1,15 +1,68 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTestRouter } from '@/App';
 import { clearDailyPracticeClockOverride } from '@/features/practice/dailyPracticeClock';
 import { clearDailyQuickAccessMiddleSlot } from '@/features/practice/dailyQuickAccess';
+import { appDb, ensureStorageReady } from '@/lib/db';
+import type { DocumentRecord, DownloadRecord } from '@/lib/content';
+
+const savedSermonOptionDocument: DocumentRecord = {
+  id: 'test-saved-quick-access-sermon',
+  slug: 'saved-morning-homily',
+  title: 'Saved Morning Homily',
+  summary: 'A saved sermon option for Focus quick access tests.',
+  authorityClass: 'sermon',
+  documentType: 'sermon',
+  sourceId: 'totjo-sermons',
+  bodyMarkdown: 'A sermon saved on this device.',
+  tags: ['sermon'],
+  version: 1,
+  checksum: 'test-saved-quick-access-sermon:checksum',
+  origin: 'synced',
+  source: {
+    sourceType: 'test',
+    sourceUrls: [],
+    attribution: 'Temple of the Jedi Order',
+    approvalStatus: 'approved',
+    provenanceStatus: 'recorded',
+  },
+  sourceUrl: null,
+  author: null,
+  sortOrder: 0,
+  publishedAt: '2026-05-01',
+  updatedAt: '2026-05-01T00:00:00.000Z',
+};
+
+const savedSermonOptionDownload: DownloadRecord = {
+  id: `sermon-download:${savedSermonOptionDocument.id}`,
+  documentId: savedSermonOptionDocument.id,
+  status: 'ready',
+  storedChecksum: savedSermonOptionDocument.checksum,
+  updatedAt: '2026-05-01T00:00:00.000Z',
+};
+
+async function clearSavedSermonOptionFixture() {
+  await ensureStorageReady(appDb);
+  await Promise.all([appDb.downloads.delete(savedSermonOptionDownload.id), appDb.documents.delete(savedSermonOptionDocument.id)]);
+}
+
+async function seedSavedSermonOptionFixture() {
+  await clearSavedSermonOptionFixture();
+  await appDb.documents.put(savedSermonOptionDocument);
+  await appDb.downloads.put(savedSermonOptionDownload);
+}
 
 describe('settings information architecture', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     clearDailyPracticeClockOverride();
     clearDailyQuickAccessMiddleSlot();
+    await clearSavedSermonOptionFixture();
+  });
+
+  afterEach(async () => {
+    await clearSavedSermonOptionFixture();
   });
 
   it('shows a short local-only settings index with focused groups', () => {
@@ -67,6 +120,48 @@ describe('settings information architecture', () => {
 
     expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Default slot');
     expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');
+  });
+
+  it('persists a canonical Daily Focus middle quick-access slot across a fresh app mount', async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<AppTestRouter initialEntries={['/settings/focus-practice']} />);
+
+    expect(await screen.findByRole('option', { name: 'The Three Tenets' })).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByTestId('setting-daily-quick-access-middle-slot'), 'document:canon-three-tenets');
+    expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('document:canon-three-tenets');
+
+    await user.click(screen.getByTestId('nav-daily'));
+
+    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('The Three Tenets');
+    expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/doctrine/three-tenets');
+
+    unmount();
+    render(<AppTestRouter initialEntries={['/daily']} />);
+
+    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('The Three Tenets');
+    expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/doctrine/three-tenets');
+  });
+
+  it('shows saved offline sermons in Focus quick-access choices and can select one', async () => {
+    const user = userEvent.setup();
+
+    await seedSavedSermonOptionFixture();
+
+    render(<AppTestRouter initialEntries={['/settings/focus-practice']} />);
+
+    expect(await screen.findByRole('option', { name: 'Saved Morning Homily' })).toBeInTheDocument();
+
+    await user.selectOptions(
+      screen.getByTestId('setting-daily-quick-access-middle-slot'),
+      `document:${savedSermonOptionDocument.id}`,
+    );
+    expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue(`document:${savedSermonOptionDocument.id}`);
+
+    await user.click(screen.getByTestId('nav-daily'));
+
+    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Saved Morning Homily');
+    expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/sermons/saved-morning-homily');
   });
 
   it('opens a focused reading settings page from the settings index', async () => {
