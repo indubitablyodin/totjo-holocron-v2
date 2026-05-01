@@ -153,7 +153,7 @@ describe('daily focus selection and front page', () => {
     }
   });
 
-  it('offers quick meditation presets and opens the timer with the chosen duration', async () => {
+  it('keeps meditation stats on Daily and opens Timer without Daily-owned duration controls', async () => {
     const database = createAppDatabase('daily-practice-test-db');
     const user = userEvent.setup();
 
@@ -164,17 +164,21 @@ describe('daily focus selection and front page', () => {
         expect(screen.getByTestId('daily-meditation-card')).toBeVisible();
       });
 
-      expect(screen.getByTestId('daily-meditation-card')).toHaveTextContent('Center yourself.');
-      expect(screen.getByTestId('meditation-total-days')).toHaveTextContent(/Loading|0 days/);
-      expect(screen.getByTestId('daily-meditation-preset-60')).toHaveTextContent('1 minute');
-      expect(screen.getByTestId('daily-meditation-preset-300')).toHaveTextContent('5 minutes');
-      expect(screen.getByTestId('daily-meditation-preset-1800')).toHaveTextContent('30 minutes');
+      const meditationCard = screen.getByTestId('daily-meditation-card');
 
-      await user.click(screen.getByTestId('daily-meditation-preset-1800'));
+      expect(meditationCard).toHaveTextContent('Center yourself.');
+      expect(screen.getByTestId('meditation-total-days')).toHaveTextContent(/Loading|0 days/);
+      expect(meditationCard).not.toHaveTextContent(/Duration|1 minute|5 minutes|30 minutes|Cancel/);
+      expect(screen.queryByTestId('daily-meditation-presets')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('daily-meditation-preset-60')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('daily-meditation-preset-300')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('daily-meditation-preset-1800')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('daily-cancel-meditation')).not.toBeInTheDocument();
+
       await user.click(screen.getByTestId('daily-begin-meditation'));
 
       expect(await screen.findByTestId('page-title')).toHaveTextContent('Timer');
-      expect(screen.getByTestId('timer-remaining')).toHaveTextContent('30:00');
+      expect(screen.getByTestId('timer-meditation-presets')).toBeVisible();
     } finally {
       await closeAndDeleteDatabase(database);
     }

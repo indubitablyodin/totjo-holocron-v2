@@ -2,9 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
-import { createDefaultTimerSession, applyEditableTimerConfig } from '@/features/timer/timerModel';
-import { loadTimerPreferences } from '@/features/timer/timerPreferences';
-import { saveTimerSession } from '@/features/timer/timerSessionStorage';
 import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 
 import {
@@ -28,17 +25,6 @@ type DailyPracticePageProps = {
   database?: HolocronDatabase;
 };
 
-type MeditationPreset = {
-  label: string;
-  seconds: number;
-};
-
-const MEDITATION_PRESETS: MeditationPreset[] = [
-  { label: '1 minute', seconds: 60 },
-  { label: '5 minutes', seconds: 300 },
-  { label: '30 minutes', seconds: 1800 },
-];
-
 const EMPTY_MEDITATION_STATS: MeditationPracticeStats = {
   totalDistinctDays: 0,
   currentStreakDays: 0,
@@ -58,7 +44,6 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
     [clockOverride, fallbackTimeZone],
   );
   const dailyFocus = useMemo(() => selectDailyFocus(resolvedNow), [resolvedNow]);
-  const [selectedPresetSeconds, setSelectedPresetSeconds] = useState(MEDITATION_PRESETS[1].seconds);
   const [meditationStats, setMeditationStats] = useState<MeditationPracticeStats>(EMPTY_MEDITATION_STATS);
   const [middleQuickAccessSlot, setMiddleQuickAccessSlot] = useState<DailyQuickAccessChoice | null>(null);
   const [statsStatus, setStatsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -114,12 +99,6 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   }, [database]);
 
   const beginMeditation = () => {
-    const preferences = loadTimerPreferences();
-    const presetSession = applyEditableTimerConfig(createDefaultTimerSession(preferences), {
-      totalDurationSeconds: selectedPresetSeconds,
-    });
-
-    saveTimerSession(presetSession);
     void navigate('/timer');
   };
 
@@ -183,39 +162,9 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
             </p>
           ) : null}
 
-          <fieldset className="daily-preset-group">
-            <legend className="field-label">Duration</legend>
-            <div className="reader-option-group__choices" data-testid="daily-meditation-presets">
-              {MEDITATION_PRESETS.map((preset) => (
-                <button
-                  aria-pressed={selectedPresetSeconds === preset.seconds}
-                  className={`reader-option-button${selectedPresetSeconds === preset.seconds ? ' reader-option-button--active' : ''}`}
-                  data-testid={`daily-meditation-preset-${preset.seconds}`}
-                  key={preset.seconds}
-                  onClick={() => {
-                    setSelectedPresetSeconds(preset.seconds);
-                  }}
-                  type="button"
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-
           <div className="button-row">
             <button className="primary-button button-inline" data-testid="daily-begin-meditation" onClick={beginMeditation} type="button">
               Begin meditation
-            </button>
-            <button
-              className="secondary-button button-inline"
-              data-testid="daily-cancel-meditation"
-              onClick={() => {
-                setSelectedPresetSeconds(MEDITATION_PRESETS[1].seconds);
-              }}
-              type="button"
-            >
-              Cancel
             </button>
           </div>
         </article>
