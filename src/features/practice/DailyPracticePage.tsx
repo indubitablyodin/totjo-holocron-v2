@@ -133,11 +133,10 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
         </article>
       </PageSection>
 
-      <PageSection description="Center yourself." title="Meditation">
+      <PageSection title="Meditation">
         <article className="daily-meditation-card" data-testid="daily-meditation-card">
           <div className="daily-focus-card__header">
             <div>
-              <p className="today-entry-flow__label">Quick meditation</p>
               <h2 className="daily-practice-card__title">Center yourself.</h2>
             </div>
           </div>
