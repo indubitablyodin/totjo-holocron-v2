@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-fear-leads-to-anger",
+    "slug": "fear-leads-to-anger",
+    "title": "Fear Leads to Anger?",
+    "summary": "The character of Yoda has a lot to say that informs the practice of Jediism, but not so much in the prequel movies. Yet it’s this saying from The Phantom Menace that has become ...",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "The character of Yoda has a lot to say that informs the practice of Jediism, but not so much in the prequel movies. Yet it’s this saying from The Phantom Menace that has become one of his most familiar aphorisms.\n\nBut is it accurate?\n\nLet’s start by looking at fear. As Yoda implies, fear and anger are two distinct emotions with distinct physiological effects, and there have been a number of interesting studies in recent years to help scientists understand these distinctions and the mechanisms behind them. (I’ll link some of the articles I read in the comments below.)\n\nWe’re all familiar with what is colloquially called the fight-or-flight response, but this is actually a misnomer, because it’s out of order. When faced with something that causes us immediate fear, our first impulse is to freeze in response. If that seems unhelpful, the next impulse is to flee, and if that seems impossible, then we’re wired to fight. But immediately upon sensing the fear stimulus, our bodies have evolved to go through rapid physiological responses to make us better able to flee or fight. So the first way in which fear can lead to anger is the situation where our body primes us to switch from flight (a fear response) to fight, which our minimally-evolved amygdala interprets as anger.\n\nBut we need not feel trapped for fear to turn to anger. Fear makes us feel vulnerable and insecure, while for many people anger gives the illusion of strength and control over the situation. Some people feel ashamed of expressing fear, and consequently they project anger at the person or situation that caused them this shame. Or we can swerve from fear to anger because we’re angry at the thing that caused us fear simply because it caused us fear. Over time, any of these can become a learned response, the first thing our lizard brain reaches for in response to a fear stimulus.\n\nOne more thing about the fear to anger paradigm: It can be difficult to express feelings of fear, while most of us have no problem expressing anger. Both are thought of as negative emotions that cause harm in our circumstances and our relationships, but at first glance anger feels far more corrosive, doesn’t it?\n\nSo what are we to do with Yoda’s first claim? Emotional awareness is the key to understanding when our fears run the risk of becoming anger, but both fear and anger can be nearly instantaneous responses – we’ve evolved that way in order to respond to danger. It takes practice to be sufficiently conscious of our lizard-brain reactions: practice at recognizing our triggers, and practice being mindful of our changing emotional states. But for me, these practices are at the heart of Jediism: most of us meditate, and many of us practice mindfulness and cultivate tranquility.\n\nI opened with a quote from Yoda, so let me close with a quote from a real-world Jedi master, Viktor Frankl, which says to me almost everything I know about this topic:\n\nIf you have questions or advice on how to put this into practice, hit me up in the comments or over on the discord.",
+    "tags": [
+      "sermon",
+      "author:atticus",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/fear-leads-to-anger"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/fear-leads-to-anger",
+    "author": "Atticus",
+    "sortOrder": 8,
+    "publishedAt": "2026-01-30T00:00:03.000Z",
+    "updatedAt": "2026-04-27T00:00:00.000Z",
+    "checksum": "fnv1a-abbaea14"
+  }
+}

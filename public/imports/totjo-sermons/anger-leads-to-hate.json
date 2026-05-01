@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-anger-leads-to-hate",
+    "slug": "anger-leads-to-hate",
+    "title": "Anger Leads to Hate?",
+    "summary": "So, last time we talked, I brought up this quotation from Yoda, and we discussed the first part of his argument, how fear can sometimes turn to anger, although it’s certainly no...",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "So, last time we talked, I brought up this quotation from Yoda, and we discussed the first part of his argument, how fear can sometimes turn to anger, although it’s certainly not guaranteed. It only stands to reason that we should next take up the question of whether anger, in fact, leads to hate.\n\nLet me just say up front that I think the little green dude got this part wrong. Or at least more wrong than right.\n\nRight off the bat, we have a definitional problem. While we all know what it is to feel fear or anger, reasonable people can differ on what exactly is meant by “hate.” It doesn’t help that we use the word in a number of unrelated contexts. I might say that I hate lima beans – and I mean that sincerely, from the very depths of my soul – but that’s not the context in which we find the kind of corrosive hate to which Yoda is referring. And certainly, I don’t hate lima beans because I’m angry with them.\n\nSo what then is hate? I could go find dictionary definitions, but for me the best definition of hate is the one my big sister Annette taught me when I was maybe six or seven: “Hate is when you dislike someone so much that you want them hurt.” She actually might have said “dead,” I don’t quite remember, but I don’t think it has to go that far to be considered legitimate hate.\n\nIf we accept Annette’s definition, then we come to the next logical hurdle, which I’m going to sum up under the term universality. We’ve all felt fear, and we’ve all felt anger; these are, I think, inherent to the human condition, and we even talked some last time about how these evolved as survival mechanisms to prepare us to meet threats by fleeing or fighting. But hate is not universal. No one has to hate, although too many do. It’s not a natural, inherent emotion; it’s something that is cultivated, nurtured, for whatever reason.\n\n(And I suppose this is as good a time as any for me to tell you that there won’t be a follow-up on whether hate leads to suffering, because of course it does, in both the hater and the hated.)\n\nI see another distinction between anger and hate, which I can most easily explain if I greatly oversimplify both for a moment. In my own life, when I find myself experiencing anger, it’s usually because of something that someone has done. There might be fear involved first, like when someone near-misses me in traffic, but fear isn’t a necessary prerequisite; I can get righteously angry when I learn about some injustice (welcome to the year of our lord 2026), even though I’m not personally fearful in that moment. On the other hand, hate – the corrosive, wishing-harm-on-the-object hate that I’m talking about here – is frequently not because of what the hated person or group does, but because of what or who they are. There are imaging studies that show fear and anger activating in the older, more primitive parts of the brain, while hate involves the more cognitive areas of the brain, particularly those areas associated with contempt or disgust. Again, fear and anger are threat responses, but hate is not.\n\nMaybe this is a tangent, but it strikes me as funny that we use the suffix “-phobe” – from “phobia,” an irrational fear – not to describe one who fears, but to describe one who hates? Anyway, moving on.\n\nOf course, despite all the differences I’ve tried to illustrate here, it’s not impossible for anger to become hate. There has been a lot of research into what causes a person to hate, and again it’s complex because hate can encompass such a wide array of emotional reactions. But generally, one’s anger can turn to hate if it’s repeated or unrelenting over time, or if the cause of the anger is behavior that causes one to feel humiliation or shame. This is by no means an exhaustive list, and certainly what triggers anger or shame in one person might lead to completely different emotional responses in another.\n\nSo to bring this back around to the little green dude: he’s kind of right about fear and anger, much less so in my opinion about anger and hate. But that said, the Jedi way of dealing with hate is closely related to what Yoda says here. When we experience hate, or maybe what we sense could become hate if left untreated, we have to look at what the other person has done to cause us to react that way – and I assume here that you’re feeling strong antipathy of this sort because of what the other person has done and not because of who they are, yeah? Next, we have to examine the negative emotions caused by their behavior – did they make you feel fear or anger, or some other unpleasant feeling like jealousy? Watch for the ways in which these negative emotions can be destructive to your sense of self, such as causing you to feel shame or insecurity. I believe that fully understanding your negative emotional reactions is the first and most powerful step toward overcoming them. That said, though, it often helps to talk out these feelings with a trusted friend or spiritual advisor, and there is absolutely no shame in seeking the help of a trained professional.\n\nIf you have questions or advice on how to put this into practice, hit me up in the comments or over on the discord.",
+    "tags": [
+      "sermon",
+      "author:atticus",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/anger-leads-to-hate"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/anger-leads-to-hate",
+    "author": "Atticus",
+    "sortOrder": 6,
+    "publishedAt": "2026-02-20T00:00:36.000Z",
+    "updatedAt": "2026-04-27T00:00:00.000Z",
+    "checksum": "fnv1a-eecf79b1"
+  }
+}

@@ -1,0 +1,336 @@
+{
+  "importedAt": "2026-04-27T00:00:00.000Z",
+  "checksum": "fnv1a-e5ca0f46",
+  "documents": [
+    {
+      "id": "sermon-sermon-from-the-stove-boiling-water",
+      "slug": "sermon-from-the-stove-boiling-water",
+      "title": "Sermon From the Stove: Boiling Water",
+      "summary": "The Sermons from the Stove series are sermons, inspirations, and insights ChaotishRabe gained while cooking in his kitchen at home.",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:chaotishrabe",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/sermon-from-the-stove-boiling-water"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-boiling-water",
+      "author": "ChaotishRabe",
+      "sortOrder": 0,
+      "publishedAt": "2026-04-24T03:30:55.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-475413d6"
+    },
+    {
+      "id": "sermon-the-force-works-all-things-out",
+      "slug": "the-force-works-all-things-out",
+      "title": "The Force Works All Things Out",
+      "summary": "Before I begin, I’d like us all to take a moment to meditate on two questions: What is one situation where we acted or didn’t act because we were afraid? What is one situation w...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:rosalyn-johnson",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/the-force-works-all-things-out"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/the-force-works-all-things-out",
+      "author": "Rosalyn Johnson",
+      "sortOrder": 1,
+      "publishedAt": "2026-04-09T18:34:19.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-a5625dd0"
+    },
+    {
+      "id": "sermon-resilience-and-integration-of-practice",
+      "slug": "resilience-and-integration-of-practice",
+      "title": "Resilience and integration of practice",
+      "summary": "Happy Friday Everybody",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:zanthan-storm",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/resilience-and-integration-of-practice"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/resilience-and-integration-of-practice",
+      "author": "Zanthan Storm",
+      "sortOrder": 2,
+      "publishedAt": "2026-04-03T12:45:30.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-89726a43"
+    },
+    {
+      "id": "sermon-how-to-walk-a-path-alone-yet-with-others",
+      "slug": "how-to-walk-a-path-alone-yet-with-others",
+      "title": "How to Walk a Path Alone, Yet With Others",
+      "summary": "As a Jedi, you may sometimes feel lonely and excluded. This is usually because you are far too hard on yourself and have standards and values ​​that sometimes demand a lot from ...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:serenity-amyntas",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/how-to-walk-a-path-alone-yet-with-others"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/how-to-walk-a-path-alone-yet-with-others",
+      "author": "Serenity Amyntas",
+      "sortOrder": 3,
+      "publishedAt": "2026-03-27T00:00:32.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-4699f928"
+    },
+    {
+      "id": "sermon-may-the-forest-be-with-you",
+      "slug": "may-the-forest-be-with-you",
+      "title": "May the Forest Be With You",
+      "summary": "Today is Earth Day. You know - for that big hunk of rock floating in space that we all happen to live on at this moment. The one with Moon moon - the only moon in our solar syst...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:tavi",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/may-the-forest-be-with-you"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/may-the-forest-be-with-you",
+      "author": "Tavi",
+      "sortOrder": 4,
+      "publishedAt": "2026-03-20T00:00:15.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-35891c57"
+    },
+    {
+      "id": "sermon-why-i-dont-want-another-cat-for-now",
+      "slug": "why-i-dont-want-another-cat-for-now",
+      "title": "Why i don’t want another cat for now",
+      "summary": "Care fatigue, i had never heard of it until a burn out completely turned my life upside down. It not only was very inconvenient but it also made me realise that the image that w...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:serenity-amyntas",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/why-i-dont-want-another-cat-for-now"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/why-i-dont-want-another-cat-for-now",
+      "author": "Serenity Amyntas",
+      "sortOrder": 5,
+      "publishedAt": "2026-02-27T00:00:22.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-ec0ebb80"
+    },
+    {
+      "id": "sermon-anger-leads-to-hate",
+      "slug": "anger-leads-to-hate",
+      "title": "Anger Leads to Hate?",
+      "summary": "So, last time we talked, I brought up this quotation from Yoda, and we discussed the first part of his argument, how fear can sometimes turn to anger, although it’s certainly no...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:atticus",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/anger-leads-to-hate"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/anger-leads-to-hate",
+      "author": "Atticus",
+      "sortOrder": 6,
+      "publishedAt": "2026-02-20T00:00:36.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-17484a6d"
+    },
+    {
+      "id": "sermon-comfort-now-mercy",
+      "slug": "comfort-now-mercy",
+      "title": "Comfort-Now Mercy: A Jedi Perspective",
+      "summary": "Although I am still working on my Apprenticeship, A.Div, and Seminary training, I had an experience earlier this week that inspired me to write a sermon that includes lessons fr...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:pachomius",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/comfort-now-mercy"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/comfort-now-mercy",
+      "author": "Pachomius",
+      "sortOrder": 7,
+      "publishedAt": "2026-02-17T22:41:04.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-57536b8d"
+    },
+    {
+      "id": "sermon-fear-leads-to-anger",
+      "slug": "fear-leads-to-anger",
+      "title": "Fear Leads to Anger?",
+      "summary": "The character of Yoda has a lot to say that informs the practice of Jediism, but not so much in the prequel movies. Yet it’s this saying from The Phantom Menace that has become ...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:atticus",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/fear-leads-to-anger"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/fear-leads-to-anger",
+      "author": "Atticus",
+      "sortOrder": 8,
+      "publishedAt": "2026-01-30T00:00:03.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-4f45cc4f"
+    },
+    {
+      "id": "sermon-what-jedi-believe-in-times-of-conflict",
+      "slug": "what-jedi-believe-in-times-of-conflict",
+      "title": "What Jedi Believe in Times of Conflict",
+      "summary": "Its easy to get lost in these difficult times where worldly conflicts affect our day to day lives to a point we are stressed out over it. Its a natural reaction to injustice and...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:serenity-amyntas",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/what-jedi-believe-in-times-of-conflict"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/what-jedi-believe-in-times-of-conflict",
+      "author": "Serenity Amyntas",
+      "sortOrder": 9,
+      "publishedAt": "2026-01-23T00:00:40.000Z",
+      "updatedAt": "2026-04-27T00:00:00.000Z",
+      "checksum": "fnv1a-8e207e04"
+    }
+  ]
+}
