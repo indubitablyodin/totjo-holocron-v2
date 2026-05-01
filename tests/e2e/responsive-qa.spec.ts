@@ -23,49 +23,44 @@ async function expectNoHorizontalOverflow(page: Page, selector: string) {
 }
 
 test.describe('responsive QA matrix', () => {
-  test('mobile-nav phone matrix keeps the wheel rail labeled and reachable', async ({ page }, testInfo) => {
+  test('mobile-nav phone matrix keeps content wide and dock reachable', async ({ page }, testInfo) => {
     requirePhoneProject(testInfo);
 
     await page.goto('/library');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Read');
-    await expect(page.getByTestId('nav-daily')).toHaveText('Focus');
-    await expect(page.getByTestId('nav-library')).toHaveText('Read');
-    await expect(page.getByTestId('nav-timer')).toHaveText('Timer');
-    await expect(page.getByTestId('nav-settings')).toHaveText('Settings');
+    await expect(page.getByTestId('bottom-nav')).toContainText('Focus');
+    await expect(page.getByTestId('bottom-nav')).toContainText('Library');
+    await expect(page.getByTestId('bottom-nav')).toContainText('Settings');
+    await expect(page.getByTestId('primary-nav')).toBeHidden();
 
     const navMetrics = await page.evaluate(() => {
-      const nav = document.querySelector('[data-testid="primary-nav"]');
       const main = document.querySelector('[data-testid="shell-main"]');
 
-      if (!nav || !main) {
-        throw new Error('Primary navigation rail is missing.');
+      if (!main) {
+        throw new Error('Main content is missing.');
       }
 
-      const navRect = nav.getBoundingClientRect();
       const mainRect = main.getBoundingClientRect();
 
       return {
-        navLeft: navRect.left,
-        navRight: navRect.right,
-        navTop: navRect.top,
         mainLeft: mainRect.left,
-        navHeight: navRect.height,
+        mainWidth: mainRect.width,
         viewportHeight: window.innerHeight,
+        viewportWidth: window.innerWidth,
       };
     });
 
-    expect(navMetrics.navLeft).toBeGreaterThanOrEqual(0);
-    expect(navMetrics.navRight).toBeLessThan(navMetrics.mainLeft + 12);
-    expect(navMetrics.navHeight).toBeGreaterThan(navMetrics.viewportHeight * 0.55);
+    expect(navMetrics.mainLeft).toBeGreaterThanOrEqual(0);
+    expect(navMetrics.mainWidth).toBeGreaterThan(navMetrics.viewportWidth * 0.8);
     const bottomNavMetrics = await page.getByTestId('bottom-nav').boundingBox();
     expect(bottomNavMetrics).not.toBeNull();
     if (!bottomNavMetrics) {
       throw new Error('Expected bottom navigation bounds to be available.');
     }
-    expect(bottomNavMetrics.y + bottomNavMetrics.height).toBeLessThanOrEqual(navMetrics.navTop + 1);
-    await expectNoHorizontalOverflow(page, '.nav-link');
+    expect(bottomNavMetrics.width).toBeGreaterThan(navMetrics.viewportWidth * 0.8);
+    await expectNoHorizontalOverflow(page, '.bottom-nav__link');
 
     await page.screenshot({ path: '.sisyphus/evidence/task-8-mobile-nav-phone.png' });
   });

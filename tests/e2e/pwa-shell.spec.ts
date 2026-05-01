@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('PWA shell', () => {
-  test('mobile-nav phone layout shows the core destinations in the wheel rail', async ({ page }) => {
+  test('mobile-nav phone layout gives content room and keeps dock destinations reachable', async ({ page }) => {
     const consoleErrors: string[] = [];
 
     page.on('console', (message) => {
@@ -27,17 +27,11 @@ test.describe('PWA shell', () => {
       window.dispatchEvent(installEvent);
     });
 
-    await expect(page.getByTestId('nav-daily')).toHaveText('Focus');
-    await expect(page.getByTestId('nav-library')).toHaveText('Read');
-    await expect(page.getByTestId('nav-timer')).toHaveText('Timer');
-    await expect(page.getByTestId('nav-settings')).toHaveText('Settings');
     await expect(page.getByTestId('bottom-nav')).toContainText('Focus');
     await expect(page.getByTestId('bottom-nav')).toContainText('Library');
     await expect(page.getByTestId('bottom-nav')).toContainText('Settings');
-    await expect(page.getByTestId('primary-nav')).toBeVisible();
-    await expect(page.getByTestId('nav-daily')).toBeVisible();
-    await expect(page.getByTestId('nav-timer')).toBeVisible();
-    await expect(page.getByTestId('nav-settings')).toBeVisible();
+    await expect(page.getByTestId('bottom-nav')).toBeVisible();
+    await expect(page.getByTestId('primary-nav')).toBeHidden();
     await expect(page.getByTestId('creator-home-link')).toHaveAttribute('href', 'https://odinhalvorson.com');
     await expect(page.getByTestId('creator-home-link')).toContainText('Creator home');
     await expect(page.getByTestId('creator-donate-link')).toHaveAttribute('href', 'https://ko-fi.com/indubitablyodin');
@@ -49,26 +43,21 @@ test.describe('PWA shell', () => {
     await expect(page.getByTestId('page-content')).toBeVisible();
     await expect(page.getByTestId('offline-banner')).toHaveCount(1);
 
-    const navBox = await page.getByTestId('primary-nav').boundingBox();
     const mainBox = await page.getByTestId('shell-main').boundingBox();
+    const bottomNavBox = await page.getByTestId('bottom-nav').boundingBox();
     const viewport = page.viewportSize();
 
-    expect(navBox).not.toBeNull();
     expect(mainBox).not.toBeNull();
+    expect(bottomNavBox).not.toBeNull();
     expect(viewport).not.toBeNull();
 
-    if (!navBox || !mainBox || !viewport) {
-      throw new Error('Expected mobile rail bounds and viewport dimensions to be available.');
+    if (!mainBox || !bottomNavBox || !viewport) {
+      throw new Error('Expected mobile content, dock, and viewport dimensions to be available.');
     }
 
-    expect(navBox.x).toBeLessThan(mainBox.x);
-    expect(navBox.height).toBeGreaterThan(viewport.height * 0.55);
-    const bottomNavBox = await page.getByTestId('bottom-nav').boundingBox();
-    expect(bottomNavBox).not.toBeNull();
-    if (!bottomNavBox) {
-      throw new Error('Expected bottom navigation bounds to be available.');
-    }
-    expect(bottomNavBox.y + bottomNavBox.height).toBeLessThanOrEqual(Math.min(navBox.y, mainBox.y) + 1);
+    expect(mainBox.width).toBeGreaterThan(viewport.width * 0.8);
+    expect(bottomNavBox.width).toBeGreaterThan(viewport.width * 0.8);
+    expect(bottomNavBox.y + bottomNavBox.height).toBeLessThanOrEqual(mainBox.y + 1);
     expect(consoleErrors).toEqual([]);
     await page.screenshot({ path: '.sisyphus/evidence/task-2-mobile-nav-phone.png' });
   });
@@ -167,7 +156,7 @@ test.describe('PWA shell', () => {
     await context.setOffline(true);
     await page.reload();
 
-    await expect(page.getByTestId('nav-library')).toBeVisible();
+    await expect(page.getByTestId('bottom-nav-library')).toBeVisible();
     await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
     await expect(page.getByTestId('offline-banner')).toContainText('You’re offline. Reading and settings still work with saved content.');
     await expect(page.locator('body')).not.toContainText('ERR_INTERNET_DISCONNECTED');
