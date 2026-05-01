@@ -50,19 +50,21 @@ async function mockDailyClock(page: Page, initialIsoString: string) {
 }
 
 async function expectBottomNavDoesNotOverlay(page: Page, testId: string) {
-  await expect(page.getByTestId('bottom-nav')).not.toHaveCSS('position', 'fixed');
+  await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
   await page.getByTestId(testId).scrollIntoViewIfNeeded();
 
   const elementBox = await page.getByTestId(testId).boundingBox();
+  const bottomNavBox = await page.getByTestId('bottom-nav').boundingBox();
 
   expect(elementBox).not.toBeNull();
+  expect(bottomNavBox).not.toBeNull();
 
-  if (!elementBox) {
+  if (!elementBox || !bottomNavBox) {
     throw new Error(`Expected ${testId} bounds to be available.`);
   }
 
   expect(elementBox.y).toBeGreaterThanOrEqual(0);
-  expect(elementBox.y + elementBox.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  expect(elementBox.y + elementBox.height).toBeLessThanOrEqual(bottomNavBox.y);
 }
 
 test.describe('daily focus route', () => {
@@ -135,7 +137,8 @@ test.describe('daily focus route', () => {
     await expect(page.getByTestId('daily-meditation-preset-300')).toHaveText('5 minutes');
     await expect(page.getByTestId('daily-meditation-preset-1800')).toHaveText('30 minutes');
     await expect(page.getByTestId('daily-quick-access-jedi-code')).toHaveAttribute('href', '/library/doctrine/code');
-    await expect(page.getByTestId('daily-quick-access-knights-code')).toHaveAttribute('href', '/library/supplemental/knights-code');
+    await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveText('Default slot');
+    await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');
     await expect(page.getByTestId('daily-quick-access-bookmarks')).toHaveAttribute('href', '/library/bookmarks');
     await expectBottomNavDoesNotOverlay(page, 'daily-begin-meditation');
     await expectBottomNavDoesNotOverlay(page, 'daily-quick-access-bookmarks');

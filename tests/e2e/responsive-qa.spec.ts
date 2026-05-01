@@ -33,6 +33,7 @@ test.describe('responsive QA matrix', () => {
     await expect(page.getByTestId('bottom-nav')).toContainText('Focus');
     await expect(page.getByTestId('bottom-nav')).toContainText('Library');
     await expect(page.getByTestId('bottom-nav')).toContainText('Settings');
+    await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
     await expect(page.getByTestId('primary-nav')).toBeHidden();
 
     const navMetrics = await page.evaluate(() => {
@@ -60,6 +61,7 @@ test.describe('responsive QA matrix', () => {
       throw new Error('Expected bottom navigation bounds to be available.');
     }
     expect(bottomNavMetrics.width).toBeGreaterThan(navMetrics.viewportWidth * 0.8);
+    expect(bottomNavMetrics.y + bottomNavMetrics.height).toBeLessThanOrEqual(navMetrics.viewportHeight);
     await expectNoHorizontalOverflow(page, '.bottom-nav__link');
 
     await page.screenshot({ path: '.sisyphus/evidence/task-8-mobile-nav-phone.png' });

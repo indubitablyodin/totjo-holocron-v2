@@ -6,19 +6,21 @@ function parseClockToSeconds(clockText: string): number {
 }
 
 async function expectBottomNavDoesNotOverlay(page: import('@playwright/test').Page, testId: string) {
-  await expect(page.getByTestId('bottom-nav')).not.toHaveCSS('position', 'fixed');
+  await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
   await page.getByTestId(testId).scrollIntoViewIfNeeded();
 
   const elementBox = await page.getByTestId(testId).boundingBox();
+  const bottomNavBox = await page.getByTestId('bottom-nav').boundingBox();
 
   expect(elementBox).not.toBeNull();
+  expect(bottomNavBox).not.toBeNull();
 
-  if (!elementBox) {
+  if (!elementBox || !bottomNavBox) {
     throw new Error(`Expected ${testId} bounds to be available.`);
   }
 
   expect(elementBox.y).toBeGreaterThanOrEqual(0);
-  expect(elementBox.y + elementBox.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  expect(elementBox.y + elementBox.height).toBeLessThanOrEqual(bottomNavBox.y);
 }
 
 test.describe('meditation timer', () => {

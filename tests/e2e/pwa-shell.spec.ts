@@ -31,6 +31,7 @@ test.describe('PWA shell', () => {
     await expect(page.getByTestId('bottom-nav')).toContainText('Library');
     await expect(page.getByTestId('bottom-nav')).toContainText('Settings');
     await expect(page.getByTestId('bottom-nav')).toBeVisible();
+    await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
     await expect(page.getByTestId('primary-nav')).toBeHidden();
     await expect(page.getByTestId('creator-home-link')).toHaveAttribute('href', 'https://odinhalvorson.com');
     await expect(page.getByTestId('creator-home-link')).toContainText('Creator home');
@@ -57,7 +58,8 @@ test.describe('PWA shell', () => {
 
     expect(mainBox.width).toBeGreaterThan(viewport.width * 0.8);
     expect(bottomNavBox.width).toBeGreaterThan(viewport.width * 0.8);
-    expect(bottomNavBox.y + bottomNavBox.height).toBeLessThanOrEqual(mainBox.y + 1);
+    expect(bottomNavBox.y + bottomNavBox.height).toBeLessThanOrEqual(viewport.height);
+    expect(bottomNavBox.y).toBeGreaterThan(viewport.height - bottomNavBox.height * 2);
     expect(consoleErrors).toEqual([]);
     await page.screenshot({ path: '.sisyphus/evidence/task-2-mobile-nav-phone.png' });
   });
