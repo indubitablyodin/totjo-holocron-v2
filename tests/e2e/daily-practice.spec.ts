@@ -135,9 +135,12 @@ test.describe('daily focus route', () => {
     await expect(page.getByTestId('daily-meditation-card')).toContainText('Center yourself.');
     await expect(page.getByTestId('meditation-total-days')).toContainText('0 days');
     await expect(page.getByTestId('meditation-current-streak')).toContainText('0 days');
-    await expect(page.getByTestId('daily-meditation-preset-60')).toHaveText('1 minute');
-    await expect(page.getByTestId('daily-meditation-preset-300')).toHaveText('5 minutes');
-    await expect(page.getByTestId('daily-meditation-preset-1800')).toHaveText('30 minutes');
+    await expect(page.getByTestId('daily-meditation-card')).not.toContainText(/Duration|1 minute|5 minutes|30 minutes|Cancel/);
+    await expect(page.getByTestId('daily-meditation-presets')).toHaveCount(0);
+    await expect(page.getByTestId('daily-meditation-preset-60')).toHaveCount(0);
+    await expect(page.getByTestId('daily-meditation-preset-300')).toHaveCount(0);
+    await expect(page.getByTestId('daily-meditation-preset-1800')).toHaveCount(0);
+    await expect(page.getByTestId('daily-cancel-meditation')).toHaveCount(0);
     await expect(page.getByTestId('daily-quick-access-jedi-code')).toHaveAttribute('href', '/library/doctrine/code');
     await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveText('Default slot');
     await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');
@@ -145,10 +148,9 @@ test.describe('daily focus route', () => {
     await expectBottomNavDoesNotOverlay(page, 'daily-begin-meditation');
     await expectBottomNavDoesNotOverlay(page, 'daily-quick-access-bookmarks');
 
-    await page.getByTestId('daily-meditation-preset-60').click();
     await page.getByTestId('daily-begin-meditation').click();
 
     await expect(page).toHaveURL(/\/timer$/);
-    await expect(page.getByTestId('timer-remaining')).toHaveText('01:00');
+    await expect(page.getByTestId('timer-meditation-presets')).toBeVisible();
   });
 });

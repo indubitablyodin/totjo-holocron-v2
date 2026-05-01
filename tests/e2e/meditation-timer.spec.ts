@@ -33,9 +33,15 @@ test.describe('meditation timer', () => {
     await expect(page.getByRole('heading', { name: 'Start a session' })).toBeVisible();
     await expect(page.getByTestId('timer-panel')).toBeVisible();
     await expect(page.getByTestId('timer-defaults')).toHaveCount(0);
+    await expect(page.getByTestId('timer-meditation-preset-60')).toHaveText('1 minute');
+    await expect(page.getByTestId('timer-meditation-preset-300')).toHaveText('5 minutes');
+    await expect(page.getByTestId('timer-meditation-preset-1800')).toHaveText('30 minutes');
     await expect(page.getByTestId('timer-start')).toHaveText('Start timer');
     await expect(page.getByTestId('timer-reset')).toHaveText('Reset session');
+    await expect(page.getByTestId('timer-cancel')).toHaveText('Cancel');
     await expect(page.getByTestId('timer-settings-toggle')).toBeVisible();
+    await page.getByTestId('timer-meditation-preset-60').click();
+    await expect(page.getByTestId('timer-remaining')).toHaveText('01:00');
     await expectBottomNavDoesNotOverlay(page, 'timer-start');
     await expectBottomNavDoesNotOverlay(page, 'timer-reset');
 
@@ -49,6 +55,23 @@ test.describe('meditation timer', () => {
     await expect(page.getByTestId('timer-pause')).toHaveText('Pause timer');
     await expect(page.getByTestId('timer-reset')).toHaveText('Reset session');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-6-timer-phone.png' });
+  });
+
+  test('timer cancel clears the session and returns to Daily', async ({ page }) => {
+    await page.goto('/timer');
+    await page.waitForLoadState('networkidle');
+
+    await page.getByTestId('timer-meditation-preset-60').click();
+    await expect(page.getByTestId('timer-remaining')).toHaveText('01:00');
+
+    await page.getByTestId('timer-cancel').click();
+
+    await expect(page).toHaveURL(/\/daily$/);
+    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
+
+    await page.goto('/timer');
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByTestId('timer-remaining')).toHaveText('05:00');
   });
 
   test('timer completes offline with bundled default-gong cues', async ({ context, page }) => {

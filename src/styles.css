@@ -919,6 +919,7 @@ input {
 .daily-practice-meta,
 .daily-practice-actions,
 .daily-preset-group,
+.timer-preset-group,
 .daily-quick-access,
 .today-entry-flow,
 .today-entry-flow__actions,
@@ -999,7 +1000,8 @@ input {
   line-height: 1.25;
 }
 
-.daily-preset-group {
+.daily-preset-group,
+.timer-preset-group {
   min-width: 0;
   margin: 0;
   padding: 0;
