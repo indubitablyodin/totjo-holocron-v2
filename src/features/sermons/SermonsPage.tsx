@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
@@ -100,17 +100,7 @@ export function SermonsPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isOnline || sermons.length > 0 || syncStatus.kind === 'syncing') {
-      return;
-    }
-
-    void handleSync();
-  }, [isOnline, sermons.length, syncStatus.kind]);
-
-  const visibleSermons = useMemo(() => sermons.slice(0, 7), [sermons]);
-
-  const handleSync = async () => {
+  const handleSync = useCallback(async () => {
     setSyncStatus({ kind: 'syncing', message: 'Updating sermons…' });
 
     try {
@@ -132,7 +122,23 @@ export function SermonsPage() {
         message: 'Could not update sermons. Reconnect and try again.',
       });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!isOnline || sermons.length > 0 || syncStatus.kind === 'syncing') {
+      return;
+    }
+
+    const syncTimer = window.setTimeout(() => {
+      void handleSync();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(syncTimer);
+    };
+  }, [handleSync, isOnline, sermons.length, syncStatus.kind]);
+
+  const visibleSermons = useMemo(() => sermons.slice(0, 7), [sermons]);
 
   return (
     <PageLayout

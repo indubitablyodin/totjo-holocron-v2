@@ -59,7 +59,7 @@ export function SermonPage() {
     cacheState: 'uncached-sermon',
   });
   const [isSaving, setIsSaving] = useState(false);
-  const [onlineDetailMarkdown, setOnlineDetailMarkdown] = useState<string | null>(null);
+  const [onlineDetail, setOnlineDetail] = useState<{ bodyMarkdown: string; slug: string } | null>(null);
   const isOnline = useOnlineStatus();
 
   useEffect(() => {
@@ -107,7 +107,6 @@ export function SermonPage() {
 
   useEffect(() => {
     if (routeState.status !== 'ready' || !routeState.document || routeState.cacheState === 'cached-sermon' || !isOnline) {
-      setOnlineDetailMarkdown(null);
       return;
     }
 
@@ -116,12 +115,12 @@ export function SermonPage() {
     void fetchSermonDetailDocument(routeState.document.slug)
       .then((document) => {
         if (isMounted) {
-          setOnlineDetailMarkdown(document.bodyMarkdown);
+          setOnlineDetail({ bodyMarkdown: document.bodyMarkdown, slug: document.slug });
         }
       })
       .catch(() => {
         if (isMounted) {
-          setOnlineDetailMarkdown(null);
+          setOnlineDetail(null);
         }
       });
 
@@ -144,6 +143,8 @@ export function SermonPage() {
       setIsSaving(false);
     }
   };
+
+  const shouldUseOnlineDetail = routeState.status === 'ready' && routeState.document && routeState.cacheState !== 'cached-sermon' && isOnline;
 
   if (routeState.status === 'loading') {
     return (
@@ -309,9 +310,9 @@ export function SermonPage() {
           <div className="document-copy">
             <DoctrineMarkdownContent markdown={document.bodyMarkdown} />
           </div>
-        ) : onlineDetailMarkdown ? (
+        ) : shouldUseOnlineDetail && onlineDetail?.slug === document.slug ? (
           <div className="document-copy">
-            <DoctrineMarkdownContent markdown={onlineDetailMarkdown} />
+            <DoctrineMarkdownContent markdown={onlineDetail.bodyMarkdown} />
           </div>
         ) : (
           <p className="support-copy">This sermon summary is saved here, but the full sermon is not on this device yet.</p>

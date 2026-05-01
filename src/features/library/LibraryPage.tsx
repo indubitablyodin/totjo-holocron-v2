@@ -35,19 +35,6 @@ const READ_LANE_COPY = {
   },
 } as const;
 
-function matchesSearch(document: LibraryDocumentRecord, searchTerm: string) {
-  const normalizedQuery = searchTerm.trim().toLowerCase();
-
-  if (!normalizedQuery) {
-    return true;
-  }
-
-  return [document.title, document.summary, document.tags.join(' '), getAuthorityPresentation(document.authorityClass).badgeLabel]
-    .join(' ')
-    .toLowerCase()
-    .includes(normalizedQuery);
-}
-
 type SearchScope = 'canonical' | 'supplemental' | 'sermon' | 'bookmark' | 'note';
 
 type SearchResult = {
