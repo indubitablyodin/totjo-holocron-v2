@@ -124,15 +124,10 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   };
 
   return (
-    <PageLayout
-      description="A single doctrine focus, a simple meditation path, and your saved reading shortcuts stay on this device."
-      eyebrow="Daily practice"
-      title="Daily Focus"
-    >
-      <PageSection description="One shared offline focus is selected by the UTC day from structured TOTJO doctrine." title="Daily Focus">
+    <PageLayout description="" eyebrow="Daily practice" title="Daily Focus">
+      <PageSection title="Daily Focus">
         <article className="daily-focus-card" data-testid="daily-focus-card">
           <div className="daily-focus-card__header">
-            <p className="today-entry-flow__label">Daily Focus</p>
             <p className="practice-status-pill practice-status-pill--ready" data-testid="daily-focus-day">
               UTC {dailyFocus.dayKey}
             </p>
@@ -147,7 +142,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
               {dailyFocus.text}
             </p>
             <p className="support-copy" data-testid="daily-focus-source">
-              {dailyFocus.label} from {dailyFocus.sourceTitle}.
+              {dailyFocus.label}
             </p>
           </div>
 

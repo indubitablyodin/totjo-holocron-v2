@@ -58,7 +58,7 @@ function createFocusEntries(
     sourceTitle: document.title,
     sourceHref: `/library/doctrine/${document.slug}`,
     sourceActionLabel: options.sourceActionLabel ?? `Read ${document.title}`,
-    label: `${document.title} ${index + 1}`,
+    label: `${document.title} #${index + 1}`,
     text: item,
     preface: options.preface ?? null,
   }));

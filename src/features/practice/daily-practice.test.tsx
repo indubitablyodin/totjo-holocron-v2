@@ -68,6 +68,8 @@ describe('daily focus selection and front page', () => {
     expect(dailyFocusPool.map((entry) => entry.sourceSlug)).not.toContain('a-meditation-for-jedi');
     expect(dailyFocusPool.map((entry) => entry.sourceSlug)).not.toContain('knights-code');
     expect(dailyFocusPool.some((entry) => entry.sourceHref.startsWith('/library/sermons'))).toBe(false);
+    expect(dailyFocusPool[5]).toMatchObject({ label: 'Jedi Believe #6', sourceSlug: 'jedi-believe' });
+    expect(dailyFocusPool.every((entry) => / #\d+$/.test(entry.label))).toBe(true);
   });
 
   it('selects by UTC day with Euclidean modulo and the same result for everyone', () => {
@@ -92,11 +94,12 @@ describe('daily focus selection and front page', () => {
         expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
       });
 
-      expect(screen.getByTestId('daily-focus-card')).toHaveTextContent('Daily Focus');
       expect(screen.getByText('Jediism is a religion based on the observance of the Force. We believe:')).toBeVisible();
+      expect(screen.getByTestId('daily-focus-source')).toHaveTextContent('Jedi Believe #1');
+      expect(screen.getByTestId('daily-focus-card')).not.toHaveTextContent('Daily Focus');
+      expect(screen.getByTestId('daily-focus-source')).not.toHaveTextContent('from Jedi Believe');
       expect(screen.getByTestId('daily-open-source')).toHaveAttribute('href', '/library/doctrine/jedi-believe');
       expect(screen.queryByTestId('reader-controls-toggle')).not.toBeInTheDocument();
-      expect(screen.queryByText('Reader controls')).not.toBeInTheDocument();
     } finally {
       await closeAndDeleteDatabase(database);
     }

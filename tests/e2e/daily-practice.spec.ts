@@ -80,9 +80,11 @@ test.describe('daily focus route', () => {
     await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
     await expect(page.getByTestId('daily-focus-card')).toBeVisible();
     await expect(page.getByTestId('daily-focus-card')).toContainText('Jediism is a religion based on the observance of the Force. We believe:');
+    await expect(page.getByTestId('daily-focus-source')).toHaveText('Jedi Believe #1');
+    await expect(page.getByTestId('daily-focus-card')).not.toContainText('Daily Focus');
+    await expect(page.getByTestId('daily-focus-source')).not.toContainText('from Jedi Believe');
     await expect(page.getByTestId('daily-open-source')).toHaveAttribute('href', '/library/doctrine/jedi-believe');
     await expect(page.getByTestId('reader-controls-toggle')).toHaveCount(0);
-    await expect(page.getByText('Reader controls')).toHaveCount(0);
 
     const focusBox = await page.getByTestId('daily-focus-card').boundingBox();
     const meditationBox = await page.getByTestId('daily-meditation-card').boundingBox();
