@@ -36,6 +36,8 @@ test.describe('meditation timer', () => {
     await expect(page.getByTestId('timer-start')).toHaveText('Start timer');
     await expect(page.getByTestId('timer-reset')).toHaveText('Reset session');
     await expect(page.getByTestId('timer-settings-toggle')).toBeVisible();
+    await expectBottomNavDoesNotOverlay(page, 'timer-start');
+    await expectBottomNavDoesNotOverlay(page, 'timer-reset');
 
     await page.getByTestId('timer-settings-toggle').click();
 

@@ -1,4 +1,30 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+const EXPECTED_BOTTOM_NAV_LABELS = ['Back', 'Focus', 'Library', 'Settings'];
+
+async function expectBottomNavLabels(page: Page) {
+  const bottomNav = page.getByTestId('bottom-nav');
+
+  await expect(bottomNav.locator('.bottom-nav__link')).toHaveText(EXPECTED_BOTTOM_NAV_LABELS);
+  await expect(bottomNav).not.toContainText('Timer');
+}
+
+async function expectBottomNavDoesNotCover(page: Page, testId: string) {
+  await page.getByTestId(testId).scrollIntoViewIfNeeded();
+
+  const elementBox = await page.getByTestId(testId).boundingBox();
+  const bottomNavBox = await page.getByTestId('bottom-nav').boundingBox();
+
+  expect(elementBox).not.toBeNull();
+  expect(bottomNavBox).not.toBeNull();
+
+  if (!elementBox || !bottomNavBox) {
+    throw new Error(`Expected ${testId} and bottom dock bounds to be available.`);
+  }
+
+  expect(elementBox.y).toBeGreaterThanOrEqual(0);
+  expect(elementBox.y + elementBox.height).toBeLessThanOrEqual(bottomNavBox.y);
+}
 
 test.describe('PWA shell', () => {
   test('mobile-nav phone layout gives content room and keeps dock destinations reachable', async ({ page }) => {
@@ -27,9 +53,7 @@ test.describe('PWA shell', () => {
       window.dispatchEvent(installEvent);
     });
 
-    await expect(page.getByTestId('bottom-nav')).toContainText('Focus');
-    await expect(page.getByTestId('bottom-nav')).toContainText('Library');
-    await expect(page.getByTestId('bottom-nav')).toContainText('Settings');
+    await expectBottomNavLabels(page);
     await expect(page.getByTestId('bottom-nav')).toBeVisible();
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
     await expect(page.getByTestId('primary-nav')).toBeHidden();
@@ -64,6 +88,25 @@ test.describe('PWA shell', () => {
     await page.screenshot({ path: '.sisyphus/evidence/task-2-mobile-nav-phone.png' });
   });
 
+  test('bottom dock leaves daily and timer actions clear on phone', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/daily');
+    await page.waitForLoadState('networkidle');
+
+    await expectBottomNavLabels(page);
+    await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
+    await expectBottomNavDoesNotCover(page, 'daily-begin-meditation');
+    await expectBottomNavDoesNotCover(page, 'daily-quick-access');
+
+    await page.goto('/timer');
+    await page.waitForLoadState('networkidle');
+
+    await expectBottomNavLabels(page);
+    await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
+    await expectBottomNavDoesNotCover(page, 'timer-start');
+    await expectBottomNavDoesNotCover(page, 'timer-reset');
+  });
+
   test('mobile-nav desktop adaptation preserves labels and route reachability', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1024 });
     await page.goto('/library');
@@ -75,6 +118,8 @@ test.describe('PWA shell', () => {
     await expect(page.getByTestId('nav-settings')).toHaveText('Settings');
     await expect(page.getByTestId('nav-sermons')).toHaveText('Sermons');
     await expect(page.getByTestId('nav-bookmarks')).toHaveText('Bookmarks');
+    await expectBottomNavLabels(page);
+    await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
     await expect(page.getByTestId('page-title')).toHaveText('Read');
 
     const navBox = await page.getByTestId('primary-nav').boundingBox();

@@ -1,5 +1,7 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 
+const EXPECTED_BOTTOM_NAV_LABELS = ['Back', 'Focus', 'Library', 'Settings'];
+
 function requirePhoneProject(testInfo: TestInfo) {
   test.skip(!testInfo.project.name.startsWith('phone-'), 'Phone viewport matrix only runs in the phone project.');
 }
@@ -30,9 +32,8 @@ test.describe('responsive QA matrix', () => {
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Read');
-    await expect(page.getByTestId('bottom-nav')).toContainText('Focus');
-    await expect(page.getByTestId('bottom-nav')).toContainText('Library');
-    await expect(page.getByTestId('bottom-nav')).toContainText('Settings');
+    await expect(page.locator('[data-testid="bottom-nav"] .bottom-nav__link')).toHaveText(EXPECTED_BOTTOM_NAV_LABELS);
+    await expect(page.getByTestId('bottom-nav')).not.toContainText('Timer');
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
     await expect(page.getByTestId('primary-nav')).toBeHidden();
 
@@ -97,6 +98,9 @@ test.describe('responsive QA matrix', () => {
     await expect(page.getByTestId('nav-library')).toBeVisible();
     await expect(page.getByTestId('nav-timer')).toBeVisible();
     await expect(page.getByTestId('nav-settings')).toBeVisible();
+    await expect(page.locator('[data-testid="bottom-nav"] .bottom-nav__link')).toHaveText(EXPECTED_BOTTOM_NAV_LABELS);
+    await expect(page.getByTestId('bottom-nav')).not.toContainText('Timer');
+    await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
 
     await page.getByTestId('nav-daily').click();
     await expect(page).toHaveURL(/\/daily$/);
