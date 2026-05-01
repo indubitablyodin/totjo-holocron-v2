@@ -633,11 +633,15 @@ input {
 }
 
 .bottom-nav {
+  position: fixed;
+  z-index: 50;
+  bottom: max(var(--space-3), env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  justify-self: center;
   justify-content: center;
   gap: var(--space-2);
-  width: min(100%, 28rem);
+  width: min(calc(100% - var(--space-3) * 2), 28rem);
   padding: var(--space-2);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-pill);
@@ -740,6 +744,7 @@ input {
 
 .shell-main {
   min-width: 0;
+  padding-bottom: calc(var(--shell-bottom-nav-height) + var(--space-5));
 }
 
 .page-header {
@@ -2010,14 +2015,7 @@ input {
   }
 
   .bottom-nav {
-    position: fixed;
-    right: auto;
-    bottom: max(var(--space-3), env(safe-area-inset-bottom));
-    left: 50%;
-    z-index: 50;
-    width: min(calc(100% - var(--space-3) * 2), 28rem);
     margin-inline: auto;
-    transform: translateX(-50%);
   }
 
   .bottom-nav__link {
