@@ -153,7 +153,7 @@
 
 html {
   background: var(--color-background);
-  scroll-padding-bottom: var(--space-6);
+  scroll-padding-bottom: calc(var(--shell-bottom-nav-height) + var(--space-6));
 }
 
 body {
@@ -865,9 +865,10 @@ input {
 .reader-control-button,
 .reader-control-panel,
 .settings-link-card,
+.daily-quick-access__button,
 .primary-button,
 .secondary-button {
-  scroll-margin-bottom: var(--space-6);
+  scroll-margin-bottom: calc(var(--shell-bottom-nav-height) + var(--space-6));
 }
 
 .filter-toggle {
@@ -994,13 +995,37 @@ input {
 }
 
 .daily-quick-access {
-  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
 }
 
-.daily-quick-access__title {
+.daily-quick-access__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: calc(var(--space-6) + var(--space-4));
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-strong);
+  color: var(--color-text);
   font-family: var(--font-display);
   font-size: clamp(1.3rem, 2vw, 1.7rem);
   line-height: 1.08;
+  text-align: center;
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.daily-quick-access__button:hover,
+.daily-quick-access__button:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--color-authority-canonical-border);
+  background: var(--color-authority-canonical-surface);
+  color: var(--color-authority-canonical-text);
 }
 
 .today-entry-flow__label,
@@ -1949,7 +1974,7 @@ input {
 
 @media (max-width: 40rem) {
   .app-shell {
-    padding: var(--space-3);
+    padding: var(--space-3) var(--space-3) calc(var(--shell-bottom-nav-height) + var(--space-5));
   }
 
   .shell-header {
@@ -1985,9 +2010,14 @@ input {
   }
 
   .bottom-nav {
-    position: sticky;
-    bottom: var(--space-2);
+    position: fixed;
+    right: auto;
+    bottom: max(var(--space-3), env(safe-area-inset-bottom));
+    left: 50%;
     z-index: 50;
+    width: min(calc(100% - var(--space-3) * 2), 28rem);
+    margin-inline: auto;
+    transform: translateX(-50%);
   }
 
   .bottom-nav__link {
@@ -2022,6 +2052,10 @@ input {
   }
 
   .timer-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-quick-access {
     grid-template-columns: 1fr;
   }
 }
