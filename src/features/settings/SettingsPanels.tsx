@@ -11,6 +11,11 @@ import {
   saveDailyPracticeClockOverride,
   type DailyPracticeClockOverride,
 } from '@/features/practice/dailyPracticeClock';
+import {
+  DAILY_QUICK_ACCESS_CHOICES,
+  loadDailyQuickAccessMiddleSlot,
+  saveDailyQuickAccessMiddleSlot,
+} from '@/features/practice/dailyQuickAccess';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
 import { getBundledAudioRightsAssets, SOUND_PROFILES, type AudioRightsAsset } from '@/features/timer/audioProfiles';
@@ -189,10 +194,16 @@ export function ReadingDisplaySettingsPage() {
 export function FocusPracticeSettingsPage() {
   const resolvedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
   const [clockOverride, setClockOverride] = useState<DailyPracticeClockOverride>(() => loadDailyPracticeClockOverride());
+  const [middleSlotChoiceId, setMiddleSlotChoiceId] = useState(() => loadDailyQuickAccessMiddleSlot()?.id ?? '');
 
   const updateClockOverride = (nextOverride: DailyPracticeClockOverride) => {
     setClockOverride(nextOverride);
     saveDailyPracticeClockOverride(nextOverride);
+  };
+
+  const updateMiddleSlotChoice = (choiceId: string) => {
+    setMiddleSlotChoiceId(choiceId);
+    saveDailyQuickAccessMiddleSlot(choiceId.length > 0 ? choiceId : null);
   };
 
   return (
@@ -282,6 +293,45 @@ export function FocusPracticeSettingsPage() {
             type="button"
           >
             Use device time
+          </button>
+        </div>
+      </PageSection>
+
+      <PageSection description="Choose the middle button on Daily Focus, or clear it back to the settings shortcut." title="Daily Focus quick access">
+        <form className="settings-form">
+          <label className="field-card" htmlFor="setting-daily-quick-access-middle-slot">
+            <span className="field-label">Middle slot</span>
+            <span className="field-help">This changes only the center Quick access button on this device.</span>
+            <select
+              className="field-select"
+              data-testid="setting-daily-quick-access-middle-slot"
+              id="setting-daily-quick-access-middle-slot"
+              onChange={(event) => {
+                updateMiddleSlotChoice(event.target.value);
+              }}
+              value={middleSlotChoiceId}
+            >
+              <option value="">Default slot</option>
+              {DAILY_QUICK_ACCESS_CHOICES.map((choice) => (
+                <option key={choice.id} value={choice.id}>
+                  {choice.title}
+                </option>
+              ))}
+            </select>
+          </label>
+        </form>
+
+        <div className="settings-actions">
+          <button
+            className="secondary-button"
+            data-testid="setting-daily-quick-access-clear"
+            disabled={middleSlotChoiceId.length === 0}
+            onClick={() => {
+              updateMiddleSlotChoice('');
+            }}
+            type="button"
+          >
+            Clear middle slot
           </button>
         </div>
       </PageSection>

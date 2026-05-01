@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { usePersonalization } from '@/features/personalization/PersonalizationContext';
 import { loadDailyPracticeClockOverride } from '@/features/practice/dailyPracticeClock';
+import { loadDailyQuickAccessMiddleSlot } from '@/features/practice/dailyQuickAccess';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { getSoundProfileById } from '@/features/timer/audioProfiles';
 import { loadTimerPreferences, type TimerCueMode } from '@/features/timer/timerPreferences';
@@ -58,9 +59,10 @@ export function SettingsPage() {
   const { pronounMode } = usePersonalization();
   const timerPreferences = loadTimerPreferences();
   const focusClockOverride = loadDailyPracticeClockOverride();
+  const focusQuickAccessSlot = loadDailyQuickAccessMiddleSlot();
   const readingSummary = `${FONT_SCALE_LABELS[settings.fontScale]} type · ${THEME_LABELS[settings.theme]} theme · ${PRONOUN_MODE_SUMMARY[pronounMode]}`;
   const timerSummary = `${timerPreferences.defaultDurationSeconds}s default · ${TIMER_CUE_MODE_SUMMARY[timerPreferences.defaultCueMode]}${timerPreferences.defaultCueMode === 'custom' ? ` · every ${timerPreferences.defaultIntervalSeconds}s` : ''} · ${getSoundProfileById(timerPreferences.defaultSoundProfileId).label}`;
-  const focusSummary = focusClockOverride.enabled ? `Manual clock · ${focusClockOverride.timeZone || 'device time zone'}` : 'Device clock';
+  const focusSummary = `${focusClockOverride.enabled ? `Manual clock · ${focusClockOverride.timeZone || 'device time zone'}` : 'Device clock'} · ${focusQuickAccessSlot?.title ?? 'Default slot'}`;
 
   return (
     <PageLayout
@@ -80,7 +82,7 @@ export function SettingsPage() {
           />
           <SettingsIndexLink
             actionLabel="Open focus settings"
-            description="Adjust the manual local time used by Focus if this device clock is wrong."
+            description="Adjust the manual local time and Daily Focus quick-access slot."
             summary={focusSummary}
             testId="settings-group-focus-practice"
             title="Focus & Practice"
