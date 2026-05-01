@@ -204,18 +204,20 @@ describe('daily focus selection and front page', () => {
     const database = createAppDatabase('daily-practice-test-db');
 
     try {
-      saveDailyQuickAccessMiddleSlot('knights-code');
+      saveDailyQuickAccessMiddleSlot('document:supplemental-knights-code');
       renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
 
       await waitFor(() => {
         expect(screen.getByTestId('daily-quick-access')).toBeVisible();
       });
 
-      expect(within(screen.getByTestId('daily-quick-access')).getAllByRole('link').map((link) => link.textContent?.trim())).toEqual([
-        'Jedi Code',
-        'Knight’s Code',
-        'Bookmarks',
-      ]);
+      await waitFor(() => {
+        expect(within(screen.getByTestId('daily-quick-access')).getAllByRole('link').map((link) => link.textContent?.trim())).toEqual([
+          'Jedi Code',
+          "Knight's Code",
+          'Bookmarks',
+        ]);
+      });
       expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/supplemental/knights-code');
     } finally {
       await closeAndDeleteDatabase(database);

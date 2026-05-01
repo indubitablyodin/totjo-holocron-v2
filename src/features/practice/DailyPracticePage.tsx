@@ -5,7 +5,7 @@ import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { createDefaultTimerSession, applyEditableTimerConfig } from '@/features/timer/timerModel';
 import { loadTimerPreferences } from '@/features/timer/timerPreferences';
 import { saveTimerSession } from '@/features/timer/timerSessionStorage';
-import { appDb, type HolocronDatabase } from '@/lib/db';
+import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 
 import {
   loadDailyPracticeClockOverride,
@@ -15,7 +15,12 @@ import {
 import { selectDailyFocus } from './dailyFocusEngine';
 import { getResolvedDailyPracticeTimeZone } from './dailyPracticeEngine';
 import { getMeditationPracticeStats, type MeditationPracticeStats } from './dailyPracticeStorage';
-import { loadDailyQuickAccessMiddleSlot } from './dailyQuickAccess';
+import {
+  createDailyQuickAccessChoices,
+  getDailyQuickAccessChoiceById,
+  loadDailyQuickAccessMiddleSlotId,
+  type DailyQuickAccessChoice,
+} from './dailyQuickAccess';
 
 type DailyPracticePageProps = {
   now?: Date;
@@ -48,7 +53,6 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const [clockOverride] = useState(() => loadDailyPracticeClockOverride());
   const fallbackTimeZone = useMemo(() => timeZone ?? getResolvedDailyPracticeTimeZone(), [timeZone]);
   const resolvedNow = useMemo(() => (now ? now : resolveDailyPracticeNow(new Date(), clockOverride)), [clockOverride, now]);
-  const middleQuickAccessSlot = useMemo(() => loadDailyQuickAccessMiddleSlot(), []);
   const resolvedTimeZone = useMemo(
     () => resolveDailyPracticeTimeZone(fallbackTimeZone, clockOverride),
     [clockOverride, fallbackTimeZone],
@@ -56,6 +60,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const dailyFocus = useMemo(() => selectDailyFocus(resolvedNow), [resolvedNow]);
   const [selectedPresetSeconds, setSelectedPresetSeconds] = useState(MEDITATION_PRESETS[1].seconds);
   const [meditationStats, setMeditationStats] = useState<MeditationPracticeStats>(EMPTY_MEDITATION_STATS);
+  const [middleQuickAccessSlot, setMiddleQuickAccessSlot] = useState<DailyQuickAccessChoice | null>(null);
   const [statsStatus, setStatsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => {
@@ -83,6 +88,30 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
       isMounted = false;
     };
   }, [database, resolvedNow, resolvedTimeZone]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void ensureStorageReady(database)
+      .then(async () => {
+        const [documents, downloads] = await Promise.all([database.documents.toArray(), database.downloads.toArray()]);
+        const choices = createDailyQuickAccessChoices(documents, downloads);
+        const selectedChoice = getDailyQuickAccessChoiceById(loadDailyQuickAccessMiddleSlotId(), choices);
+
+        if (isMounted) {
+          setMiddleQuickAccessSlot(selectedChoice);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setMiddleQuickAccessSlot(null);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [database]);
 
   const beginMeditation = () => {
     const preferences = loadTimerPreferences();
