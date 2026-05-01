@@ -1,26 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
-import { CompactReaderShell, ReaderMetaList, ReaderSurface, type CompactReaderControl } from '@/features/reader/CompactReaderShell';
+import { createDefaultTimerSession, applyEditableTimerConfig } from '@/features/timer/timerModel';
+import { loadTimerPreferences } from '@/features/timer/timerPreferences';
+import { saveTimerSession } from '@/features/timer/timerSessionStorage';
 import { appDb, type HolocronDatabase } from '@/lib/db';
 
 import {
-  DEFAULT_DAILY_PRACTICE_CLOCK_OVERRIDE,
-  formatDailyPracticeClockInputValue,
   loadDailyPracticeClockOverride,
   resolveDailyPracticeNow,
   resolveDailyPracticeTimeZone,
-  saveDailyPracticeClockOverride,
-  type DailyPracticeClockOverride,
 } from './dailyPracticeClock';
-import { getDailyPracticeCompletion, markDailyPracticeCompleted } from './dailyPracticeStorage';
-import {
-  getDailyPracticeSourceLabel,
-  getResolvedDailyPracticeTimeZone,
-  selectDailyPractice,
-  selectDailyPracticeFromLocalDateTime,
-} from './dailyPracticeEngine';
+import { selectDailyFocus } from './dailyFocusEngine';
+import { getResolvedDailyPracticeTimeZone } from './dailyPracticeEngine';
+import { getMeditationPracticeStats, type MeditationPracticeStats } from './dailyPracticeStorage';
 
 type DailyPracticePageProps = {
   now?: Date;
@@ -28,332 +22,207 @@ type DailyPracticePageProps = {
   database?: HolocronDatabase;
 };
 
-type DailyPracticeState = {
-  practiceDayId: string;
-  status: 'loading' | 'ready' | 'error';
-  completedAt: string | null;
+type MeditationPreset = {
+  label: string;
+  seconds: number;
 };
 
-function getDailyStatusLabel(completedAt: string | null): string {
-  return completedAt ? 'Completed' : 'Ready';
-}
+const MEDITATION_PRESETS: MeditationPreset[] = [
+  { label: '1 minute', seconds: 60 },
+  { label: '5 minutes', seconds: 300 },
+  { label: '30 minutes', seconds: 1800 },
+];
 
-function TodayTimingPanel({
-  clockOverride,
-  onChange,
-  timeZone,
-}: {
-  clockOverride: DailyPracticeClockOverride;
-  onChange: (override: DailyPracticeClockOverride) => void;
-  timeZone: string;
-}) {
-  return (
-    <div className="reader-panel-form">
-      <p className="field-label">Practice day timing</p>
-      <p className="field-help">If this device clock is wrong, you can set Today by hand.</p>
+const EMPTY_MEDITATION_STATS: MeditationPracticeStats = {
+  totalDistinctDays: 0,
+  currentStreakDays: 0,
+};
 
-      <label className="field-card field-card--toggle" htmlFor="daily-clock-override-toggle">
-        <span className="field-label">Manual local time</span>
-        <span className="field-help">Today will keep using {timeZone}.</span>
-        <span className="filter-toggle">
-          <input
-            checked={clockOverride.enabled}
-            data-testid="daily-clock-override-toggle"
-            id="daily-clock-override-toggle"
-            onChange={(event) => {
-              onChange({
-                enabled: event.target.checked,
-                localDateTime:
-                  event.target.checked && clockOverride.localDateTime.length === 0
-                    ? formatDailyPracticeClockInputValue(new Date())
-                    : clockOverride.localDateTime,
-                timeZone:
-                  event.target.checked && clockOverride.timeZone.trim().length === 0
-                    ? timeZone
-                    : clockOverride.timeZone,
-              });
-            }}
-            type="checkbox"
-          />
-          Use a manual local time for Today
-        </span>
-      </label>
-
-      <label className="field-card" htmlFor="daily-clock-override-time-zone">
-        <span className="field-label">Time zone</span>
-          <span className="field-help">Set the time zone for the manual clock.</span>
-        <input
-          className="field-input"
-          data-testid="daily-clock-override-time-zone"
-          disabled={!clockOverride.enabled}
-          id="daily-clock-override-time-zone"
-          onChange={(event) => {
-            onChange({
-              ...clockOverride,
-              timeZone: event.target.value,
-            });
-          }}
-          placeholder="America/Chicago"
-          type="text"
-          value={clockOverride.timeZone}
-        />
-      </label>
-
-      <label className="field-card" htmlFor="daily-clock-override-input">
-        <span className="field-label">Local time</span>
-          <span className="field-help">Set the date and time Today should follow.</span>
-        <input
-          className="field-input"
-          data-testid="daily-clock-override-input"
-          disabled={!clockOverride.enabled}
-          id="daily-clock-override-input"
-          onChange={(event) => {
-            onChange({
-              ...clockOverride,
-              localDateTime: event.target.value,
-            });
-          }}
-          type="datetime-local"
-          value={clockOverride.localDateTime}
-        />
-      </label>
-
-      <div className="reader-panel-form__actions">
-        <button
-          className="secondary-button button-inline"
-          data-testid="daily-clock-override-reset"
-          disabled={!clockOverride.enabled && clockOverride.localDateTime.length === 0}
-          onClick={() => {
-            onChange(DEFAULT_DAILY_PRACTICE_CLOCK_OVERRIDE);
-          }}
-          type="button"
-        >
-          Use device time
-        </button>
-      </div>
-    </div>
-  );
+function formatDayCount(value: number): string {
+  return value === 1 ? '1 day' : `${value} days`;
 }
 
 export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPracticePageProps) {
-  const [clockOverride, setClockOverride] = useState<DailyPracticeClockOverride>(() => loadDailyPracticeClockOverride());
+  const navigate = useNavigate();
+  const [clockOverride] = useState(() => loadDailyPracticeClockOverride());
   const fallbackTimeZone = useMemo(() => timeZone ?? getResolvedDailyPracticeTimeZone(), [timeZone]);
-  const resolvedNow = useMemo(() => {
-    if (now) {
-      return now;
-    }
-
-    return resolveDailyPracticeNow(new Date(), clockOverride);
-  }, [clockOverride, now]);
+  const resolvedNow = useMemo(() => (now ? now : resolveDailyPracticeNow(new Date(), clockOverride)), [clockOverride, now]);
   const resolvedTimeZone = useMemo(
     () => resolveDailyPracticeTimeZone(fallbackTimeZone, clockOverride),
     [clockOverride, fallbackTimeZone],
   );
-  const practice = useMemo(
-    () =>
-      clockOverride.enabled
-        ? selectDailyPracticeFromLocalDateTime(clockOverride.localDateTime, resolvedTimeZone) ?? selectDailyPractice(resolvedNow, resolvedTimeZone)
-        : selectDailyPractice(resolvedNow, resolvedTimeZone),
-    [clockOverride.enabled, clockOverride.localDateTime, resolvedNow, resolvedTimeZone],
-  );
-  const [practiceState, setPracticeState] = useState<DailyPracticeState>({
-    practiceDayId: practice.practiceDayId,
-    status: 'loading',
-    completedAt: null,
-  });
-  const [isSaving, setIsSaving] = useState(false);
-
-  const updateClockOverride = (nextOverride: DailyPracticeClockOverride) => {
-    setClockOverride(nextOverride);
-    saveDailyPracticeClockOverride(nextOverride);
-  };
-
-  const controls: CompactReaderControl[] = now
-    ? []
-    : [
-        {
-          id: 'timing',
-          label: 'Timing',
-          panel: <TodayTimingPanel clockOverride={clockOverride} onChange={updateClockOverride} timeZone={resolvedTimeZone} />,
-        },
-      ];
+  const dailyFocus = useMemo(() => selectDailyFocus(resolvedNow), [resolvedNow]);
+  const [selectedPresetSeconds, setSelectedPresetSeconds] = useState(MEDITATION_PRESETS[1].seconds);
+  const [meditationStats, setMeditationStats] = useState<MeditationPracticeStats>(EMPTY_MEDITATION_STATS);
+  const [statsStatus, setStatsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   useEffect(() => {
     let isMounted = true;
 
-    void getDailyPracticeCompletion(practice.practiceDayId, database)
-      .then((record) => {
+    void getMeditationPracticeStats(resolvedNow, resolvedTimeZone, database)
+      .then((nextStats) => {
         if (!isMounted) {
           return;
         }
 
-        setPracticeState({
-          practiceDayId: practice.practiceDayId,
-          status: 'ready',
-          completedAt: record?.completedAt ?? null,
-        });
+        setMeditationStats(nextStats);
+        setStatsStatus('ready');
       })
       .catch(() => {
         if (!isMounted) {
           return;
         }
 
-        setPracticeState({
-          practiceDayId: practice.practiceDayId,
-          status: 'error',
-          completedAt: null,
-        });
+        setMeditationStats(EMPTY_MEDITATION_STATS);
+        setStatsStatus('error');
       });
 
     return () => {
       isMounted = false;
     };
-  }, [database, practice.practiceDayId]);
+  }, [database, resolvedNow, resolvedTimeZone]);
 
-  const resolvedPracticeState =
-    practiceState.practiceDayId === practice.practiceDayId
-      ? practiceState
-      : {
-          practiceDayId: practice.practiceDayId,
-          status: 'loading' as const,
-          completedAt: null,
-        };
+  const beginMeditation = () => {
+    const preferences = loadTimerPreferences();
+    const presetSession = applyEditableTimerConfig(createDefaultTimerSession(preferences), {
+      totalDurationSeconds: selectedPresetSeconds,
+    });
 
-  const handleComplete = async () => {
-    if (resolvedPracticeState.completedAt || isSaving) {
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      const record = await markDailyPracticeCompleted(
-        {
-          practiceDayId: practice.practiceDayId,
-          documentId: practice.document.id,
-          completedAt: resolvedNow.toISOString(),
-        },
-        database,
-      );
-
-      setPracticeState({
-        practiceDayId: practice.practiceDayId,
-        status: 'ready',
-        completedAt: record.completedAt,
-      });
-    } catch {
-      setPracticeState({
-        practiceDayId: practice.practiceDayId,
-        status: 'error',
-        completedAt: null,
-      });
-    } finally {
-      setIsSaving(false);
-    }
+    saveTimerSession(presetSession);
+    void navigate('/timer');
   };
 
-  if (resolvedPracticeState.status === 'error') {
-    return (
-      <PageLayout
-        description="Today could not open right now on this device."
-        eyebrow="Today’s practice"
-        title="Today"
-      >
-        <PageSection description="Try opening today again in a moment." title="Today is unavailable">
-          <p className="surface-error" role="alert">
-            Today could not open on this device.
-          </p>
-        </PageSection>
-      </PageLayout>
-    );
-  }
-
-  const completed = Boolean(resolvedPracticeState.completedAt);
-
   return (
-    <CompactReaderShell
-      controls={controls}
-      description="Open today's reading and mark the day complete when you're done."
-      eyebrow="Today’s practice"
-      badges={
-        <div className="reader-badge-row">
-          <span className="reader-kind-pill" data-testid="daily-practice-kind">
-            {getDailyPracticeSourceLabel(practice.sourceKind)}
-          </span>
-          <p
-            className={`practice-status-pill practice-status-pill--${completed ? 'completed' : 'ready'}`}
-            data-testid="daily-status"
-            role="status"
-          >
-            {resolvedPracticeState.status === 'loading' ? 'Loading…' : getDailyStatusLabel(resolvedPracticeState.completedAt)}
-          </p>
-        </div>
-      }
-      meta={
-        <ReaderMetaList
-          items={[
-            { label: 'Date', value: practice.dateLabel },
-            { label: 'Reading', value: practice.document.title },
-          ]}
-        />
-      }
-      title="Today"
+    <PageLayout
+      description="A single doctrine focus, a simple meditation path, and your saved reading shortcuts stay on this device."
+      eyebrow="Daily practice"
+      title="Daily Focus"
     >
-      <ReaderSurface>
-        <div className="today-entry-flow">
-          <div className="reader-copy">
-            <p className="today-entry-flow__label">Today’s reading</p>
-            <h2 className="daily-practice-card__title" data-testid="daily-practice-title">
-              {practice.title}
-            </h2>
-            <p className="daily-practice-card__summary">{practice.summary}</p>
-            <p className="support-copy">{practice.reflectionPrompt}</p>
+      <PageSection description="One shared offline focus is selected by the UTC day from structured TOTJO doctrine." title="Daily Focus">
+        <article className="daily-focus-card" data-testid="daily-focus-card">
+          <div className="daily-focus-card__header">
+            <p className="today-entry-flow__label">Daily Focus</p>
+            <p className="practice-status-pill practice-status-pill--ready" data-testid="daily-focus-day">
+              UTC {dailyFocus.dayKey}
+            </p>
           </div>
 
-          <div className="today-entry-flow__actions">
-            <Link className="primary-button today-entry-flow__primary-action" data-testid="daily-open-source" to={practice.sourceHref}>
-              {practice.sourceActionLabel}
+          <div className="reader-copy">
+            <h2 className="daily-practice-card__title" data-testid="daily-practice-title">
+              {dailyFocus.sourceTitle}
+            </h2>
+            {dailyFocus.preface ? <p className="daily-focus-card__preface">{dailyFocus.preface}</p> : null}
+            <p className="daily-focus-card__text" data-testid="daily-focus-text">
+              {dailyFocus.text}
+            </p>
+            <p className="support-copy" data-testid="daily-focus-source">
+              {dailyFocus.label} from {dailyFocus.sourceTitle}.
+            </p>
+          </div>
+
+          <div className="daily-practice-actions">
+            <Link className="secondary-button button-inline" data-testid="daily-open-source" to={dailyFocus.sourceHref}>
+              {dailyFocus.sourceActionLabel}
             </Link>
+          </div>
+        </article>
+      </PageSection>
 
-            <div className="today-completion-flow" data-testid="daily-completion-flow">
-              <div className="today-completion-flow__copy">
-                <p className="field-label">Completion</p>
-                <p className="support-copy" data-testid="daily-completion-summary">
-                  {completed ? 'Today is marked complete.' : 'Mark today complete after you finish the selected reading.'}
-                </p>
-              </div>
-
-              <button
-                className="secondary-button button-inline"
-                data-testid="daily-complete"
-                disabled={completed || resolvedPracticeState.status !== 'ready' || isSaving}
-                onClick={() => {
-                  void handleComplete();
-                }}
-                type="button"
-              >
-                {completed ? 'Completed today' : isSaving ? 'Saving…' : 'Mark today complete'}
-              </button>
+      <PageSection description="Center yourself." title="Meditation">
+        <article className="daily-meditation-card" data-testid="daily-meditation-card">
+          <div className="daily-focus-card__header">
+            <div>
+              <p className="today-entry-flow__label">Quick meditation</p>
+              <h2 className="daily-practice-card__title">Center yourself.</h2>
             </div>
           </div>
-        </div>
-      </ReaderSurface>
 
-      <ReaderSurface muted>
-        <div className="section-heading">
-          <h2>When Today resets</h2>
-          <p>Today changes when the next local practice day begins.</p>
+          <dl className="timer-stat-strip" data-testid="meditation-stats">
+            <div className="timer-stat-card">
+              <dt>Total meditation days</dt>
+              <dd data-testid="meditation-total-days">
+                {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.totalDistinctDays)}
+              </dd>
+            </div>
+            <div className="timer-stat-card">
+              <dt>Current streak</dt>
+              <dd data-testid="meditation-current-streak">
+                {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.currentStreakDays)}
+              </dd>
+            </div>
+          </dl>
+          {statsStatus === 'error' ? (
+            <p className="surface-error" role="alert">
+              Meditation stats could not be loaded on this device.
+            </p>
+          ) : null}
+
+          <fieldset className="daily-preset-group">
+            <legend className="field-label">Duration</legend>
+            <div className="reader-option-group__choices" data-testid="daily-meditation-presets">
+              {MEDITATION_PRESETS.map((preset) => (
+                <button
+                  aria-pressed={selectedPresetSeconds === preset.seconds}
+                  className={`reader-option-button${selectedPresetSeconds === preset.seconds ? ' reader-option-button--active' : ''}`}
+                  data-testid={`daily-meditation-preset-${preset.seconds}`}
+                  key={preset.seconds}
+                  onClick={() => {
+                    setSelectedPresetSeconds(preset.seconds);
+                  }}
+                  type="button"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="button-row">
+            <button className="primary-button button-inline" data-testid="daily-begin-meditation" onClick={beginMeditation} type="button">
+              Begin meditation
+            </button>
+            <button
+              className="secondary-button button-inline"
+              data-testid="daily-cancel-meditation"
+              onClick={() => {
+                setSelectedPresetSeconds(MEDITATION_PRESETS[1].seconds);
+              }}
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+        </article>
+      </PageSection>
+
+      <PageSection description="Open common local reading surfaces quickly." title="Quick access">
+        <div className="daily-quick-access" data-testid="daily-quick-access">
+          <Link className="settings-link-card" data-testid="daily-quick-access-jedi-code" to="/library/doctrine/code">
+            <span className="settings-link-card__content">
+              <span className="field-label">Doctrine</span>
+              <span className="daily-quick-access__title">Jedi Code</span>
+            </span>
+            <span className="settings-link-card__summary">Open the doctrine code.</span>
+            <span className="settings-link-card__action">Open</span>
+          </Link>
+          <Link className="settings-link-card" data-testid="daily-quick-access-knights-code" to="/library/supplemental/knights-code">
+            <span className="settings-link-card__content">
+              <span className="field-label">Default slot</span>
+              <span className="daily-quick-access__title">Knight’s Code</span>
+            </span>
+            <span className="settings-link-card__summary">Open the study text.</span>
+            <span className="settings-link-card__action">Open</span>
+          </Link>
+          <Link className="settings-link-card" data-testid="daily-quick-access-bookmarks" to="/library/bookmarks">
+            <span className="settings-link-card__content">
+              <span className="field-label">Saved</span>
+              <span className="daily-quick-access__title">Bookmarks</span>
+            </span>
+            <span className="settings-link-card__summary">Open saved sermons, bookmarks, and notes.</span>
+            <span className="settings-link-card__action">Open</span>
+          </Link>
         </div>
-        <ReaderMetaList
-          items={[
-            { label: 'Next reset', value: practice.rolloverLabel },
-            {
-              label: 'Today’s completion',
-              value: `Saved only for ${practice.practiceDayKey}.`,
-            },
-          ]}
-        />
-      </ReaderSurface>
-    </CompactReaderShell>
+      </PageSection>
+    </PageLayout>
   );
 }

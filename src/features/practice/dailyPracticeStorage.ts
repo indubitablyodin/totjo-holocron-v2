@@ -38,3 +38,65 @@ export async function markDailyPracticeCompleted(
 
   return record;
 }
+
+function getLocalPracticeDayKey(completedAt: string, timeZone: string): string | null {
+  const completedDate = new Date(completedAt);
+
+  if (Number.isNaN(completedDate.getTime())) {
+    return null;
+  }
+
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(completedDate);
+  const getPart = (type: 'year' | 'month' | 'day') => parts.find((part) => part.type === type)?.value;
+  const year = getPart('year');
+  const month = getPart('month');
+  const day = getPart('day');
+
+  return year && month && day ? `${year}-${month}-${day}` : null;
+}
+
+function addDaysToLocalDayKey(dayKey: string, dayOffset: number): string {
+  const [year, month, day] = dayKey.split('-').map((part) => Number.parseInt(part, 10));
+  const nextDate = new Date(Date.UTC(year, month - 1, day + dayOffset));
+
+  return `${nextDate.getUTCFullYear()}-${`${nextDate.getUTCMonth() + 1}`.padStart(2, '0')}-${`${nextDate.getUTCDate()}`.padStart(2, '0')}`;
+}
+
+export type MeditationPracticeStats = {
+  totalDistinctDays: number;
+  currentStreakDays: number;
+};
+
+export async function getMeditationPracticeStats(
+  now: Date,
+  timeZone: string,
+  database: HolocronDatabase = appDb,
+): Promise<MeditationPracticeStats> {
+  await ensureStorageReady(database);
+
+  const meditationEntries = await database.practiceHistory.where('practiceKind').equals('meditation').toArray();
+  const meditationDays = new Set(
+    meditationEntries
+      .filter((entry) => entry.durationSeconds > 0)
+      .map((entry) => getLocalPracticeDayKey(entry.completedAt, timeZone))
+      .filter((dayKey): dayKey is string => dayKey !== null),
+  );
+  let currentStreakDays = 0;
+  const todayKey = getLocalPracticeDayKey(now.toISOString(), timeZone);
+  let cursorDayKey = todayKey && meditationDays.has(todayKey) ? todayKey : todayKey ? addDaysToLocalDayKey(todayKey, -1) : null;
+
+  while (cursorDayKey && meditationDays.has(cursorDayKey)) {
+    currentStreakDays += 1;
+    cursorDayKey = addDaysToLocalDayKey(cursorDayKey, -1);
+  }
+
+  return {
+    totalDistinctDays: meditationDays.size,
+    currentStreakDays,
+  };
+}

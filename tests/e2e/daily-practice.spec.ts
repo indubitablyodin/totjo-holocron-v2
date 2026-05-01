@@ -49,87 +49,83 @@ async function mockDailyClock(page: Page, initialIsoString: string) {
   }, { initialValue: initialIsoString, storageKey: '__daily-practice-test-now__' });
 }
 
-test.describe('daily practice route', () => {
+test.describe('daily focus route', () => {
   test.use({ timezoneId: 'America/Chicago' });
 
-  test('today-phone emphasizes the next action on a phone layout', async ({ page }) => {
+  test('focus-phone shows Daily Focus first without reader controls', async ({ page }) => {
     await mockDailyClock(page, '2026-04-26T14:00:00.000Z');
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/daily');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('page-title')).toHaveText('Today');
-    await expect(page.getByTestId('daily-open-source')).toHaveText(/read|open/i);
-    await expect(page.getByTestId('daily-open-source')).toHaveClass(/primary-button/);
-    await expect(page.getByTestId('daily-completion-flow')).toBeVisible();
-    await expect(page.getByTestId('daily-completion-summary')).toContainText('Mark today complete');
+    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
+    await expect(page.getByTestId('daily-focus-card')).toBeVisible();
+    await expect(page.getByTestId('daily-focus-card')).toContainText('Jediism is a religion based on the observance of the Force. We believe:');
+    await expect(page.getByTestId('daily-open-source')).toHaveAttribute('href', '/library/doctrine/jedi-believe');
+    await expect(page.getByTestId('reader-controls-toggle')).toHaveCount(0);
+    await expect(page.getByText('Reader controls')).toHaveCount(0);
 
-    const sourceBox = await page.getByTestId('daily-open-source').boundingBox();
-    const completionBox = await page.getByTestId('daily-completion-flow').boundingBox();
+    const focusBox = await page.getByTestId('daily-focus-card').boundingBox();
+    const meditationBox = await page.getByTestId('daily-meditation-card').boundingBox();
 
-    expect(sourceBox).not.toBeNull();
-    expect(completionBox).not.toBeNull();
+    expect(focusBox).not.toBeNull();
+    expect(meditationBox).not.toBeNull();
 
-    if (!sourceBox || !completionBox) {
-      throw new Error('Expected Today CTA and completion flow bounds to be available.');
+    if (!focusBox || !meditationBox) {
+      throw new Error('Expected Daily Focus and meditation card bounds to be available.');
     }
 
-    expect(sourceBox.y).toBeLessThan(completionBox.y + 1);
-    await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-6-today-phone.png' });
+    expect(focusBox.y).toBeLessThan(meditationBox.y);
+    await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-focus-phone.png' });
   });
 
-  test('daily-practice keeps the same item selected and completed after reload on the same day', async ({ page }) => {
-    await mockDailyClock(page, '2026-04-26T14:00:00.000Z');
-
-    await page.goto('/daily');
-    await page.waitForLoadState('networkidle');
-    await expect(page.getByTestId('daily-status')).toHaveText('Ready');
-
-    const selectedTitle = (await page.getByTestId('daily-practice-title').textContent()) ?? '';
-
-    await page.getByTestId('daily-complete').click();
-    await expect(page.getByTestId('daily-status')).toHaveText('Completed');
-
-    await page.reload();
-
-    await expect(page.getByTestId('daily-practice-title')).toHaveText(selectedTitle);
-    await expect(page.getByTestId('daily-status')).toHaveText('Completed');
-  });
-
-  test('daily-rollover advances to the next deterministic item and clears the prior day completion state', async ({ page }) => {
+  test('daily focus changes only when the UTC day changes', async ({ page }) => {
     await mockDailyClock(page, '2026-04-27T04:55:00.000Z');
 
     await page.goto('/daily');
     await page.waitForLoadState('networkidle');
-    await expect(page.getByTestId('daily-status')).toHaveText('Ready');
+    await expect(page.getByTestId('daily-focus-day')).toContainText('UTC 2026-04-27');
 
-    const previousTitle = (await page.getByTestId('daily-practice-title').textContent()) ?? '';
-
-    await page.getByTestId('daily-complete').click();
-    await expect(page.getByTestId('daily-status')).toHaveText('Completed');
+    const firstFocus = (await page.getByTestId('daily-focus-text').textContent()) ?? '';
 
     await page.evaluate(() => {
       (window as DailyPracticeTestWindow).__setDailyPracticeNow?.('2026-04-27T05:05:00.000Z');
     });
     await page.reload();
 
-    const nextTitle = (await page.getByTestId('daily-practice-title').textContent()) ?? '';
+    await expect(page.getByTestId('daily-focus-text')).toHaveText(firstFocus);
+    await expect(page.getByTestId('daily-focus-day')).toContainText('UTC 2026-04-27');
 
-    expect(nextTitle).not.toBe(previousTitle);
-    await expect(page.getByTestId('daily-status')).toHaveText('Ready');
+    await page.evaluate(() => {
+      (window as DailyPracticeTestWindow).__setDailyPracticeNow?.('2026-04-28T00:05:00.000Z');
+    });
+    await page.reload();
+
+    await expect(page.getByTestId('daily-focus-day')).toContainText('UTC 2026-04-28');
+    await expect(page.getByTestId('daily-focus-text')).not.toHaveText(firstFocus);
   });
 
-  test('daily-practice can open a bundled sermon reference from the deterministic rotation', async ({ page }) => {
-    await mockDailyClock(page, '2026-05-03T14:00:00.000Z');
+  test('daily meditation card opens timer with quick preset and shows quick access', async ({ page }) => {
+    await mockDailyClock(page, '2026-04-26T14:00:00.000Z');
 
     await page.goto('/daily');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('daily-practice-kind')).toHaveText('Sermon reference');
-    await page.getByTestId('daily-open-source').click();
+    await expect(page.getByTestId('daily-meditation-card')).toContainText('Center yourself.');
+    await expect(page.getByTestId('meditation-total-days')).toContainText('0 days');
+    await expect(page.getByTestId('meditation-current-streak')).toContainText('0 days');
+    await expect(page.getByTestId('daily-meditation-preset-60')).toHaveText('1 minute');
+    await expect(page.getByTestId('daily-meditation-preset-300')).toHaveText('5 minutes');
+    await expect(page.getByTestId('daily-meditation-preset-1800')).toHaveText('30 minutes');
+    await expect(page.getByTestId('daily-quick-access-jedi-code')).toHaveAttribute('href', '/library/doctrine/code');
+    await expect(page.getByTestId('daily-quick-access-knights-code')).toHaveAttribute('href', '/library/supplemental/knights-code');
+    await expect(page.getByTestId('daily-quick-access-bookmarks')).toHaveAttribute('href', '/library/bookmarks');
 
-    await expect(page.getByTestId('page-title')).toHaveText('The Force Works All Things Out');
-    await expect(page.getByText(/What is one situation where we acted or didn’t act because we were afraid\?/i)).toBeVisible();
+    await page.getByTestId('daily-meditation-preset-60').click();
+    await page.getByTestId('daily-begin-meditation').click();
+
+    await expect(page).toHaveURL(/\/timer$/);
+    await expect(page.getByTestId('timer-remaining')).toHaveText('01:00');
   });
 });

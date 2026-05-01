@@ -2,12 +2,16 @@ import { indexedDB } from 'fake-indexeddb';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { TimerPage } from '@/features/timer/TimerPage';
+import { clearTimerSessionStorage } from '@/features/timer/timerSessionStorage';
 import { createAppDatabase, type HolocronDatabase } from '@/lib/db';
 
 import { DailyPracticePage } from './DailyPracticePage';
-import { getDailyPracticeDayKey, selectDailyPractice, selectDailyPracticeFromLocalDateTime } from './dailyPracticeEngine';
+import { clearDailyPracticeClockOverride } from './dailyPracticeClock';
+import { dailyFocusPool, selectDailyFocus } from './dailyFocusEngine';
+import { getMeditationPracticeStats } from './dailyPracticeStorage';
 
 async function deleteDatabase(name: string): Promise<void> {
   await new Promise<void>((resolve, reject) => {
@@ -28,165 +32,162 @@ async function closeAndDeleteDatabase(database: HolocronDatabase): Promise<void>
   await deleteDatabase(name);
 }
 
-function renderDailyPractice(options: { database: HolocronDatabase; now: Date; timeZone: string }) {
+function renderDailyPractice(options: { database: HolocronDatabase; now: Date; timeZone?: string }) {
   return render(
     <MemoryRouter initialEntries={['/daily']}>
       <Routes>
-        <Route element={<DailyPracticePage database={options.database} now={options.now} timeZone={options.timeZone} />} path="/daily" />
+        <Route
+          element={<DailyPracticePage database={options.database} now={options.now} timeZone={options.timeZone ?? 'America/Chicago'} />}
+          path="/daily"
+        />
+        <Route element={<TimerPage />} path="/timer" />
       </Routes>
     </MemoryRouter>,
   );
 }
 
-function renderDailyPracticeRoute(database: HolocronDatabase) {
-  return render(
-    <MemoryRouter initialEntries={['/daily']}>
-      <Routes>
-        <Route element={<DailyPracticePage database={database} />} path="/daily" />
-      </Routes>
-    </MemoryRouter>,
-  );
-}
+beforeEach(() => {
+  clearTimerSessionStorage();
+  clearDailyPracticeClockOverride();
+});
 
 afterEach(async () => {
   await deleteDatabase('daily-practice-test-db').catch(() => undefined);
 });
 
-describe('daily-practice selection and completion', () => {
-  it('selects the next deterministic entry after local midnight in the active time zone', () => {
-    const beforeMidnight = new Date('2026-04-26T23:55:00-05:00');
-    const afterMidnight = new Date('2026-04-27T00:05:00-05:00');
-
-    const beforeSelection = selectDailyPractice(beforeMidnight, 'America/Chicago');
-    const afterSelection = selectDailyPractice(afterMidnight, 'America/Chicago');
-
-    expect(getDailyPracticeDayKey(beforeMidnight, 'America/Chicago')).toBe('2026-04-26');
-    expect(getDailyPracticeDayKey(afterMidnight, 'America/Chicago')).toBe('2026-04-27');
-    expect(beforeSelection.title).not.toBe(afterSelection.title);
-    expect(beforeSelection.practiceDayId).not.toBe(afterSelection.practiceDayId);
-    expect(beforeSelection.entryIndex).toBe(0);
-    expect(afterSelection.entryIndex).toBe(1);
+describe('daily focus selection and front page', () => {
+  it('builds the deterministic Daily Focus pool only from the requested structured doctrine sources', () => {
+    expect(dailyFocusPool).toHaveLength(48);
+    expect(dailyFocusPool.filter((entry) => entry.sourceSlug === 'jedi-believe')).toHaveLength(8);
+    expect(dailyFocusPool.filter((entry) => entry.sourceSlug === 'three-tenets')).toHaveLength(3);
+    expect(dailyFocusPool.filter((entry) => entry.sourceSlug === '16-teachings')).toHaveLength(16);
+    expect(dailyFocusPool.filter((entry) => entry.sourceSlug === '21-maxims')).toHaveLength(21);
+    expect(dailyFocusPool.map((entry) => entry.sourceSlug)).not.toContain('code');
+    expect(dailyFocusPool.map((entry) => entry.sourceSlug)).not.toContain('a-meditation-for-jedi');
+    expect(dailyFocusPool.map((entry) => entry.sourceSlug)).not.toContain('knights-code');
+    expect(dailyFocusPool.some((entry) => entry.sourceHref.startsWith('/library/sermons'))).toBe(false);
   });
 
-  it('keeps the same curated item completed after reload on the same day', async () => {
+  it('selects by UTC day with Euclidean modulo and the same result for everyone', () => {
+    const anchorSelection = selectDailyFocus(new Date('2026-04-26T00:00:00.000Z'));
+    const nextSelection = selectDailyFocus(new Date('2026-04-27T00:00:00.000Z'));
+    const previousSelection = selectDailyFocus(new Date('2026-04-25T23:59:59.000Z'));
+
+    expect(anchorSelection.entryIndex).toBe(0);
+    expect(nextSelection.entryIndex).toBe(1);
+    expect(previousSelection.entryIndex).toBe(dailyFocusPool.length - 1);
+    expect(selectDailyFocus(new Date('2026-04-27T04:55:00.000Z')).entryIndex).toBe(1);
+    expect(selectDailyFocus(new Date('2026-04-27T05:05:00.000Z')).entryIndex).toBe(1);
+  });
+
+  it('shows the Jedi Believe preface when a belief line is selected', async () => {
     const database = createAppDatabase('daily-practice-test-db');
-    const user = userEvent.setup();
-    const now = new Date('2026-04-26T09:00:00-05:00');
 
     try {
-      const firstRender = renderDailyPractice({ database, now, timeZone: 'America/Chicago' });
-
-      const firstTitle = await screen.findByTestId('daily-practice-title');
-      const selectedTitle = firstTitle.textContent;
+      renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
 
       await waitFor(() => {
-        expect(screen.getByTestId('daily-status')).toHaveTextContent('Ready');
+        expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
       });
-      expect(screen.getByTestId('daily-open-source')).toHaveClass('primary-button');
-      expect(screen.getByTestId('daily-completion-summary')).toHaveTextContent(
-        'Mark today complete after you finish the selected reading.',
-      );
-      await user.click(screen.getByTestId('daily-complete'));
-      await waitFor(() => {
-        expect(screen.getByTestId('daily-status')).toHaveTextContent('Completed');
-      });
-      expect(screen.getByTestId('daily-completion-summary')).toHaveTextContent('Today is marked complete.');
+
+      expect(screen.getByTestId('daily-focus-card')).toHaveTextContent('Daily Focus');
+      expect(screen.getByText('Jediism is a religion based on the observance of the Force. We believe:')).toBeVisible();
       expect(screen.getByTestId('daily-open-source')).toHaveAttribute('href', '/library/doctrine/jedi-believe');
-
-      firstRender.unmount();
-
-      renderDailyPractice({ database, now, timeZone: 'America/Chicago' });
-
-      expect(await screen.findByTestId('daily-practice-title')).toHaveTextContent(selectedTitle ?? '');
-      await waitFor(() => {
-        expect(screen.getByTestId('daily-status')).toHaveTextContent('Completed');
-      });
-      expect(screen.getByTestId('daily-complete')).toBeDisabled();
+      expect(screen.queryByTestId('reader-controls-toggle')).not.toBeInTheDocument();
+      expect(screen.queryByText('Reader controls')).not.toBeInTheDocument();
     } finally {
       await closeAndDeleteDatabase(database);
     }
   });
 
-  it('starts fresh on the next practice day without inheriting the previous completion state', async () => {
+  it('counts distinct meditation days and the current streak by local practice day', async () => {
     const database = createAppDatabase('daily-practice-test-db');
-    const user = userEvent.setup();
-    const beforeMidnight = new Date('2026-04-26T23:55:00-05:00');
-    const afterMidnight = new Date('2026-04-27T00:05:00-05:00');
 
     try {
-      const firstRender = renderDailyPractice({
-        database,
-        now: beforeMidnight,
-        timeZone: 'America/Chicago',
-      });
+      await database.practiceHistory.bulkPut([
+        {
+          id: 'meditation:one',
+          documentId: null,
+          practiceKind: 'meditation',
+          completedAt: '2026-04-28T14:00:00.000Z',
+          durationSeconds: 60,
+        },
+        {
+          id: 'meditation:two',
+          documentId: null,
+          practiceKind: 'meditation',
+          completedAt: '2026-04-29T14:00:00.000Z',
+          durationSeconds: 300,
+        },
+        {
+          id: 'meditation:duplicate-day',
+          documentId: null,
+          practiceKind: 'meditation',
+          completedAt: '2026-04-29T22:00:00.000Z',
+          durationSeconds: 1800,
+        },
+        {
+          id: 'meditation:ignored-zero',
+          documentId: null,
+          practiceKind: 'meditation',
+          completedAt: '2026-04-30T14:00:00.000Z',
+          durationSeconds: 0,
+        },
+      ]);
 
-      const previousTitle = (await screen.findByTestId('daily-practice-title')).textContent;
-
-      await waitFor(() => {
-        expect(screen.getByTestId('daily-status')).toHaveTextContent('Ready');
+      await expect(getMeditationPracticeStats(new Date('2026-04-29T18:00:00.000Z'), 'America/Chicago', database)).resolves.toEqual({
+        totalDistinctDays: 2,
+        currentStreakDays: 2,
       });
-      await user.click(screen.getByTestId('daily-complete'));
-      await waitFor(() => {
-        expect(screen.getByTestId('daily-status')).toHaveTextContent('Completed');
+      await expect(getMeditationPracticeStats(new Date('2026-04-30T18:00:00.000Z'), 'America/Chicago', database)).resolves.toEqual({
+        totalDistinctDays: 2,
+        currentStreakDays: 2,
       });
-
-      firstRender.unmount();
-
-      renderDailyPractice({
-        database,
-        now: afterMidnight,
-        timeZone: 'America/Chicago',
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('daily-status')).toHaveTextContent('Ready');
-      });
-      expect(screen.getByTestId('daily-practice-title').textContent).not.toBe(previousTitle);
-      expect(screen.getByTestId('daily-complete')).not.toBeDisabled();
     } finally {
       await closeAndDeleteDatabase(database);
     }
   });
 
-  it('surfaces a sermon reference in the deterministic rotation', () => {
-    const sermonSelection = selectDailyPractice(new Date('2026-05-03T09:00:00-05:00'), 'America/Chicago');
-
-    expect(sermonSelection.sourceKind).toBe('sermon-reference');
-    expect(sermonSelection.document.slug).toBe('daily-practice-the-force-works-all-things-out');
-    expect(sermonSelection.sourceHref).toBe('/library/sermons/daily-practice-the-force-works-all-things-out');
-  });
-
-  it('selects the correct practice day from a manual local datetime and override time zone', () => {
-    const overrideSelection = selectDailyPracticeFromLocalDateTime('2026-04-27T00:05', 'America/Chicago');
-
-    expect(overrideSelection?.practiceDayKey).toBe('2026-04-27');
-    expect(overrideSelection?.entryIndex).toBe(1);
-    expect(overrideSelection?.timeZone).toBe('America/Chicago');
-  });
-
-  it('reveals timing controls on the daily route and lets the reader enter a manual datetime and time zone', async () => {
+  it('offers quick meditation presets and opens the timer with the chosen duration', async () => {
     const database = createAppDatabase('daily-practice-test-db');
     const user = userEvent.setup();
 
     try {
-      renderDailyPracticeRoute(database);
+      renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
 
       await waitFor(() => {
-        expect(screen.getByTestId('page-title')).toHaveTextContent('Today');
+        expect(screen.getByTestId('daily-meditation-card')).toBeVisible();
       });
 
-      await user.click(screen.getByTestId('reader-controls-toggle'));
-      await user.click(screen.getByTestId('reader-control-timing'));
+      expect(screen.getByTestId('daily-meditation-card')).toHaveTextContent('Center yourself.');
+      expect(screen.getByTestId('meditation-total-days')).toHaveTextContent(/Loading|0 days/);
+      expect(screen.getByTestId('daily-meditation-preset-60')).toHaveTextContent('1 minute');
+      expect(screen.getByTestId('daily-meditation-preset-300')).toHaveTextContent('5 minutes');
+      expect(screen.getByTestId('daily-meditation-preset-1800')).toHaveTextContent('30 minutes');
 
-      expect(screen.getByTestId('daily-clock-override-toggle')).toBeVisible();
-      await user.click(screen.getByTestId('daily-clock-override-toggle'));
-      await user.clear(screen.getByTestId('daily-clock-override-input'));
-      await user.type(screen.getByTestId('daily-clock-override-input'), '2026-04-27T00:05');
-      await user.clear(screen.getByTestId('daily-clock-override-time-zone'));
-      await user.type(screen.getByTestId('daily-clock-override-time-zone'), 'America/Chicago');
+      await user.click(screen.getByTestId('daily-meditation-preset-1800'));
+      await user.click(screen.getByTestId('daily-begin-meditation'));
 
-      expect(screen.getByTestId('daily-clock-override-input')).toHaveValue('2026-04-27T00:05');
-      expect(screen.getByTestId('daily-clock-override-time-zone')).toHaveValue('America/Chicago');
+      expect(await screen.findByTestId('page-title')).toHaveTextContent('Timer');
+      expect(screen.getByTestId('timer-remaining')).toHaveTextContent('30:00');
+    } finally {
+      await closeAndDeleteDatabase(database);
+    }
+  });
+
+  it('shows the requested quick access destinations', async () => {
+    const database = createAppDatabase('daily-practice-test-db');
+
+    try {
+      renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('daily-quick-access')).toBeVisible();
+      });
+
+      expect(screen.getByTestId('daily-quick-access-jedi-code')).toHaveAttribute('href', '/library/doctrine/code');
+      expect(screen.getByTestId('daily-quick-access-knights-code')).toHaveAttribute('href', '/library/supplemental/knights-code');
+      expect(screen.getByTestId('daily-quick-access-bookmarks')).toHaveAttribute('href', '/library/bookmarks');
     } finally {
       await closeAndDeleteDatabase(database);
     }
