@@ -4,6 +4,13 @@ import { Link } from 'react-router-dom';
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { usePersonalization } from '@/features/personalization/PersonalizationContext';
 import { PRONOUN_MODE_OPTIONS } from '@/features/personalization/personalizationRules';
+import {
+  DEFAULT_DAILY_PRACTICE_CLOCK_OVERRIDE,
+  formatDailyPracticeClockInputValue,
+  loadDailyPracticeClockOverride,
+  saveDailyPracticeClockOverride,
+  type DailyPracticeClockOverride,
+} from '@/features/practice/dailyPracticeClock';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
 import { getBundledAudioRightsAssets, SOUND_PROFILES, type AudioRightsAsset } from '@/features/timer/audioProfiles';
@@ -172,6 +179,109 @@ export function ReadingDisplaySettingsPage() {
         <div className="settings-actions">
           <button className="secondary-button" onClick={resetSettings} type="button">
             Reset reading defaults
+          </button>
+        </div>
+      </PageSection>
+    </PageLayout>
+  );
+}
+
+export function FocusPracticeSettingsPage() {
+  const resolvedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const [clockOverride, setClockOverride] = useState<DailyPracticeClockOverride>(() => loadDailyPracticeClockOverride());
+
+  const updateClockOverride = (nextOverride: DailyPracticeClockOverride) => {
+    setClockOverride(nextOverride);
+    saveDailyPracticeClockOverride(nextOverride);
+  };
+
+  return (
+    <PageLayout
+      description="Set the local clock Focus uses when this device clock is wrong."
+      eyebrow="Settings"
+      headerBadge={<SettingsBackLink />}
+      title="Focus & Practice"
+    >
+      <PageSection description="Daily Focus remains a shared UTC focus; this setting corrects the app’s understanding of now." title="Manual local time">
+        <form className="settings-form">
+          <label className="field-card field-card--toggle" htmlFor="setting-daily-clock-override-toggle">
+            <span className="field-label">Manual local time</span>
+            <span className="field-help">Use this only when this device clock is wrong.</span>
+            <span className="filter-toggle">
+              <input
+                checked={clockOverride.enabled}
+                data-testid="setting-daily-clock-override-toggle"
+                id="setting-daily-clock-override-toggle"
+                onChange={(event) => {
+                  updateClockOverride({
+                    enabled: event.target.checked,
+                    localDateTime:
+                      event.target.checked && clockOverride.localDateTime.length === 0
+                        ? formatDailyPracticeClockInputValue(new Date())
+                        : clockOverride.localDateTime,
+                    timeZone:
+                      event.target.checked && clockOverride.timeZone.trim().length === 0
+                        ? resolvedTimeZone
+                        : clockOverride.timeZone,
+                  });
+                }}
+                type="checkbox"
+              />
+              Use a manual clock for Focus
+            </span>
+          </label>
+
+          <label className="field-card" htmlFor="setting-daily-clock-override-time-zone">
+            <span className="field-label">Time zone</span>
+            <span className="field-help">Set the time zone for the manual clock.</span>
+            <input
+              className="field-input"
+              data-testid="setting-daily-clock-override-time-zone"
+              disabled={!clockOverride.enabled}
+              id="setting-daily-clock-override-time-zone"
+              onChange={(event) => {
+                updateClockOverride({
+                  ...clockOverride,
+                  timeZone: event.target.value,
+                });
+              }}
+              placeholder="America/Chicago"
+              type="text"
+              value={clockOverride.timeZone}
+            />
+          </label>
+
+          <label className="field-card" htmlFor="setting-daily-clock-override-input">
+            <span className="field-label">Local time</span>
+            <span className="field-help">Set the date and time Focus should follow.</span>
+            <input
+              className="field-input"
+              data-testid="setting-daily-clock-override-input"
+              disabled={!clockOverride.enabled}
+              id="setting-daily-clock-override-input"
+              onChange={(event) => {
+                updateClockOverride({
+                  ...clockOverride,
+                  localDateTime: event.target.value,
+                });
+              }}
+              type="datetime-local"
+              value={clockOverride.localDateTime}
+            />
+          </label>
+        </form>
+
+        <div className="settings-actions">
+          <button
+            className="secondary-button"
+            data-testid="setting-daily-clock-override-reset"
+            disabled={!clockOverride.enabled && clockOverride.localDateTime.length === 0 && clockOverride.timeZone.length === 0}
+            onClick={() => {
+              updateClockOverride(DEFAULT_DAILY_PRACTICE_CLOCK_OVERRIDE);
+            }}
+            type="button"
+          >
+            Use device time
           </button>
         </div>
       </PageSection>

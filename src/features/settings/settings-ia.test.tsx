@@ -1,21 +1,45 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTestRouter } from '@/App';
+import { clearDailyPracticeClockOverride } from '@/features/practice/dailyPracticeClock';
 
 describe('settings information architecture', () => {
-  it('shows a short local-only settings index with the three focused groups', () => {
+  beforeEach(() => {
+    clearDailyPracticeClockOverride();
+  });
+
+  it('shows a short local-only settings index with focused groups', () => {
     render(<AppTestRouter initialEntries={['/settings']} />);
 
     expect(screen.getByTestId('page-title')).toHaveTextContent('Settings');
     expect(screen.getByTestId('settings-index')).toBeVisible();
     expect(screen.getByTestId('settings-group-reading-display')).toHaveTextContent('Reading & Display');
+    expect(screen.getByTestId('settings-group-focus-practice')).toHaveTextContent('Focus & Practice');
     expect(screen.getByTestId('settings-group-timer-defaults')).toHaveTextContent('Timer Defaults');
     expect(screen.getByTestId('settings-group-about-legal')).toHaveTextContent('About & Legal');
     expect(screen.queryByTestId('settings-group-account-sync')).not.toBeInTheDocument();
     expect(screen.queryByTestId('setting-font-scale')).not.toBeInTheDocument();
     expect(screen.queryByTestId('setting-timer-sound-profile')).not.toBeInTheDocument();
+  });
+
+  it('opens focus settings and saves a manual local time override', async () => {
+    const user = userEvent.setup();
+
+    render(<AppTestRouter initialEntries={['/settings']} />);
+
+    await user.click(screen.getByTestId('settings-group-focus-practice'));
+
+    expect(screen.getByTestId('page-title')).toHaveTextContent('Focus & Practice');
+    await user.click(screen.getByTestId('setting-daily-clock-override-toggle'));
+    await user.clear(screen.getByTestId('setting-daily-clock-override-input'));
+    await user.type(screen.getByTestId('setting-daily-clock-override-input'), '2026-04-27T00:05');
+    await user.clear(screen.getByTestId('setting-daily-clock-override-time-zone'));
+    await user.type(screen.getByTestId('setting-daily-clock-override-time-zone'), 'America/Chicago');
+
+    expect(screen.getByTestId('setting-daily-clock-override-input')).toHaveValue('2026-04-27T00:05');
+    expect(screen.getByTestId('setting-daily-clock-override-time-zone')).toHaveValue('America/Chicago');
   });
 
   it('opens a focused reading settings page from the settings index', async () => {
