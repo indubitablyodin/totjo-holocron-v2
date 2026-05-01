@@ -27,16 +27,21 @@ test.describe('PWA shell', () => {
       window.dispatchEvent(installEvent);
     });
 
-    await expect(page.getByTestId('nav-daily')).toHaveText('Today');
+    await expect(page.getByTestId('nav-daily')).toHaveText('Focus');
     await expect(page.getByTestId('nav-library')).toHaveText('Read');
     await expect(page.getByTestId('nav-timer')).toHaveText('Timer');
     await expect(page.getByTestId('nav-settings')).toHaveText('Settings');
+    await expect(page.getByTestId('bottom-nav')).toContainText('Focus');
+    await expect(page.getByTestId('bottom-nav')).toContainText('Library');
+    await expect(page.getByTestId('bottom-nav')).toContainText('Settings');
     await expect(page.getByTestId('primary-nav')).toBeVisible();
     await expect(page.getByTestId('nav-daily')).toBeVisible();
     await expect(page.getByTestId('nav-timer')).toBeVisible();
     await expect(page.getByTestId('nav-settings')).toBeVisible();
     await expect(page.getByTestId('creator-home-link')).toHaveAttribute('href', 'https://odinhalvorson.com');
+    await expect(page.getByTestId('creator-home-link')).toContainText('Creator home');
     await expect(page.getByTestId('creator-donate-link')).toHaveAttribute('href', 'https://ko-fi.com/indubitablyodin');
+    await expect(page.getByTestId('creator-donate-link')).toContainText('Ko-fi');
     await expect(page.getByTestId('install-cta')).toBeVisible();
     await expect(page.locator('[data-testid="primary-nav"] [data-testid="install-cta"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="primary-nav"] [data-testid="offline-banner"]')).toHaveCount(0);
@@ -58,6 +63,12 @@ test.describe('PWA shell', () => {
 
     expect(navBox.x).toBeLessThan(mainBox.x);
     expect(navBox.height).toBeGreaterThan(viewport.height * 0.55);
+    const bottomNavBox = await page.getByTestId('bottom-nav').boundingBox();
+    expect(bottomNavBox).not.toBeNull();
+    if (!bottomNavBox) {
+      throw new Error('Expected bottom navigation bounds to be available.');
+    }
+    expect(bottomNavBox.x).toBeGreaterThanOrEqual(navBox.x + navBox.width - 1);
     expect(consoleErrors).toEqual([]);
     await page.screenshot({ path: '.sisyphus/evidence/task-2-mobile-nav-phone.png' });
   });
@@ -67,7 +78,7 @@ test.describe('PWA shell', () => {
     await page.goto('/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('nav-daily')).toHaveText('Today');
+    await expect(page.getByTestId('nav-daily')).toHaveText('Focus');
     await expect(page.getByTestId('nav-library')).toHaveText('Read');
     await expect(page.getByTestId('nav-timer')).toHaveText('Timer');
     await expect(page.getByTestId('nav-settings')).toHaveText('Settings');
@@ -89,7 +100,7 @@ test.describe('PWA shell', () => {
 
     await page.getByTestId('nav-daily').click();
     await expect(page).toHaveURL(/\/daily$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Today');
+    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
     await expect(page.getByTestId('page-content')).toBeVisible();
 
     await page.getByTestId('nav-library').click();
@@ -118,6 +129,7 @@ test.describe('PWA shell', () => {
 
     await expect(page.getByTestId('page-title')).toHaveText('Settings');
     await expect(page.getByTestId('settings-group-reading-display')).toBeVisible();
+    await expect(page.getByTestId('settings-group-focus-practice')).toBeVisible();
     await expect(page.getByTestId('settings-group-timer-defaults')).toBeVisible();
     await expect(page.getByTestId('settings-group-about-legal')).toBeVisible();
     await expect(page.getByTestId('settings-group-account-sync')).toHaveCount(0);
@@ -156,7 +168,7 @@ test.describe('PWA shell', () => {
     await page.reload();
 
     await expect(page.getByTestId('nav-library')).toBeVisible();
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
     await expect(page.getByTestId('offline-banner')).toContainText('You’re offline. Reading and settings still work with saved content.');
     await expect(page.locator('body')).not.toContainText('ERR_INTERNET_DISCONNECTED');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-2-pwa-shell-offline.png' });

@@ -30,7 +30,7 @@ test.describe('responsive QA matrix', () => {
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Read');
-    await expect(page.getByTestId('nav-daily')).toHaveText('Today');
+    await expect(page.getByTestId('nav-daily')).toHaveText('Focus');
     await expect(page.getByTestId('nav-library')).toHaveText('Read');
     await expect(page.getByTestId('nav-timer')).toHaveText('Timer');
     await expect(page.getByTestId('nav-settings')).toHaveText('Settings');
@@ -58,6 +58,12 @@ test.describe('responsive QA matrix', () => {
     expect(navMetrics.navLeft).toBeGreaterThanOrEqual(0);
     expect(navMetrics.navRight).toBeLessThan(navMetrics.mainLeft + 12);
     expect(navMetrics.navHeight).toBeGreaterThan(navMetrics.viewportHeight * 0.55);
+    const bottomNavMetrics = await page.getByTestId('bottom-nav').boundingBox();
+    expect(bottomNavMetrics).not.toBeNull();
+    if (!bottomNavMetrics) {
+      throw new Error('Expected bottom navigation bounds to be available.');
+    }
+    expect(bottomNavMetrics.x).toBeGreaterThanOrEqual(navMetrics.navRight - 1);
     await expectNoHorizontalOverflow(page, '.nav-link');
 
     await page.screenshot({ path: '.sisyphus/evidence/task-8-mobile-nav-phone.png' });
@@ -96,7 +102,7 @@ test.describe('responsive QA matrix', () => {
 
     await page.getByTestId('nav-daily').click();
     await expect(page).toHaveURL(/\/daily$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Today');
+    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
 
     await page.getByTestId('nav-library').click();
     await expect(page).toHaveURL(/\/library$/);

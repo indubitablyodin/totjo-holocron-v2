@@ -13,6 +13,7 @@ import { SermonsPage } from '@/features/sermons/SermonsPage';
 import { ReadingSettingsProvider } from '@/features/settings/ReadingSettingsContext';
 import {
   AboutLegalSettingsPage,
+  FocusPracticeSettingsPage,
   ReadingDisplaySettingsPage,
   TimerDefaultsSettingsPage,
 } from '@/features/settings/SettingsPanels';
@@ -24,7 +25,7 @@ function RoutedApp() {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route element={<Navigate replace to="/library" />} path="/" />
+        <Route element={<Navigate replace to="/daily" />} path="/" />
         <Route element={<LibraryPage />} path="/library" />
         <Route element={<BookmarksPage />} path="/library/bookmarks" />
         <Route element={<DoctrinePage />} path="/library/doctrine/:slug" />
@@ -36,6 +37,7 @@ function RoutedApp() {
         <Route element={<TimerPage />} path="/timer" />
         <Route element={<SettingsPage />} path="/settings" />
         <Route element={<ReadingDisplaySettingsPage />} path="/settings/reading-display" />
+        <Route element={<FocusPracticeSettingsPage />} path="/settings/focus-practice" />
         <Route element={<TimerDefaultsSettingsPage />} path="/settings/timer-defaults" />
         <Route element={<AboutLegalSettingsPage />} path="/settings/about-legal" />
         <Route element={<Navigate replace to="/settings" />} path="/settings/account" />
@@ -58,7 +60,7 @@ export function AppRoutes() {
   );
 }
 
-export function AppTestRouter({ initialEntries = ['/library'] }: { initialEntries?: string[] }) {
+export function AppTestRouter({ initialEntries = ['/daily'] }: { initialEntries?: string[] }) {
   return (
     <ReadingSettingsProvider>
       <AuthProvider>

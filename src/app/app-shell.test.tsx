@@ -27,13 +27,12 @@ describe('app-shell routes', () => {
     render(<AppTestRouter />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('library-count-canon')).toHaveTextContent(/^[1-9]\d*$/);
-      expect(screen.getByTestId('library-count-supplemental')).toHaveTextContent(/^[1-9]\d*$/);
+      expect(screen.getByTestId('daily-focus-card')).toBeVisible();
     });
 
     const primaryNav = screen.getByTestId('primary-nav');
     expect(within(primaryNav).getAllByRole('link').map((link) => link.querySelector('.nav-link__title')?.textContent?.trim())).toEqual([
-      'Today',
+      'Focus',
       'Read',
       'Timer',
       'Settings',
@@ -42,6 +41,7 @@ describe('app-shell routes', () => {
       'Sermons',
       'Bookmarks',
       'Reading & Display',
+      'Focus & Practice',
       'Timer Defaults',
       'About & Legal',
     ]);
@@ -50,14 +50,20 @@ describe('app-shell routes', () => {
     expect(within(primaryNav).queryByTestId('offline-banner')).not.toBeInTheDocument();
     expect(screen.queryByTestId('app-update-prompt')).not.toBeInTheDocument();
     expect(screen.getByTestId('creator-home-link')).toHaveAttribute('href', 'https://odinhalvorson.com');
+    expect(screen.getByTestId('creator-home-link')).toHaveAccessibleName('Open creator homepage at odinhalvorson.com');
     expect(screen.getByTestId('creator-donate-link')).toHaveAttribute('href', 'https://ko-fi.com/indubitablyodin');
+    expect(screen.getByTestId('creator-donate-link')).toHaveAccessibleName('Support the creator on Ko-fi');
 
-    expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+    expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
     expect(screen.getByTestId('page-header')).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
+    expect(screen.getByTestId('bottom-nav')).toBeVisible();
+    expect(screen.getByTestId('bottom-nav')).toHaveTextContent('Focus');
+    expect(screen.getByTestId('bottom-nav')).toHaveTextContent('Library');
+    expect(screen.getByTestId('bottom-nav')).toHaveTextContent('Settings');
 
     await user.click(screen.getByTestId('nav-daily'));
-    expect(screen.getByTestId('page-title')).toHaveTextContent('Today');
+    expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
     expect(screen.getByTestId('page-content')).toBeVisible();
 
     await user.click(screen.getByTestId('nav-timer'));

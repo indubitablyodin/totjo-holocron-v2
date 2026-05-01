@@ -22,10 +22,10 @@ type BeforeInstallPromptEvent = Event & {
 export const PRIMARY_PAGES: PageDefinition[] = [
   {
     group: 'core',
-    icon: 'today',
-    id: 'today',
+    icon: 'focus',
+    id: 'focus',
     path: '/daily',
-    title: 'Today',
+    title: 'Focus',
     navTestId: 'nav-daily',
     match: (pathname) => pathname === '/daily',
   },
@@ -103,6 +103,15 @@ export const PRIMARY_PAGES: PageDefinition[] = [
   },
   {
     group: 'settings',
+    icon: 'focus',
+    id: 'focus-practice',
+    path: '/settings/focus-practice',
+    title: 'Focus & Practice',
+    navTestId: 'nav-focus-practice',
+    match: (pathname) => pathname === '/settings/focus-practice',
+  },
+  {
+    group: 'settings',
     icon: 'timer-defaults',
     id: 'timer-defaults',
     path: '/settings/timer-defaults',
@@ -128,7 +137,7 @@ const NAV_GROUP_LABELS: Record<PageDefinition['group'], string> = {
 };
 
 const NAV_ICON_GLYPHS: Record<PageDefinition['icon'], string> = {
-  today: '☼',
+  focus: '☼',
   read: '✦',
   timer: '◴',
   settings: '⚙',
@@ -248,6 +257,10 @@ export function AppShell() {
   };
 
   const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
+  const bottomNavPages = useMemo(
+    () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'settings'),
+    [navGroups.core],
+  );
 
   return (
     <div className="app-shell">
@@ -259,11 +272,27 @@ export function AppShell() {
         </div>
         <div className="shell-support">
           <div className="creator-support" aria-label="Creator links">
-            <a className="creator-link" data-testid="creator-home-link" href="https://odinhalvorson.com" rel="noreferrer" target="_blank">
-              odinhalvorson.com
+            <a
+              aria-label="Open creator homepage at odinhalvorson.com"
+              className="creator-link creator-link--home"
+              data-testid="creator-home-link"
+              href="https://odinhalvorson.com"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <span className="creator-link__eyebrow">Creator home</span>
+              <span className="creator-link__label">odinhalvorson.com</span>
             </a>
-            <a className="creator-donate-link" data-testid="creator-donate-link" href="https://ko-fi.com/indubitablyodin" rel="noreferrer" target="_blank">
-              Support on Ko-fi
+            <a
+              aria-label="Support the creator on Ko-fi"
+              className="creator-link creator-link--donate creator-donate-link"
+              data-testid="creator-donate-link"
+              href="https://ko-fi.com/indubitablyodin"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <span className="creator-link__eyebrow">Support</span>
+              <span className="creator-link__label">Ko-fi</span>
             </a>
           </div>
           <button
@@ -396,6 +425,24 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+
+      <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav">
+        {bottomNavPages.map((page) => {
+          const isActive = page.match(location.pathname, location.hash);
+
+          return (
+            <Link
+              className={`bottom-nav__link${isActive ? ' bottom-nav__link--active' : ''}`}
+              data-testid={`bottom-${page.navTestId}`}
+              key={page.id}
+              to={page.path}
+            >
+              <span aria-hidden="true" className="bottom-nav__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
+              <span>{page.title === 'Read' ? 'Library' : page.title}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }

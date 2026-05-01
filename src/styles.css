@@ -252,6 +252,83 @@ input {
   justify-items: end;
 }
 
+.creator-support {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  max-width: 26rem;
+}
+
+.creator-link {
+  display: grid;
+  gap: var(--space-1);
+  min-width: min(100%, 10.5rem);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: left;
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.creator-link:hover,
+.creator-link:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-soft);
+}
+
+.creator-link:focus-visible {
+  outline: var(--border-width-strong) solid var(--color-accent);
+  outline-offset: var(--space-1);
+}
+
+.creator-link--donate {
+  border-color: var(--color-authority-sermon-border);
+  background: var(--color-authority-sermon-surface);
+}
+
+.creator-link--donate:hover,
+.creator-link--donate:focus-visible {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-soft);
+}
+
+.creator-link__eyebrow,
+.creator-link__label {
+  min-width: 0;
+  font-family: var(--font-ui);
+}
+
+.creator-link__eyebrow {
+  color: var(--color-text-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.creator-link__label {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.creator-link--donate .creator-link__label {
+  color: var(--color-authority-sermon-text);
+}
+
 .shell-kicker,
 .page-eyebrow,
 .metric-label,
@@ -551,9 +628,62 @@ input {
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--color-wheel-item-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+  line-height: 1.18;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 60;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  left: calc(var(--space-4) + 12rem);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.bottom-nav__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 5.25rem;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-strong);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(var(--blur-surface));
+  color: var(--color-text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 700;
+  pointer-events: auto;
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base),
+    background-color var(--transition-base);
+}
+
+.bottom-nav__link:hover,
+.bottom-nav__link:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.bottom-nav__link--active {
+  border-color: var(--color-authority-canonical-border);
+  background: var(--color-authority-canonical-surface);
+  color: var(--color-authority-canonical-text);
+}
+
+.bottom-nav__icon::before {
+  content: attr(data-icon);
+  line-height: 1;
 }
 
 .nav-link--active {
@@ -765,8 +895,12 @@ input {
 }
 
 .daily-practice-card,
+.daily-focus-card,
+.daily-meditation-card,
 .daily-practice-meta,
 .daily-practice-actions,
+.daily-preset-group,
+.daily-quick-access,
 .today-entry-flow,
 .today-entry-flow__actions,
 .today-completion-flow,
@@ -781,10 +915,25 @@ input {
   background: transparent;
 }
 
+.daily-focus-card,
+.daily-meditation-card {
+  padding: var(--space-4) 0 0;
+  border-top: 1px solid var(--color-border-strong);
+  background: transparent;
+}
+
 .daily-practice-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.daily-focus-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: var(--space-3);
   flex-wrap: wrap;
 }
@@ -812,6 +961,41 @@ input {
 
 .daily-practice-card__summary {
   color: var(--color-text-muted);
+}
+
+.daily-focus-card__preface,
+.daily-focus-card__text,
+.daily-quick-access__title {
+  margin: 0;
+}
+
+.daily-focus-card__preface {
+  color: var(--color-text-muted);
+}
+
+.daily-focus-card__text {
+  max-width: var(--page-line-width);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  line-height: 1.25;
+}
+
+.daily-preset-group {
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-3) 0 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.daily-quick-access {
+  gap: 0;
+}
+
+.daily-quick-access__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  line-height: 1.08;
 }
 
 .today-entry-flow__label,
@@ -1740,6 +1924,11 @@ input {
     min-width: min(100%, 17rem);
   }
 
+  .bottom-nav {
+    left: calc((100vw - min(100vw, var(--page-max-width))) / 2 + var(--space-5) + var(--shell-rail-width) + var(--space-5));
+    right: calc((100vw - min(100vw, var(--page-max-width))) / 2 + var(--space-5));
+  }
+
   .nav-wheel__scroll {
     height: calc(100vh - 16rem);
   }
@@ -1765,7 +1954,7 @@ input {
   }
 
   .shell-header {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     align-items: stretch;
   }
 
@@ -1783,16 +1972,35 @@ input {
 
   .creator-support {
     justify-content: stretch;
+    max-width: none;
   }
 
-  .creator-link,
-  .creator-donate-link {
-    flex: 1 1 10rem;
+  .creator-link {
+    flex: 1 1 12rem;
+    min-width: min(100%, 12rem);
   }
 
   .primary-button,
   .secondary-button {
     width: 100%;
+  }
+
+  .bottom-nav {
+    left: 11.75rem;
+    right: var(--space-2);
+    bottom: var(--space-2);
+    gap: var(--space-1);
+  }
+
+  .bottom-nav__link {
+    min-width: 0;
+    flex: 1 1 0;
+    padding-inline: var(--space-2);
+    font-size: 0.72rem;
+  }
+
+  .bottom-nav__icon {
+    display: none;
   }
 
   .code-grid {
