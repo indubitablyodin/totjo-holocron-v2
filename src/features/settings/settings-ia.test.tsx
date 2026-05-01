@@ -4,10 +4,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTestRouter } from '@/App';
 import { clearDailyPracticeClockOverride } from '@/features/practice/dailyPracticeClock';
+import { clearDailyQuickAccessMiddleSlot } from '@/features/practice/dailyQuickAccess';
 
 describe('settings information architecture', () => {
   beforeEach(() => {
     clearDailyPracticeClockOverride();
+    clearDailyQuickAccessMiddleSlot();
   });
 
   it('shows a short local-only settings index with focused groups', () => {
@@ -40,6 +42,31 @@ describe('settings information architecture', () => {
 
     expect(screen.getByTestId('setting-daily-clock-override-input')).toHaveValue('2026-04-27T00:05');
     expect(screen.getByTestId('setting-daily-clock-override-time-zone')).toHaveValue('America/Chicago');
+  });
+
+  it('lets Focus settings choose and clear the Daily Focus middle quick-access slot', async () => {
+    const user = userEvent.setup();
+
+    render(<AppTestRouter initialEntries={['/settings/focus-practice']} />);
+
+    expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('');
+    expect(screen.getByRole('option', { name: 'Knight’s Code' })).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByTestId('setting-daily-quick-access-middle-slot'), 'knights-code');
+    expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('knights-code');
+
+    await user.click(screen.getByText('Back to settings'));
+    await user.click(screen.getByTestId('nav-daily'));
+
+    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Knight’s Code');
+    expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/supplemental/knights-code');
+
+    await user.click(screen.getByTestId('nav-focus-practice'));
+    await user.click(screen.getByTestId('setting-daily-quick-access-clear'));
+    await user.click(screen.getByTestId('nav-daily'));
+
+    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Default slot');
+    expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');
   });
 
   it('opens a focused reading settings page from the settings index', async () => {

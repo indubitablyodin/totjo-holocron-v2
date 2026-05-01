@@ -1,5 +1,5 @@
 import { indexedDB } from 'fake-indexeddb';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -12,6 +12,7 @@ import { DailyPracticePage } from './DailyPracticePage';
 import { clearDailyPracticeClockOverride } from './dailyPracticeClock';
 import { dailyFocusPool, selectDailyFocus } from './dailyFocusEngine';
 import { getMeditationPracticeStats } from './dailyPracticeStorage';
+import { clearDailyQuickAccessMiddleSlot, saveDailyQuickAccessMiddleSlot } from './dailyQuickAccess';
 
 async function deleteDatabase(name: string): Promise<void> {
   await new Promise<void>((resolve, reject) => {
@@ -49,6 +50,7 @@ function renderDailyPractice(options: { database: HolocronDatabase; now: Date; t
 beforeEach(() => {
   clearTimerSessionStorage();
   clearDailyPracticeClockOverride();
+  clearDailyQuickAccessMiddleSlot();
 });
 
 afterEach(async () => {
@@ -175,7 +177,7 @@ describe('daily focus selection and front page', () => {
     }
   });
 
-  it('shows the requested quick access destinations', async () => {
+  it('shows three simple quick access buttons with the default middle slot', async () => {
     const database = createAppDatabase('daily-practice-test-db');
 
     try {
@@ -185,9 +187,36 @@ describe('daily focus selection and front page', () => {
         expect(screen.getByTestId('daily-quick-access')).toBeVisible();
       });
 
+      expect(within(screen.getByTestId('daily-quick-access')).getAllByRole('link').map((link) => link.textContent?.trim())).toEqual([
+        'Jedi Code',
+        'Default slot',
+        'Bookmarks',
+      ]);
       expect(screen.getByTestId('daily-quick-access-jedi-code')).toHaveAttribute('href', '/library/doctrine/code');
-      expect(screen.getByTestId('daily-quick-access-knights-code')).toHaveAttribute('href', '/library/supplemental/knights-code');
+      expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');
       expect(screen.getByTestId('daily-quick-access-bookmarks')).toHaveAttribute('href', '/library/bookmarks');
+    } finally {
+      await closeAndDeleteDatabase(database);
+    }
+  });
+
+  it('uses the selected reading for the configurable quick access middle slot', async () => {
+    const database = createAppDatabase('daily-practice-test-db');
+
+    try {
+      saveDailyQuickAccessMiddleSlot('knights-code');
+      renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('daily-quick-access')).toBeVisible();
+      });
+
+      expect(within(screen.getByTestId('daily-quick-access')).getAllByRole('link').map((link) => link.textContent?.trim())).toEqual([
+        'Jedi Code',
+        'Knight’s Code',
+        'Bookmarks',
+      ]);
+      expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/supplemental/knights-code');
     } finally {
       await closeAndDeleteDatabase(database);
     }
