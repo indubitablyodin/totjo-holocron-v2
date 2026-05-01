@@ -314,7 +314,7 @@ export function AppShell() {
         <div className="brand-block">
           <p className="shell-kicker">Temple of the Jedi Order</p>
           <p className="shell-title">TOTJO Holocron</p>
-          <p className="shell-subtitle">Read the doctrine, keep a daily practice, and use the timer when you need it.</p>
+          <p className="shell-subtitle">Practice daily, serve willingly, and let the Force guide you.</p>
         </div>
         <div className="shell-support">
           <div className="creator-support" aria-label="Creator links">
