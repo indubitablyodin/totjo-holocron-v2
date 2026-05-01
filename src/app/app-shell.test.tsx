@@ -15,6 +15,10 @@ function resetReadingDocumentState() {
   clearReadingSettingsStorage();
 }
 
+function getBottomNavLabels() {
+  return Array.from(screen.getByTestId('bottom-nav').querySelectorAll('.bottom-nav__link')).map((navItem) => navItem.textContent?.trim());
+}
+
 describe('app-shell routes', () => {
   beforeEach(() => {
     resetReadingDocumentState();
@@ -58,9 +62,8 @@ describe('app-shell routes', () => {
     expect(screen.getByTestId('page-header')).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
     expect(screen.getByTestId('bottom-nav')).toBeVisible();
-    expect(screen.getByTestId('bottom-nav')).toHaveTextContent('Focus');
-    expect(screen.getByTestId('bottom-nav')).toHaveTextContent('Library');
-    expect(screen.getByTestId('bottom-nav')).toHaveTextContent('Settings');
+    expect(getBottomNavLabels()).toEqual(['Back', 'Focus', 'Library', 'Settings']);
+    expect(screen.getByTestId('bottom-nav')).not.toHaveTextContent('Timer');
 
     await user.click(screen.getByTestId('nav-daily'));
     expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
@@ -79,6 +82,44 @@ describe('app-shell routes', () => {
 
     await user.click(screen.getByTestId('nav-library'));
     expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+  });
+
+  it('uses the in-app route stack for Back before falling back', async () => {
+    const user = userEvent.setup();
+
+    render(<AppTestRouter />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+    });
+
+    await user.click(screen.getByTestId('bottom-nav-library'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+    });
+
+    await user.click(screen.getByTestId('bottom-nav-back'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+    });
+  });
+
+  it('falls Back to Daily Focus when no useful in-app route is known', async () => {
+    const user = userEvent.setup();
+
+    render(<AppTestRouter initialEntries={['/settings']} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Settings');
+    });
+
+    await user.click(screen.getByTestId('bottom-nav-back'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+    });
   });
 
   it('renders a quiet app update prompt when the PWA has a waiting update', async () => {

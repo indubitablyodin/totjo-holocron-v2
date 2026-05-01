@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 
 import { applyPwaUpdate, dismissPwaUpdate, getPwaUpdateSnapshot, subscribePwaUpdate } from '@/app/pwaUpdate';
 
@@ -136,6 +136,10 @@ const NAV_GROUP_LABELS: Record<PageDefinition['group'], string> = {
   settings: 'Settings',
 };
 
+const BOTTOM_NAV_BACK_ICON = '←';
+const FALLBACK_BACK_PATH = '/daily';
+const IN_APP_HISTORY_LIMIT = 24;
+
 const NAV_ICON_GLYPHS: Record<PageDefinition['icon'], string> = {
   focus: '☼',
   read: '✦',
@@ -173,13 +177,21 @@ function useOnlineStatus() {
   return isOnline;
 }
 
+function getRoutePath(location: { hash: string; pathname: string; search: string }) {
+  return `${location.pathname}${location.search}${location.hash}`;
+}
+
 export function AppShell() {
   const isOnline = useOnlineStatus();
   const location = useLocation();
+  const navigate = useNavigate();
+  const navigationType = useNavigationType();
   const pwaUpdate = useSyncExternalStore(subscribePwaUpdate, getPwaUpdateSnapshot, getPwaUpdateSnapshot);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const inAppHistoryRef = useRef<string[]>([]);
   const wheelScrollRef = useRef<HTMLDivElement | null>(null);
   const wheelSegmentRef = useRef<HTMLDivElement | null>(null);
+  const currentRoutePath = getRoutePath(location);
   const navGroups = useMemo(
     () => ({
       core: PRIMARY_PAGES.filter((page) => page.group === 'core'),
@@ -189,6 +201,29 @@ export function AppShell() {
     [],
   );
   const secondaryPages = useMemo(() => [...navGroups.library, ...navGroups.settings], [navGroups.library, navGroups.settings]);
+
+  useEffect(() => {
+    const historyStack = inAppHistoryRef.current;
+    const lastRoutePath = historyStack[historyStack.length - 1];
+
+    if (lastRoutePath === currentRoutePath) {
+      return;
+    }
+
+    if (navigationType === 'POP') {
+      const existingIndex = historyStack.lastIndexOf(currentRoutePath);
+
+      inAppHistoryRef.current = existingIndex >= 0 ? historyStack.slice(0, existingIndex + 1) : [currentRoutePath];
+      return;
+    }
+
+    if (navigationType === 'REPLACE') {
+      inAppHistoryRef.current = historyStack.length > 0 ? [...historyStack.slice(0, -1), currentRoutePath] : [currentRoutePath];
+      return;
+    }
+
+    inAppHistoryRef.current = [...historyStack, currentRoutePath].slice(-IN_APP_HISTORY_LIMIT);
+  }, [currentRoutePath, navigationType]);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
@@ -261,6 +296,17 @@ export function AppShell() {
     () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'settings'),
     [navGroups.core],
   );
+  const handleBottomNavBack = () => {
+    const historyStack = inAppHistoryRef.current;
+    const previousRoutePath = historyStack.length > 1 ? historyStack[historyStack.length - 2] : null;
+
+    if (previousRoutePath && previousRoutePath !== currentRoutePath) {
+      void navigate(-1);
+      return;
+    }
+
+    void navigate(FALLBACK_BACK_PATH, { replace: true });
+  };
 
   return (
     <div className="app-shell">
@@ -350,6 +396,10 @@ export function AppShell() {
       </div>
 
       <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav">
+        <button className="bottom-nav__link bottom-nav__button" data-testid="bottom-nav-back" onClick={handleBottomNavBack} type="button">
+          <span aria-hidden="true" className="bottom-nav__icon" data-icon={BOTTOM_NAV_BACK_ICON} />
+          <span>Back</span>
+        </button>
         {bottomNavPages.map((page) => {
           const isActive = page.match(location.pathname, location.hash);
 
