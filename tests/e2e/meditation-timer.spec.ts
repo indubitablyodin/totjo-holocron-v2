@@ -1,0 +1,104 @@
+import { expect, test } from '@playwright/test';
+
+function parseClockToSeconds(clockText: string): number {
+  const [minutes, seconds] = clockText.split(':').map((value) => Number.parseInt(value, 10));
+  return minutes * 60 + seconds;
+}
+
+test.describe('meditation timer', () => {
+  test('timer-phone keeps live controls primary and hides session setup until requested', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/timer');
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.getByTestId('page-title')).toHaveText('Timer');
+    await expect(page.getByRole('heading', { name: 'Start a session' })).toBeVisible();
+    await expect(page.getByTestId('timer-panel')).toBeVisible();
+    await expect(page.getByTestId('timer-defaults')).toHaveCount(0);
+    await expect(page.getByTestId('timer-start')).toHaveText('Start timer');
+    await expect(page.getByTestId('timer-reset')).toHaveText('Reset session');
+    await expect(page.getByTestId('timer-settings-toggle')).toBeVisible();
+
+    await page.getByTestId('timer-settings-toggle').click();
+
+    await expect(page.getByTestId('timer-defaults')).toBeVisible();
+    await expect(page.getByTestId('timer-sound-profile')).toBeVisible();
+
+    await page.getByTestId('timer-start').click();
+
+    await expect(page.getByTestId('timer-pause')).toHaveText('Pause timer');
+    await expect(page.getByTestId('timer-reset')).toHaveText('Reset session');
+    await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-6-timer-phone.png' });
+  });
+
+  test('timer completes offline with bundled default-gong cues', async ({ context, page }) => {
+    await page.goto('/timer');
+    await page.waitForLoadState('networkidle');
+
+    await page.getByTestId('timer-settings-toggle').click();
+    await page.getByTestId('timer-duration-seconds').fill('5');
+    await page.getByTestId('timer-sound-profile').selectOption('default-gong');
+
+    await page.evaluate(async () => {
+      if ('serviceWorker' in navigator) {
+        await navigator.serviceWorker.ready;
+      }
+    });
+
+    await context.setOffline(true);
+
+    const bundledCueAvailableOffline = await page.evaluate(async () => {
+      const response = await fetch('/audio/default-gong-complete.mp3');
+      return response.ok;
+    });
+
+    expect(bundledCueAvailableOffline).toBe(true);
+
+    await page.getByTestId('timer-start').click();
+
+    await expect(page.getByTestId('timer-status')).toHaveText('Complete', { timeout: 10000 });
+    await page.getByTestId('timer-details-toggle').click();
+    await expect(page.getByTestId('timer-last-cue')).toContainText('Complete cue');
+    await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-8-timer-offline.png' });
+  });
+
+  test('timer reflects elapsed duration after background and resume', async ({ context, page }) => {
+    await page.goto('/timer');
+    await page.waitForLoadState('networkidle');
+
+    await page.getByTestId('timer-settings-toggle').click();
+    await page.getByTestId('timer-duration-seconds').fill('10');
+    await page.getByTestId('timer-start').click();
+
+    const backgroundPage = await context.newPage();
+    await backgroundPage.goto('/settings');
+    await backgroundPage.waitForLoadState('networkidle');
+    await backgroundPage.waitForTimeout(3200);
+
+    await page.bringToFront();
+
+    const remainingSeconds = parseClockToSeconds(await page.getByTestId('timer-remaining').innerText());
+
+    expect(remainingSeconds).toBeLessThanOrEqual(7);
+    expect(remainingSeconds).toBeGreaterThanOrEqual(6);
+    await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-8-timer-background.png' });
+
+    await backgroundPage.close();
+  });
+
+  test('audio-rights settings surface bundled cue provenance', async ({ page }) => {
+    await page.goto('/settings/timer-defaults');
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.getByTestId('setting-timer-sound-profile')).toHaveValue('default-gong');
+
+    await page.goto('/settings/about-legal');
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.getByTestId('audio-rights-default-gong')).toContainText('CC0-1.0');
+    await expect(page.getByTestId('audio-rights-default-gong')).toContainText('Approved');
+    await expect(page.getByTestId('audio-rights-default-gong')).toContainText('Recorded');
+    await expect(page.getByTestId('audio-rights-default-gong')).toContainText('/audio/default-gong-complete.mp3');
+    await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-8-audio-rights.png' });
+  });
+});
