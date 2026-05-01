@@ -1984,6 +1984,12 @@ input {
     width: 100%;
   }
 
+  .bottom-nav {
+    position: sticky;
+    bottom: var(--space-2);
+    z-index: 50;
+  }
+
   .bottom-nav__link {
     min-width: 0;
     flex: 1 1 0;
@@ -1992,6 +1998,14 @@ input {
   }
 
   .bottom-nav__icon {
+    display: none;
+  }
+
+  .shell-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-nav {
     display: none;
   }
 
