@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import {
@@ -29,6 +29,17 @@ import { type TimerCueMode } from '@/features/timer/timerPreferences';
 import { listMeditationPracticeHistory, recordMeditationPractice } from '@/features/timer/timerHistory';
 
 type AudioStatus = 'ready' | 'silent' | 'unavailable';
+
+type MeditationPreset = {
+  label: string;
+  seconds: number;
+};
+
+const MEDITATION_PRESETS: MeditationPreset[] = [
+  { label: '1 minute', seconds: 60 },
+  { label: '5 minutes', seconds: 300 },
+  { label: '30 minutes', seconds: 1800 },
+];
 
 const TIMER_CUE_MODE_LABELS: Record<TimerCueMode, string> = {
   'start-end': 'Beginning and end',
@@ -104,6 +115,7 @@ function useAudioElements(soundProfileId: SoundProfileId) {
 }
 
 export function TimerPage() {
+  const navigate = useNavigate();
   const [session, setSession] = useState<TimerSessionState>(() => loadTimerSession());
   const [lastCueMessage, setLastCueMessage] = useState('No cue has played yet.');
   const [historyEntries, setHistoryEntries] = useState<Array<{ id: string; completedAt: string; durationSeconds: number }>>([]);
@@ -266,6 +278,31 @@ export function TimerPage() {
               </p>
             </div>
 
+            <fieldset className="timer-preset-group">
+              <legend className="field-label">Quick duration</legend>
+              <div className="reader-option-group__choices" data-testid="timer-meditation-presets">
+                {MEDITATION_PRESETS.map((preset) => (
+                  <button
+                    aria-pressed={session.totalDurationSeconds === preset.seconds}
+                    className={`reader-option-button${session.totalDurationSeconds === preset.seconds ? ' reader-option-button--active' : ''}`}
+                    data-testid={`timer-meditation-preset-${preset.seconds}`}
+                    disabled={!canEditSession}
+                    key={preset.seconds}
+                    onClick={() => {
+                      setSession((currentSession) =>
+                        applyEditableTimerConfig(currentSession, {
+                          totalDurationSeconds: preset.seconds,
+                        }),
+                      );
+                    }}
+                    type="button"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
             <div className="timer-controls">
               {(session.phase === 'idle' || session.phase === 'complete') && (
                 <button
@@ -330,6 +367,20 @@ export function TimerPage() {
                 type="button"
               >
                 Reset session
+              </button>
+
+              <button
+                className="secondary-button"
+                data-testid="timer-cancel"
+                onClick={() => {
+                  clearTimerSessionStorage();
+                  setShowSessionSettings(false);
+                  setShowTimerDetails(false);
+                  void navigate('/daily');
+                }}
+                type="button"
+              >
+                Cancel
               </button>
             </div>
 
