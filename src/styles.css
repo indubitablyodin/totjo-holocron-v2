@@ -153,7 +153,7 @@
 
 html {
   background: var(--color-background);
-  scroll-padding-bottom: calc(var(--shell-bottom-nav-height) + var(--space-6));
+  scroll-padding-bottom: var(--space-6);
 }
 
 body {
@@ -633,15 +633,17 @@ input {
 }
 
 .bottom-nav {
-  position: fixed;
-  z-index: 60;
-  right: var(--space-4);
-  bottom: var(--space-4);
-  left: calc(var(--space-4) + 12rem);
   display: flex;
+  justify-self: center;
   justify-content: center;
   gap: var(--space-2);
-  pointer-events: none;
+  width: min(100%, 28rem);
+  padding: var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(var(--blur-surface));
 }
 
 .bottom-nav__link {
@@ -651,16 +653,13 @@ input {
   gap: var(--space-2);
   min-width: 5.25rem;
   padding: var(--space-2) var(--space-3);
-  border: var(--border-width) solid var(--color-border);
+  border: var(--border-width) solid transparent;
   border-radius: var(--radius-pill);
-  background: var(--color-surface-strong);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(var(--blur-surface));
+  background: transparent;
   color: var(--color-text-muted);
   font-family: var(--font-ui);
   font-size: 0.82rem;
   font-weight: 700;
-  pointer-events: auto;
   transition:
     transform var(--transition-base),
     border-color var(--transition-base),
@@ -671,7 +670,8 @@ input {
 .bottom-nav__link:hover,
 .bottom-nav__link:focus-visible {
   transform: translateY(-1px);
-  border-color: var(--color-border-strong);
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
   color: var(--color-text);
 }
 
@@ -740,7 +740,6 @@ input {
 
 .shell-main {
   min-width: 0;
-  padding-bottom: calc(var(--shell-bottom-nav-height) + var(--space-5));
 }
 
 .page-header {
@@ -768,8 +767,12 @@ input {
 .content-section {
   display: grid;
   gap: var(--space-5);
-  padding: var(--space-5) 0 0;
-  border-top: 1px solid var(--color-border);
+  padding: 0;
+  border-top: 0;
+}
+
+.content-section + .content-section {
+  padding-top: var(--space-2);
 }
 
 .section-body {
@@ -782,6 +785,8 @@ input {
   display: grid;
   gap: var(--space-2);
   max-width: var(--page-line-width);
+  padding-left: var(--space-4);
+  border-left: var(--border-width-strong) solid var(--color-border);
 }
 
 .section-heading h2,
@@ -918,8 +923,8 @@ input {
 
 .daily-focus-card,
 .daily-meditation-card {
-  padding: var(--space-4) 0 0;
-  border-top: 1px solid var(--color-border-strong);
+  padding: 0;
+  border-top: 0;
   background: transparent;
 }
 
@@ -984,9 +989,8 @@ input {
 .daily-preset-group {
   min-width: 0;
   margin: 0;
-  padding: var(--space-3) 0 0;
+  padding: 0;
   border: 0;
-  border-top: 1px solid var(--color-border);
 }
 
 .daily-quick-access {
@@ -1707,10 +1711,9 @@ input {
 .timer-stat-card {
   display: grid;
   gap: var(--space-1);
-  padding: var(--space-3);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-soft);
+  padding: var(--space-1) 0 var(--space-1) var(--space-3);
+  border-left: var(--border-width-strong) solid var(--color-border);
+  background: transparent;
 }
 
 .timer-stat-card dt,
@@ -1925,11 +1928,6 @@ input {
     min-width: min(100%, 17rem);
   }
 
-  .bottom-nav {
-    left: calc((100vw - min(100vw, var(--page-max-width))) / 2 + var(--space-5) + var(--shell-rail-width) + var(--space-5));
-    right: calc((100vw - min(100vw, var(--page-max-width))) / 2 + var(--space-5));
-  }
-
   .nav-wheel__scroll {
     height: calc(100vh - 16rem);
   }
@@ -1984,13 +1982,6 @@ input {
   .primary-button,
   .secondary-button {
     width: 100%;
-  }
-
-  .bottom-nav {
-    left: 11.75rem;
-    right: var(--space-2);
-    bottom: var(--space-2);
-    gap: var(--space-1);
   }
 
   .bottom-nav__link {

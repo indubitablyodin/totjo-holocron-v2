@@ -349,6 +349,24 @@ export function AppShell() {
         ) : null}
       </div>
 
+      <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav">
+        {bottomNavPages.map((page) => {
+          const isActive = page.match(location.pathname, location.hash);
+
+          return (
+            <Link
+              className={`bottom-nav__link${isActive ? ' bottom-nav__link--active' : ''}`}
+              data-testid={`bottom-${page.navTestId}`}
+              key={page.id}
+              to={page.path}
+            >
+              <span aria-hidden="true" className="bottom-nav__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
+              <span>{page.title === 'Read' ? 'Library' : page.title}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
       <div className="shell-layout">
         <nav aria-label="Primary" className="primary-nav" data-testid="primary-nav">
           <div className="primary-nav__list primary-nav__list--wheel">
@@ -425,24 +443,6 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
-
-      <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav">
-        {bottomNavPages.map((page) => {
-          const isActive = page.match(location.pathname, location.hash);
-
-          return (
-            <Link
-              className={`bottom-nav__link${isActive ? ' bottom-nav__link--active' : ''}`}
-              data-testid={`bottom-${page.navTestId}`}
-              key={page.id}
-              to={page.path}
-            >
-              <span aria-hidden="true" className="bottom-nav__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
-              <span>{page.title === 'Read' ? 'Library' : page.title}</span>
-            </Link>
-          );
-        })}
-      </nav>
     </div>
   );
 }
