@@ -37,7 +37,7 @@ export function getDailyPracticeSourceLabel(sourceKind: DailyPracticeSourceKind)
     return 'Sermon reference';
   }
 
-  return 'Doctrine passage';
+  return 'Doctrine reading';
 }
 
 export type DailyPracticeSelection = DailyPracticeManifestEntry & {
