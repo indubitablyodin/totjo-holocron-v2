@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://indubitablyodin.github.io/totjo-holocron-v2",
   "packageManager": "pnpm@10.17.0",
   "scripts": {
     "dev": "vite",
@@ -11,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "node tests/run-tests.mjs",
     "test:e2e": "playwright test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.1",
@@ -44,6 +47,7 @@
     "workbox-core": "^7.3.0",
     "workbox-precaching": "^7.3.0",
     "workbox-routing": "^7.3.0",
-    "workbox-window": "^7.3.0"
+    "workbox-window": "^7.3.0",
+    "gh-pages": "^6.1.0"
   }
 }
