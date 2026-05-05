@@ -11,18 +11,7 @@ import { defineConfig } from 'vitest/config';
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const testSyncStorePath = path.resolve(rootDir, '.sisyphus', 'tmp', 'test-sync-store.json');
 
-function getBasePath() {
-  // For GitHub Pages, use the repository name as base path
-  // This can be set via environment variable or defaults to the repo name
-  const repositoryName = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? 'totjo-holocron-v2';
-  
-  // If building for GitHub Pages (either via env var or production build)
-  if (process.env.GITHUB_PAGES === 'true' || process.env.NODE_ENV === 'production') {
-    return `/${repositoryName}/`;
-  }
-  
-  return '/';
-}
+
 
 type TestSyncStore = Record<string, unknown>;
 
@@ -148,19 +137,29 @@ function testSyncApiPlugin(): Plugin {
 }
 
 export default defineConfig({
-  base: getBasePath(),
+  base: '/totjo-holocron-v2/',
   plugins: [
     react(),
     testSyncApiPlugin(),
     VitePWA({
-      strategies: 'injectManifest',
-      srcDir: 'src',
-      filename: 'sw.ts',
-      injectRegister: false,
-      includeAssets: ['apple-touch-icon.png', 'favicon.png', 'icons/icon-192.png', 'icons/icon-512.png'],
-      manifest: false,
-      injectManifest: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,wav,mp3}'],
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.png', 'apple-touch-icon.png', 'icons/icon-192.png', 'icons/icon-512.png'],
+      manifest: {
+        name: 'Totjo Holocron',
+        short_name: 'Totjo',
+        theme_color: '#ffffff',
+        icons: [
+          {
+            src: 'icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+        ],
       },
     }),
   ],
