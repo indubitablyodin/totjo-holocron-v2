@@ -12,12 +12,16 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const testSyncStorePath = path.resolve(rootDir, '.sisyphus', 'tmp', 'test-sync-store.json');
 
 function getBasePath() {
-  if (process.env.GITHUB_PAGES !== 'true') {
-    return '/';
-  }
-
+  // For GitHub Pages, use the repository name as base path
+  // This can be set via environment variable or defaults to the repo name
   const repositoryName = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? 'totjo-holocron-v2';
-  return `/${repositoryName}/`;
+  
+  // If building for GitHub Pages (either via env var or production build)
+  if (process.env.GITHUB_PAGES === 'true' || process.env.NODE_ENV === 'production') {
+    return `/${repositoryName}/`;
+  }
+  
+  return '/';
 }
 
 type TestSyncStore = Record<string, unknown>;
