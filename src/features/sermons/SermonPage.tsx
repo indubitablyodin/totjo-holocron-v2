@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { CompactReaderShell, ReaderMetaList, ReaderOptionGroup, ReaderSurface, type CompactReaderControl } from '@/features/reader/CompactReaderShell';
+import type { BreadcrumbItem } from '@/app/Breadcrumb';
 import { DoctrineMarkdownContent } from '@/features/reader/doctrineMarkdown';
 import { ReaderUserStateSection } from '@/features/reader/ReaderUserStateSection';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
@@ -146,6 +147,19 @@ export function SermonPage() {
 
   const shouldUseOnlineDetail = routeState.status === 'ready' && routeState.document && routeState.cacheState !== 'cached-sermon' && isOnline;
 
+  // Compute breadcrumbs before early returns to satisfy Rules of Hooks
+  const breadcrumbs: BreadcrumbItem[] | null = useMemo(
+    () =>
+      routeState.document
+        ? [
+            { label: 'Library', href: '/library' },
+            { label: 'Sermons', href: '/library/sermons' },
+            { label: routeState.document.title, href: undefined },
+          ]
+        : null,
+    [routeState.document],
+  );
+
   if (routeState.status === 'loading') {
     return (
       <PageLayout
@@ -267,6 +281,7 @@ export function SermonPage() {
     <CompactReaderShell
       actionAside={actionAside}
       badges={<SermonAuthorityBadge />}
+      breadcrumbs={breadcrumbs ?? undefined}
       controls={controls}
       description={document.summary}
       eyebrow="TOTJO sermons"

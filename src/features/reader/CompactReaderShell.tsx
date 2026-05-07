@@ -1,4 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
+import { Breadcrumb, type BreadcrumbItem } from '@/app/Breadcrumb';
 
 export type CompactReaderControl = {
   id: string;
@@ -11,6 +12,7 @@ export type CompactReaderControl = {
 type CompactReaderShellProps = {
   actionAside?: ReactNode;
   badges?: ReactNode;
+  breadcrumbs?: BreadcrumbItem[];
   children: ReactNode;
   controls?: CompactReaderControl[];
   description: string;
@@ -47,6 +49,7 @@ function getControlPanelId(controlId: string) {
 export function CompactReaderShell({
   actionAside,
   badges,
+  breadcrumbs,
   children,
   controls = [],
   description,
@@ -64,6 +67,7 @@ export function CompactReaderShell({
   return (
     <article className="reader-shell" data-testid="reader-shell">
       <header className="reader-shell__header" data-testid="page-header">
+        {breadcrumbs?.length ? <Breadcrumb items={breadcrumbs} /> : null}
         <p className="page-eyebrow">{eyebrow}</p>
         <h1 className="reader-shell__title" data-testid="page-title">
           {title}

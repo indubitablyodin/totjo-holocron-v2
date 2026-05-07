@@ -166,8 +166,8 @@ describe('daily focus selection and front page', () => {
 
       const meditationCard = screen.getByTestId('daily-meditation-card');
 
-      expect(meditationCard).toHaveTextContent('Center yourself.');
-      expect(within(meditationCard).getAllByText('Center yourself.')).toHaveLength(1);
+      expect(screen.getByTestId('meditation-subtitle')).toHaveTextContent('Center yourself.');
+      expect(within(meditationCard).queryAllByText('Center yourself.')).toHaveLength(0);
       expect(screen.getAllByText('Center yourself.')).toHaveLength(1);
       expect(screen.queryByText('Quick meditation')).not.toBeInTheDocument();
       expect(screen.getByTestId('meditation-total-days')).toHaveTextContent(/Loading|0 days/);

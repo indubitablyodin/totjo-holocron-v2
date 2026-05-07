@@ -2,6 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
+import { usePersonalization } from '@/features/personalization/PersonalizationContext';
+import {
+  createDoctrinePersonalizationModel,
+  PersonalizedDoctrineContent,
+} from '@/features/personalization/personalizationOverlay';
 import { CompactReaderShell, ReaderMetaList, ReaderOptionGroup, ReaderSurface } from '@/features/reader/CompactReaderShell';
 import { DoctrineMarkdownContent, parseCodeView } from '@/features/reader/doctrineMarkdown';
 import { ReaderUserStateSection } from '@/features/reader/ReaderUserStateSection';
@@ -9,6 +14,7 @@ import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
 import { doctrineLibraryEntries } from '@/lib/content';
 import { getLibraryDocumentBySlug } from '@/lib/db';
+import type { BreadcrumbItem } from '@/app/Breadcrumb';
 
 import {
   getAuthorityPresentation,
@@ -84,10 +90,13 @@ function DoctrineCodeView({ document }: { document: LibraryDocumentRecord }) {
 
 export function LibraryDocumentPage({ authorityClass }: LibraryDocumentPageProps) {
   const { slug } = useParams<{ slug: string }>();
+  const { pronounMode } = usePersonalization();
   const { settings, updateContrast, updateFontScale, updateTheme } = useReadingSettings();
   const [document, setDocument] = useState<LibraryDocumentRecord | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'not-found' | 'error'>('loading');
   const presentation = getAuthorityPresentation(authorityClass);
+
+  const activePersonalizationEnabled = pronounMode === 'he' || pronounMode === 'she' || pronounMode === 'they';
   const resolvedStatus = slug ? status : 'not-found';
 
   useEffect(() => {
@@ -127,6 +136,32 @@ export function LibraryDocumentPage({ authorityClass }: LibraryDocumentPageProps
       isMounted = false;
     };
   }, [authorityClass, slug]);
+
+  // Compute models and breadcrumbs before early returns to satisfy Rules of Hooks
+  const personalizedDoctrineModel = useMemo(
+    () =>
+      document
+        ? createDoctrinePersonalizationModel({
+            documentId: document.id,
+            documentVersion: document.version,
+            markdown: document.bodyMarkdown,
+            pronounMode,
+          })
+        : null,
+    [document, pronounMode],
+  );
+
+  const breadcrumbs: BreadcrumbItem[] | null = useMemo(
+    () =>
+      document
+        ? [
+            { label: 'Library', href: '/library' },
+            { label: presentation.laneTitle, href: `/library/${authorityClass}` },
+            { label: document.title, href: undefined },
+          ]
+        : null,
+    [authorityClass, document, presentation.laneTitle],
+  );
 
   if (resolvedStatus === 'not-found') {
     return (
@@ -180,6 +215,7 @@ export function LibraryDocumentPage({ authorityClass }: LibraryDocumentPageProps
           {presentation.badgeLabel}
         </span>
       }
+      breadcrumbs={breadcrumbs ?? undefined}
       controls={[
         {
           id: 'font-scale',
@@ -248,6 +284,14 @@ export function LibraryDocumentPage({ authorityClass }: LibraryDocumentPageProps
       <ReaderSurface>
         {authorityClass === 'canonical' && document.slug === 'code' ? (
           <DoctrineCodeView document={document} />
+        ) : personalizedDoctrineModel?.hasPersonalizedBlocks && activePersonalizationEnabled ? (
+          <div className="document-copy">
+            <PersonalizedDoctrineContent
+              model={personalizedDoctrineModel}
+              personalizationEnabled={true}
+              showOriginalBlockIds={new Set()}
+            />
+          </div>
         ) : (
           <div className="document-copy">
             <DoctrineMarkdownContent markdown={document.bodyMarkdown} />

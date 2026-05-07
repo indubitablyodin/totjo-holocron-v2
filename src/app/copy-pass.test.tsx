@@ -22,7 +22,7 @@ describe('copy pass', () => {
     });
 
     expect(screen.getByTestId('daily-focus-card')).toBeVisible();
-    expect(screen.getByTestId('daily-meditation-card')).toHaveTextContent('Center yourself.');
+    expect(screen.getByTestId('meditation-subtitle')).toHaveTextContent('Center yourself.');
     expect(screen.queryByTestId('reader-controls-toggle')).not.toBeInTheDocument();
 
     todayView.unmount();

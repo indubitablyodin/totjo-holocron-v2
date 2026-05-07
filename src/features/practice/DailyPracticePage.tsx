@@ -103,8 +103,8 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   };
 
   return (
-    <PageLayout description="" eyebrow="Daily practice" title="Daily Focus">
-      <PageSection title="Daily Focus">
+    <PageLayout description="" eyebrow="" title="Daily Focus">
+      <PageSection>
         <article className="daily-focus-card" data-testid="daily-focus-card">
           <div className="daily-focus-card__header">
             <p className="practice-status-pill practice-status-pill--ready" data-testid="daily-focus-day">
@@ -134,42 +134,36 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
       </PageSection>
 
       <PageSection title="Meditation">
-        <article className="daily-meditation-card" data-testid="daily-meditation-card">
-          <div className="daily-focus-card__header">
-            <div>
-              <h2 className="daily-practice-card__title">Center yourself.</h2>
-            </div>
-          </div>
-
-          <dl className="timer-stat-strip" data-testid="meditation-stats">
-            <div className="timer-stat-card">
-              <dt>Total meditation days</dt>
-              <dd data-testid="meditation-total-days">
-                {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.totalDistinctDays)}
-              </dd>
-            </div>
-            <div className="timer-stat-card">
-              <dt>Current streak</dt>
-              <dd data-testid="meditation-current-streak">
-                {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.currentStreakDays)}
-              </dd>
-            </div>
-          </dl>
-          {statsStatus === 'error' ? (
-            <p className="surface-error" role="alert">
-              Meditation stats could not be loaded on this device.
-            </p>
-          ) : null}
-
-          <div className="button-row">
-            <button className="primary-button button-inline" data-testid="daily-begin-meditation" onClick={beginMeditation} type="button">
-              Begin meditation
-            </button>
-          </div>
-        </article>
+        <div className="daily-meditation-container">
+          <h3 className="daily-practice-card__title" data-testid="meditation-subtitle">Center yourself.</h3>
+          <button className="primary-button button-inline" data-testid="daily-begin-meditation" onClick={beginMeditation} type="button">
+            Begin meditation
+          </button>
+          <article className="daily-meditation-card" data-testid="daily-meditation-card">
+            <dl className="timer-stat-strip" data-testid="meditation-stats">
+              <div className="timer-stat-card">
+                <dt>Total meditation days</dt>
+                <dd data-testid="meditation-total-days">
+                  {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.totalDistinctDays)}
+                </dd>
+              </div>
+              <div className="timer-stat-card">
+                <dt>Current streak</dt>
+                <dd data-testid="meditation-current-streak">
+                  {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.currentStreakDays)}
+                </dd>
+              </div>
+            </dl>
+            {statsStatus === 'error' ? (
+              <p className="surface-error" role="alert">
+                Meditation stats could not be loaded on this device.
+              </p>
+            ) : null}
+          </article>
+        </div>
       </PageSection>
 
-      <PageSection title="Quick access">
+      <PageSection title="">
         <div className="daily-quick-access" data-testid="daily-quick-access">
           <Link className="daily-quick-access__button" data-testid="daily-quick-access-jedi-code" to="/library/doctrine/code">
             Jedi Code

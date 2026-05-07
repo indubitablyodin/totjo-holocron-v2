@@ -16,6 +16,7 @@ import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
 import { doctrineLibraryEntries, type DocumentRecord } from '@/lib/content';
 import { getDocumentBySlug } from '@/lib/db';
+import type { BreadcrumbItem } from '@/app/Breadcrumb';
 
 type CodeViewMode = 'side-by-side' | 'single-column';
 type DoctrineDocumentState = {
@@ -256,6 +257,19 @@ export function DoctrinePage() {
   const activePersonalizationEnabled = pronounMode === 'he' || pronounMode === 'she' || pronounMode === 'they';
   const showOriginalBlockIds = new Set<string>();
 
+  // Compute breadcrumbs early to avoid hooks-after-return violation
+  const breadcrumbs: BreadcrumbItem[] | null = useMemo(
+    () =>
+      resolvedDocument
+        ? [
+            { label: 'Library', href: '/library' },
+            { label: 'Doctrine', href: '/library/doctrine' },
+            { label: resolvedDocument.title, href: undefined },
+          ]
+        : null,
+    [resolvedDocument],
+  );
+
   const controls: CompactReaderControl[] = resolvedDocument
     ? [
         {
@@ -377,10 +391,11 @@ export function DoctrinePage() {
 
   return (
     <CompactReaderShell
+      badges={<HeaderBadges />}
+      breadcrumbs={breadcrumbs ?? undefined}
+      controls={controls}
       description={document.summary}
       eyebrow="Doctrine library"
-      badges={<HeaderBadges />}
-      controls={controls}
       navigation={<DoctrineReaderNavigation currentSlug={document.slug} />}
       title={document.title}
     >

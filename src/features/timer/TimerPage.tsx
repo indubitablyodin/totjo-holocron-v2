@@ -256,23 +256,15 @@ export function TimerPage() {
         : 'Audio unavailable';
 
   return (
-    <PageLayout
-      description="Keep the live session in reach and tuck the setup details away until you want them."
-      eyebrow="Meditation timer"
-      title="Timer"
-    >
-      <PageSection
-        description="The live timer stays first. Session setup stays close by without crowding the clock."
-        title="Start a session"
-      >
+    <PageLayout description="" eyebrow="Meditation timer" title="Timer">
+      <PageSection description="" title="Start a session">
         <div className="timer-grid">
           <section className="content-section timer-display timer-display--hero" data-testid="timer-panel">
-            <div className="timer-readout">
+            <div className="timer-readout timer-readout--centered">
               <p className="metric-label">Remaining</p>
               <p className="timer-clock" data-testid="timer-remaining">
                 {formatTimerClock(session.remainingSeconds)}
               </p>
-              <p className="support-copy">Pause or reset stays here while the timer runs. You can change the session again when it stops.</p>
               <p className="status-pill" data-testid="timer-status">
                 {timerStatusLabel}
               </p>

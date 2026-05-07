@@ -28,25 +28,33 @@ export type SourceTextReference = {
   excerpt: string;
 };
 
-const BLOCK_LEVEL_PRONOUN_REPLACEMENTS: Record<PronounMode, Record<string, string>> = {
+// Pronoun tokens for dynamic replacement
+// Usage in content: {pronoun:subjective}, {pronoun:possessive}, {pronoun:objective}, {pronoun:reflexive}
+const PRONOUN_TOKENS: Record<PronounMode, Record<string, string>> = {
   he: {
-    'canon-code::paragraph-1': 'The Jedi Code comes in two versions that offer different ways of understanding the same teaching.',
-    'canon-code::code-intro-1': 'The Jedi Code comes in two versions that offer different ways of understanding the same teaching.',
-    'canon-three-tenets::paragraph-1':
-      'When used correctly, the Jedi Tenets allow him to better himself and overcome any obstacle. They help him improve the world around him and fulfil his purpose in life as a Jedi.',
+    subjective: 'he',
+    objective: 'him',
+    possessive: 'his',
+    reflexive: 'himself',
   },
   she: {
-    'canon-code::paragraph-1': 'The Jedi Code comes in two versions that offer different ways of understanding the same teaching.',
-    'canon-code::code-intro-1': 'The Jedi Code comes in two versions that offer different ways of understanding the same teaching.',
-    'canon-three-tenets::paragraph-1':
-      'When used correctly, the Jedi Tenets allow her to better herself and overcome any obstacle. They help her improve the world around her and fulfil her purpose in life as a Jedi.',
+    subjective: 'she',
+    objective: 'her',
+    possessive: 'her',
+    reflexive: 'herself',
   },
   they: {
-    'canon-code::paragraph-1': 'The Jedi Code comes in two versions that offer different ways of understanding the same teaching.',
-    'canon-code::code-intro-1': 'The Jedi Code comes in two versions that offer different ways of understanding the same teaching.',
-    'canon-three-tenets::paragraph-1':
-      'When used correctly, the Jedi Tenets allow them to better themselves and overcome any obstacle. They help them improve the world around them and fulfil their purpose in life as a Jedi.',
+    subjective: 'they',
+    objective: 'them',
+    possessive: 'their',
+    reflexive: 'themselves',
   },
+};
+
+const BLOCK_LEVEL_PRONOUN_REPLACEMENTS: Record<PronounMode, Record<string, string>> = {
+  he: {},
+  she: {},
+  they: {},
 };
 
 function renderParagraphLines(lines: string[]): ReactNode {
@@ -58,6 +66,16 @@ function renderParagraphLines(lines: string[]): ReactNode {
   ));
 }
 
+// Token pattern: {pronoun:type} where type is subjective, objective, possessive, or reflexive
+const PRONOUN_TOKEN_PATTERN = /\{pronoun:(\w+)\}/g;
+
+function replacePronounTokens(text: string, pronouns: Record<string, string>): string {
+  return text.replace(PRONOUN_TOKEN_PATTERN, (match, tokenType) => {
+    const replacement = pronouns[tokenType];
+    return replacement !== undefined ? replacement : match;
+  });
+}
+
 function applyPronounPersonalization(pronounMode: PronounMode, documentId: string, blockId: string, originalText: string) {
   const exactReplacement = BLOCK_LEVEL_PRONOUN_REPLACEMENTS[pronounMode][`${documentId}::${blockId}`];
 
@@ -65,7 +83,14 @@ function applyPronounPersonalization(pronounMode: PronounMode, documentId: strin
     return exactReplacement;
   }
 
-  return originalText.replace(/\bhuman person\b/g, 'human being');
+  // Apply token-based pronoun replacement
+  const pronouns = PRONOUN_TOKENS[pronounMode];
+  let result = replacePronounTokens(originalText, pronouns);
+
+  // Legacy fallback
+  result = result.replace(/\bhuman person\b/g, 'human being');
+
+  return result;
 }
 
 export function createDisplayPersonalizationOverlay({

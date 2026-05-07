@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Link, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 
+import { BackToTopButton } from '@/app/BackToTopButton';
 import { applyPwaUpdate, dismissPwaUpdate, getPwaUpdateSnapshot, subscribePwaUpdate } from '@/app/pwaUpdate';
 
 type PageDefinition = {
@@ -181,6 +182,22 @@ function getRoutePath(location: { hash: string; pathname: string; search: string
   return `${location.pathname}${location.search}${location.hash}`;
 }
 
+  function createNavLinkClickHandler(page: PageDefinition) {
+    return (event: React.MouseEvent) => {
+      const url = new URL(page.path, window.location.origin);
+      const currentUrl = new URL(window.location.href);
+
+      // If clicking a hash link on the same page, scroll to the element
+      if (url.pathname === currentUrl.pathname && url.hash && url.hash !== currentUrl.hash) {
+        event.preventDefault();
+        const targetElement = document.querySelector(url.hash);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    };
+  }
+
 export function AppShell() {
   const isOnline = useOnlineStatus();
   const location = useLocation();
@@ -192,6 +209,7 @@ export function AppShell() {
   const wheelScrollRef = useRef<HTMLDivElement | null>(null);
   const wheelSegmentRef = useRef<HTMLDivElement | null>(null);
   const currentRoutePath = getRoutePath(location);
+  const handleNavLinkClick = createNavLinkClickHandler;
   const navGroups = useMemo(
     () => ({
       core: PRIMARY_PAGES.filter((page) => page.group === 'core'),
@@ -296,6 +314,17 @@ export function AppShell() {
     () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'settings'),
     [navGroups.core],
   );
+
+  // Scroll to element when hash changes (for in-page navigation like /library#read-doctrine)
+  useEffect(() => {
+    if (location.hash) {
+      const targetElement = document.querySelector(location.hash);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [location.hash]);
+
   const handleBottomNavBack = () => {
     const historyStack = inAppHistoryRef.current;
     const previousRoutePath = historyStack.length > 1 ? historyStack[historyStack.length - 2] : null;
@@ -431,6 +460,7 @@ export function AppShell() {
                       className={`nav-link nav-link--wheel nav-link--wheel-core${isActive ? ' nav-link--active' : ''}`}
                       data-testid={page.navTestId}
                       key={page.id}
+                      onClick={handleNavLinkClick(page)}
                       to={page.path}
                     >
                       <span aria-hidden="true" className="nav-link__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
@@ -458,6 +488,7 @@ export function AppShell() {
                                   aria-hidden="true"
                                   className={`nav-link nav-link--wheel nav-link--wheel-ghost${isActive ? ' nav-link--active' : ''}`}
                                   key={`${segmentIndex}-${page.id}`}
+                                  onClick={handleNavLinkClick(page)}
                                   tabIndex={-1}
                                   to={page.path}
                                 >
@@ -472,6 +503,7 @@ export function AppShell() {
                                 className={`nav-link nav-link--wheel${isActive ? ' nav-link--active' : ''}`}
                                 data-testid={page.navTestId}
                                 key={`${segmentIndex}-${page.id}`}
+                                onClick={handleNavLinkClick(page)}
                                 to={page.path}
                               >
                                 <span aria-hidden="true" className="nav-link__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
@@ -492,6 +524,7 @@ export function AppShell() {
         <main className="shell-main" data-testid="shell-main">
           <Outlet />
         </main>
+        <BackToTopButton />
       </div>
     </div>
   );

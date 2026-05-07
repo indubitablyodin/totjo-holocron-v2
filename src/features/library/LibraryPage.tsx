@@ -291,25 +291,40 @@ export function LibraryPage() {
         title="What you can read"
       >
         <div className="metric-grid" role="list">
-          <a className="metric-card" href="#read-doctrine" role="listitem">
+          <button
+            className="metric-card metric-card--button"
+            onClick={() => document.getElementById('read-doctrine')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+            role="listitem"
+            type="button"
+          >
             <span className="metric-label">{READ_LANE_COPY.canonical.countLabel}</span>
             <strong className="metric-value" data-testid="library-count-canon">
               {counts ? counts.canonical : '…'}
             </strong>
             <p className="metric-copy">{READ_LANE_COPY.canonical.countSummary}</p>
-          </a>
-          <a className="metric-card" href="#read-supplemental" role="listitem">
+          </button>
+          <button
+            className="metric-card metric-card--button"
+            onClick={() => document.getElementById('read-supplemental')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+            role="listitem"
+            type="button"
+          >
             <span className="metric-label">{READ_LANE_COPY.supplemental.countLabel}</span>
             <strong className="metric-value" data-testid="library-count-supplemental">
               {counts ? counts.supplemental : '…'}
             </strong>
             <p className="metric-copy">{READ_LANE_COPY.supplemental.countSummary}</p>
-          </a>
-          <a className="metric-card" href="#read-sermons" role="listitem">
+          </button>
+          <button
+            className="metric-card metric-card--button"
+            onClick={() => document.getElementById('read-sermons')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+            role="listitem"
+            type="button"
+          >
             <span className="metric-label">{READ_LANE_COPY.sermon.countLabel}</span>
             <strong className="metric-value">{counts ? counts.sermon : '…'}</strong>
             <p className="metric-copy">{READ_LANE_COPY.sermon.countSummary}</p>
-          </a>
+          </button>
         </div>
 
         {hasError ? (

@@ -2,7 +2,7 @@
   "slug": "knights-code",
   "title": "Knight's Code",
   "summary": "Public TOTJO text included here for reflection and study.",
-  "bodyMarkdown": "A Knight is sworn to valour\nHis heart knows only virtue\nHis blade defends the helpless.\nHis word speaks only truth.\nHis shield shelters the forsaken.\nHis courage gives hope to the despairing.\nHis justice undoes the wicked.\nHis image brings peace.\nHis code breaks the darkness,\nHis legend brings light",
+  "bodyMarkdown": "A Knight is sworn to valour\n{pronoun:possessive} heart knows only virtue\n{pronoun:possessive} blade defends the helpless.\n{pronoun:possessive} word speaks only truth.\n{pronoun:possessive} shield shelters the forsaken.\n{pronoun:possessive} courage gives hope to the despairing.\n{pronoun:possessive} justice undoes the wicked.\n{pronoun:possessive} image brings peace.\n{pronoun:possessive} code breaks the darkness,\n{pronoun:possessive} legend brings light",
   "tags": ["supplemental", "knights-code", "bonus-text", "totjo-public"],
   "updatedAt": "2026-04-27T00:00:00.000Z"
 }

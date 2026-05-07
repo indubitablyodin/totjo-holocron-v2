@@ -28,7 +28,7 @@
       "kind": "tenets",
       "sortOrder": 20,
       "intro": [
-        "When used correctly, the Jedi Tenets allow us to better ourselves and overcome any obstacle. They help us improve the world around us and fulfil our purpose in life as a Jedi."
+        "When used correctly, the Jedi Tenets allow {pronoun:objective} to better {pronoun:reflexive} and overcome any obstacle. They help {pronoun:objective} improve the world around {pronoun:objective} and fulfil {pronoun:possessive} purpose in life as a Jedi."
       ],
       "tenets": [
         "Focus",
@@ -65,7 +65,7 @@
       "kind": "code",
       "sortOrder": 30,
       "intro": [
-        "The Jedi Code comes in two versions which are different ways of understanding the same teaching."
+        "The Jedi Code comes in two versions that offer different ways of understanding the same teaching."
       ],
       "versions": [
         {
