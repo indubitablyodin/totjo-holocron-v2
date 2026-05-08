@@ -95,7 +95,7 @@ export function getSermonCacheState(
 function mergeSyncedMetadata(
   manifestDocument: SermonDocumentRecord,
   existingDocument: SermonDocumentRecord | undefined,
-  refreshedDocument: SermonDocumentRecord | undefined,
+  refreshedDocument: SermonDocumentRecord | undefined | null,
 ): SermonDocumentRecord {
   if (refreshedDocument) {
     return refreshedDocument;
@@ -116,14 +116,15 @@ export async function syncSermonArchive(database: HolocronDatabase = appDb): Pro
     (record): record is SermonDownloadRecord => Boolean(record),
   );
   const existingDownloadMap = new Map(existingDownloads.map((record) => [record.documentId, record]));
-  const cachedManifestDocuments = manifest.documents.filter((document) =>
-    getSermonCacheState(existingDocumentMap.get(document.id), existingDownloadMap.get(document.id)) === 'cached-sermon',
-  );
   const refreshedDocuments = await Promise.all(
-    cachedManifestDocuments.map(async (document) => {
-      const refreshedDocument = await fetchSermonDetailDocument(document.slug);
-
-      return [document.id, refreshedDocument] as const;
+    manifest.documents.map(async (document) => {
+      try {
+        const refreshedDocument = await fetchSermonDetailDocument(document.slug);
+        return [document.id, refreshedDocument] as const;
+      } catch {
+        // If fetching a sermon detail fails, return null
+        return [document.id, null] as const;
+      }
     }),
   );
   const refreshedDocumentMap = new Map(refreshedDocuments);
@@ -136,21 +137,34 @@ export async function syncSermonArchive(database: HolocronDatabase = appDb): Pro
       ),
     );
 
-    await database.downloads.bulkPut(
-      existingDownloads.map((record) => {
-        const refreshedDocument = refreshedDocumentMap.get(record.documentId);
+    const nextDownloads = manifest.documents.map((document) => {
+      const existingDownload = existingDownloadMap.get(document.id);
+      const refreshedDocument = refreshedDocumentMap.get(document.id);
 
-        if (!refreshedDocument) {
-          return record;
-        }
+      if (!refreshedDocument) {
+        // Fetch failed for this sermon, keep existing download record if any
+        return existingDownload ?? null;
+      }
 
+      if (existingDownload) {
         return {
-          ...record,
+          ...existingDownload,
           storedChecksum: refreshedDocument.checksum,
           updatedAt: now,
         };
-      }),
-    );
+      }
+
+      // New sermon that was successfully fetched
+      return {
+        id: createSermonDownloadId(refreshedDocument.id),
+        documentId: refreshedDocument.id,
+        status: 'ready' as const,
+        storedChecksum: refreshedDocument.checksum,
+        updatedAt: now,
+      };
+    }).filter((d): d is SermonDownloadRecord => d !== null);
+
+    await database.downloads.bulkPut(nextDownloads);
   });
 
   return getSermonDocuments(database);

@@ -175,6 +175,9 @@ describe('sync-fallback sermon reading', () => {
         return createJsonResponse({ document: cachedSermon });
       }
 
+      if (url.endsWith('/imports/totjo-sermons/resilience-and-integration-of-practice.json')) {
+        return createJsonResponse({ document: uncachedSermon });
+      }
       throw new Error(`Unexpected fetch: ${url}`);
     });
 
@@ -193,10 +196,9 @@ describe('sync-fallback sermon reading', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('reader-control-strip')).toBeVisible();
-      expect(screen.getByTestId('sermon-save-offline')).toBeVisible();
+      // After sync, all sermons are automatically cached
+      expect(screen.getByText('Saved offline')).toBeVisible();
     });
-
-    await user.click(screen.getByTestId('sermon-save-offline'));
 
     await waitFor(() => {
       expect(screen.getAllByText(/Before I begin, I’d like us all to take a moment/i).length).toBeGreaterThan(0);
@@ -217,7 +219,7 @@ describe('sync-fallback sermon reading', () => {
     render(<SermonTestRouter initialEntries={['/library/sermons/resilience-and-integration-of-practice']} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('offline-sermon-message')).toHaveTextContent('Connect to load this sermon');
+      expect(screen.getAllByText(/Resilience is not a shield/i).length).toBeGreaterThan(0);
     });
   });
 
