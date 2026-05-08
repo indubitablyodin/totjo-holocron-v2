@@ -27,61 +27,59 @@ export function registerAppServiceWorker() {
   const swPath = getServiceWorkerPath();
 
   // Manually register the service worker for injectManifest strategy
-  window.addEventListener('load', () => {
-    void navigator.serviceWorker
-      .register(swPath)
-      .then((registration) => {
-        serviceWorkerRegistration = registration;
+  // Register immediately (not on load) so browser can detect PWA as soon as possible
+  void (async () => {
+    try {
+      const registration = await navigator.serviceWorker.register(swPath);
+      serviceWorkerRegistration = registration;
 
-        // Check for updates periodically
-        const checkForUpdates = () => {
-          if (!registration || !navigator) {
-            return;
-          }
+      // Check for updates periodically
+      const checkForUpdates = () => {
+        if (!registration || !navigator) {
+          return;
+        }
+        void registration.update().catch(() => {
+          // Ignore update errors
+        });
+      };
 
-          void registration.update().catch(() => {
-            // Ignore update errors
+      // Check for updates every 4 hours
+      const updateInterval = setInterval(checkForUpdates, 4 * 60 * 60 * 1000);
+
+      // Set up update notification
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing || registration.waiting;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed') {
+              // New update available
+              notifyPwaUpdateAvailable();
+              setPwaUpdater(async () => {
+                if (registration.waiting) {
+                  await registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                }
+              });
+            }
           });
-        };
-
-        // Check for updates every 4 hours
-        const updateInterval = setInterval(checkForUpdates, 4 * 60 * 60 * 1000);
-
-        // Set up update notification
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing || registration.waiting;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed') {
-                // New update available
-                notifyPwaUpdateAvailable();
-                setPwaUpdater(async () => {
-                  if (registration.waiting) {
-                    await registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-                  }
-                });
-              }
-            });
-          }
-        });
-
-        // Cleanup
-        setPwaUpdater(async () => {
-          if (registration.waiting) {
-            await registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-          }
-        });
-
-        // Clean up interval on pagehide
-        window.addEventListener('pagehide', () => {
-          clearInterval(updateInterval);
-        });
-      })
-      .catch(() => {
-        // Service worker registration failed, but that's okay
-        // The app will still work, just without offline caching
+        }
       });
-  });
+
+      // Cleanup
+      setPwaUpdater(async () => {
+        if (registration.waiting) {
+          await registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+
+      // Clean up interval on pagehide
+      window.addEventListener('pagehide', () => {
+        clearInterval(updateInterval);
+      });
+    } catch {
+      // Service worker registration failed, but that's okay
+      // The app will still work, just without offline caching
+    }
+  })();
 }
 
 export function getServiceWorkerRegistration() {
