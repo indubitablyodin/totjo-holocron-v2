@@ -33,9 +33,25 @@ export function registerAppServiceWorker() {
       const registration = await navigator.serviceWorker.register(swPath);
       serviceWorkerRegistration = registration;
 
+      // Define the updater function once, using the current registration
+      const createUpdater = (reg: ServiceWorkerRegistration) => async (reloadPage: boolean = true) => {
+        if (reg.waiting) {
+          await reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          // Wait for the new service worker to activate
+          await reg.update();
+        }
+        // Reload the page to use the new service worker
+        if (reloadPage) {
+          window.location.reload();
+        }
+      };
+
+      // Set the updater initially
+      setPwaUpdater(createUpdater(registration));
+
       // Check for updates periodically
       const checkForUpdates = () => {
-        if (!registration || !navigator) {
+        if (!registration) {
           return;
         }
         void registration.update().catch(() => {
@@ -52,22 +68,12 @@ export function registerAppServiceWorker() {
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed') {
-              // New update available
+              // New update available - notify UI
               notifyPwaUpdateAvailable();
-              setPwaUpdater(async () => {
-                if (registration.waiting) {
-                  await registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-                }
-              });
+              // Re-set the updater with the updated registration reference
+              setPwaUpdater(createUpdater(registration));
             }
           });
-        }
-      });
-
-      // Cleanup
-      setPwaUpdater(async () => {
-        if (registration.waiting) {
-          await registration.waiting.postMessage({ type: 'SKIP_WAITING' });
         }
       });
 
