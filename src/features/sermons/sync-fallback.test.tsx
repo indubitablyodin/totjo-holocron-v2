@@ -196,13 +196,15 @@ describe('sync-fallback sermon reading', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('reader-control-strip')).toBeVisible();
-      // After sync, all sermons are automatically cached
-      expect(screen.getByText('Saved offline')).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Save offline' })).toBeVisible();
     });
 
     await waitFor(() => {
       expect(screen.getAllByText(/Before I begin, I’d like us all to take a moment/i).length).toBeGreaterThan(0);
     });
+
+    await user.click(screen.getByRole('button', { name: 'Save offline' }));
+    await waitFor(() => expect(screen.getByText('Saved offline')).toBeVisible());
 
     sermonsView.unmount();
 
@@ -219,7 +221,10 @@ describe('sync-fallback sermon reading', () => {
     render(<SermonTestRouter initialEntries={['/library/sermons/resilience-and-integration-of-practice']} />);
 
     await waitFor(() => {
-      expect(screen.getAllByText(/Resilience is not a shield/i).length).toBeGreaterThan(0);
+      expect(screen.getByText('Connect to load this sermon')).toBeVisible();
+      expect(
+        screen.getByText('This sermon summary is saved here, but the full sermon is not on this device yet.'),
+      ).toBeVisible();
     });
   });
 

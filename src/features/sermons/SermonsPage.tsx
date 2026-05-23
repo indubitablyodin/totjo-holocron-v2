@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
@@ -66,6 +66,7 @@ export function SermonsPage() {
     message: 'Connect to load the latest public sermon list on this device.',
   });
   const isOnline = useOnlineStatus();
+  const autoSyncAttemptedRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -114,7 +115,7 @@ export function SermonsPage() {
       setPageStatus('ready');
       setSyncStatus({
         kind: 'synced',
-        message: `Updated ${syncedSermons.length} sermons. Open one to save it for offline reading.`,
+        message: `Updated ${syncedSermons.length} sermons. Open one to read online or save it for offline reading.`,
       });
     } catch {
       setSyncStatus({
@@ -125,9 +126,11 @@ export function SermonsPage() {
   }, []);
 
   useEffect(() => {
-    if (!isOnline || sermons.length > 0 || syncStatus.kind === 'syncing') {
+    if (!isOnline || autoSyncAttemptedRef.current || syncStatus.kind === 'syncing') {
       return;
     }
+
+    autoSyncAttemptedRef.current = true;
 
     const syncTimer = window.setTimeout(() => {
       void handleSync();
@@ -136,7 +139,7 @@ export function SermonsPage() {
     return () => {
       window.clearTimeout(syncTimer);
     };
-  }, [handleSync, isOnline, sermons.length, syncStatus.kind]);
+  }, [handleSync, isOnline, syncStatus.kind]);
 
   const visibleSermons = useMemo(() => sermons.slice(0, 7), [sermons]);
 

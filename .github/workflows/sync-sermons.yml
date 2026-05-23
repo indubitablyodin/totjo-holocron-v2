@@ -1,0 +1,58 @@
+name: Sync TOTJO Sermons
+
+on:
+  schedule:
+    - cron: '17 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-sermons
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Import public TOTJO sermons
+        run: |
+          IMPORTED_AT="$(date -u +'%Y-%m-%dT%H:%M:%S.000Z')"
+          pnpm run import:sermons -- --imported-at "$IMPORTED_AT"
+
+      - name: Verify generated sermon assets
+        run: pnpm test
+
+      - name: Commit updated sermon assets
+        run: |
+          if git diff --quiet -- public/imports/totjo-sermons; then
+            echo "No sermon asset changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/imports/totjo-sermons
+          git commit -m "chore: sync TOTJO sermons"
+          git push

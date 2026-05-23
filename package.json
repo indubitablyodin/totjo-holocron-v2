@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node tests/run-tests.mjs",
     "test:e2e": "playwright test",
+    "import:sermons": "node scripts/import-totjo/import-sermons.mjs --archive-url https://templeofthejediorder.org/sermons --output-dir public/imports/totjo-sermons",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

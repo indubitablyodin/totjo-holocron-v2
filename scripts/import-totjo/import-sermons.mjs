@@ -341,7 +341,7 @@ function parseArgs(argv) {
     archiveSources: [],
     detailDir: null,
     outputDir: null,
-    importedAt: '2026-04-27T00:00:00.000Z',
+    importedAt: new Date().toISOString(),
   };
 
   for (let index = 0; index < argv.length; index += 1) {
