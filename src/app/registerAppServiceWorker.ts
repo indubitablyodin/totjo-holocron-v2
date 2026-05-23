@@ -6,10 +6,18 @@ import { notifyPwaUpdateAvailable, setPwaUpdater } from '@/app/pwaUpdate';
 let hasRegistered = false;
 let serviceWorkerRegistration: ServiceWorkerRegistration | null = null;
 
+function normalizeBasePath(basePath: string): string {
+  if (!basePath || basePath === './') {
+    return '/';
+  }
+
+  return basePath.endsWith('/') ? basePath : `${basePath}/`;
+}
+
 function getServiceWorkerPath(): string {
   // When deployed to GitHub Pages, the base path is /totjo-holocron-v2/
   // The service worker is built to the root of the base path
-  const basePath = import.meta.env.BASE_URL || '/';
+  const basePath = normalizeBasePath(import.meta.env.BASE_URL || '/');
   return `${basePath}sw.js`;
 }
 
