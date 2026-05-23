@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Redirecting to TOTJO Holocron</title>
+  </head>
+  <body>
+    <p>Redirecting to TOTJO Holocron…</p>
+    <script>
+      (function redirectProjectRouteToHashRoute() {
+        var projectBase = '/totjo-holocron-v2/';
+        var path = window.location.pathname;
+        var search = window.location.search || '';
+        var existingHash = window.location.hash || '';
+
+        if (path === projectBase || path === projectBase.slice(0, -1)) {
+          window.location.replace(projectBase + '#/daily' + search + existingHash);
+          return;
+        }
+
+        if (!path.startsWith(projectBase)) {
+          window.location.replace(projectBase + '#/daily' + search + existingHash);
+          return;
+        }
+
+        var routePath = path.slice(projectBase.length);
+        var hashRoute = routePath ? '/' + routePath.replace(/^\/+/, '') : '/daily';
+        window.location.replace(projectBase + '#' + hashRoute + search + existingHash);
+      })();
+    </script>
+  </body>
+</html>

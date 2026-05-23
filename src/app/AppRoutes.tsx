@@ -1,4 +1,4 @@
-import { BrowserRouter, MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, MemoryRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppShell } from '@/app/AppShell';
 import { AuthProvider } from '@/features/auth/AuthContext';
@@ -78,8 +78,8 @@ export function AppTestRouter({ initialEntries = ['/daily'] }: { initialEntries?
 
 export default function App() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <HashRouter>
       <AppRoutes />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
