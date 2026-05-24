@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-sermon-from-the-stove-potato",
+    "slug": "sermon-from-the-stove-potato",
+    "title": "Sermon From the Stove: Potato",
+    "summary": "The Sermons from the Stove series are sermons, inspirations, and insights ChaotishRabe gained while cooking in his kitchen at home.",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "The Sermons from the Stove series are sermons, inspirations, and insights ChaotishRabe gained while cooking in his kitchen at home.\n\nAlright, let’s get away from AI. Otherwise, I’m going to have to change the header disclaimer to “loosely gained while cooking”. Most everyone has a favorite/spirit animal that they personally identify with or strive to be, but is there a food you want to be? No, it’s not one of those progressive, weird interview questions that they ask after telling you that you were a coin at the bottom of a blender, how would you get out? If you were a food, what would you be?\n\nAs you could guess, my response would be the potato. Take a second, dear reader, to name all of the potato dishes you can think of. I’ll name a few: Potato Chips, French Fries, Baked Potato, Potato Soup, Potato Au Gratin, Funeral Potatoes. My mom liked to scoop out a potato, mash the insides, fill the potato back up, and then bake them for a time in the oven, and called them twice-baked potatoes.\n\nDespite turning into all of these different and numerous things, it is still the same potato as before. It’s not like I slight of handed some other tuberous vegetable and did a magic trick. The potato is merely transformed through a process of action. Beneath these potato metaphors is a teaching.\n\n“Capability - The Force does not ask of our ability, only our availability. In opening to The Force, Its capabilities flow through us. Indeed, clear intention is not enough, Jedi do.” – Teaching 10.\n\nWe, as Jedi, can achieve great things if we merely get out of our own way on things and let the Force flow through us. I liken this as to being a musical instrument. In the opening line of A Meditation For Jedi, it says we are instruments of change. The thing about musical instruments is that they often don’t play on their own; they need someone to draw the potential of the instrument out. In the same way, we must allow The Force to work within us; but remember the last two words: “Jedi do.” What worth is there in receiving a wrapped gift from the Force if we do not open it?\n\nIf you have time, share with others how you are being available to the influences of the Force.",
+    "tags": [
+      "sermon",
+      "author:chaotishrabe",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/sermon-from-the-stove-potato"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-potato",
+    "author": "ChaotishRabe",
+    "sortOrder": 1,
+    "publishedAt": "2026-05-15T00:00:04.000Z",
+    "updatedAt": "2026-05-24T09:25:41.000Z",
+    "checksum": "fnv1a-ed490c2e"
+  }
+}

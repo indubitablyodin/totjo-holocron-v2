@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-sermon-from-the-stove-wrong-instructions",
+    "slug": "sermon-from-the-stove-wrong-instructions",
+    "title": "Sermon From the Stove: Wrong Instructions",
+    "summary": "The Sermons from the Stove series are sermons, inspirations, and insights ChaotishRabe gained while cooking in his kitchen at home.",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "The Sermons from the Stove series are sermons, inspirations, and insights ChaotishRabe gained while cooking in his kitchen at home.\n\nAs I mentioned in my previous sermon, I used to use a meal delivery service. Keyword used to. Part of the reason why I stopped was two-fold, the cost of the service was not making economical sense, and the second, as you could’ve guessed, were the occasional wrong instructions. I guess more accurately, they were missing instructions. I finally got my ingredients prepped and ready to go and proceeded with making the meal.\n\nOccasionally in the process, it would tell me to throw something into the oven, but the instructions didn’t say anything about preheating an oven. So guess who gets to wait for the oven to preheat before continuing the meal preparation. This happened a few times before I decided to suspend my service indefinitely. Come to find out, the company was using AI to make the recipies.\n\nI think we, as a society, have only begun to understand the ramifications of the usage of Artificial Intelligence. At this point, I don’t think AI use is inherently bad, but it depends a lot of how it’s used. A lot of danger I’ve found recently, is its ability for us to shortcut the creative process. The discomfort arising from an intimidating blank page can be forgone easily. But I’m not here writing this sermon to argue AI use, or even personal integrity, though we could.\n\nTeaching 3 tells us “Jedi maintain a clarity of awareness that all events are interconnected.”\n\nWe Jedi are aware of the future impacts of action and inaction. Does using AI for a certain thing or task actually pigeonhole or stunt my growth in the skills needed to succeed? Am I using AI as an escape from the present moment, unable to wrestle my thoughts into words or action? If I do choose to use AI, do I have a quality control process to make sure any end user isn’t cursing and debating whether or not, they can just throw the metaphorical something in the air fryer so they’re not waiting for their oven to preheat.\n\nExamine your thoughts, perceive as much as you can, your own future impact. You may not be able to predict everything, but a plan that fails is better than having no plan at all. Where else may we be trying to shortcut life?",
+    "tags": [
+      "sermon",
+      "author:chaotishrabe",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/sermon-from-the-stove-wrong-instructions"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-wrong-instructions",
+    "author": "ChaotishRabe",
+    "sortOrder": 2,
+    "publishedAt": "2026-05-08T00:00:05.000Z",
+    "updatedAt": "2026-05-24T09:25:41.000Z",
+    "checksum": "fnv1a-46f520fe"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-sermon-from-the-stove-knifework",
+    "slug": "sermon-from-the-stove-knifework",
+    "title": "Sermon From the Stove: Knifework",
+    "summary": "The Sermons from the Stove series are sermons, inspirations, and insights ChaotishRabe gained while cooking in his kitchen at home.",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "The Sermons from the Stove series are sermons, inspirations, and insights ChaotishRabe gained while cooking in his kitchen at home.\n\nIn my last sermon, SftS: Boiling Water, I talked how important fundamentals are because they establish a foundation to grow on. Maybe one of my earliest cooking fundamentals should’ve been knife work. Let me explain.\n\nInevitably, as I branched out from boiling water, I found myself working with more and more ingredients. Of course, you can’t throw every ingredient, unprocessed, into a pot. If you want the potatoes to cook evenly, you should cut them into even pieces. If you want your stew to have a balanced flavor throughout, you have to cut the carrots, celery, and garlic. Cutting is relatively simple, but cutting effectively is entirely different.\n\nThere’s a certain meal delivery service that boasts that a meal would have a certain food preparation time, and I could set records on how LONG it could take. Often, my prep time was as long as my cook time.\n\nI had started working for a natural gas utility company and had became a safety team lead, a person that leads the safety meetings. I had a mentor who was teaching me the practical safety approaches and OSHA considerations. Well one day, I was telling him my woes of how long it would take for me to prep my food for cooking. As it turns out, he had taken a few cooking classes with his ex-wife years ago and one of the lessons was on knife work. Guess what I spent the rest of the day learning?\n\n“Teachers affect eternity – who can tell where their influences stop?” the second maxim reminds us. Who can tell where their influences stop, indeed. We as Jedi, understand the interconnectedness of it all. We would do well to remember, our mentors do not ONLY teach us to be Jedi, but to be a human being. Even further a “human becoming”, as Br. John puts it. I, and I hope every Knight, can recognize the overwhelming influence our TM as had on us. I would encourage Knight aspirants to have those considerations while looking for a TM. You are not only becoming a Knight, but a version of yourself that you could not even begin to imagine.\n\nIf you have time, share examples of the far reaching effects your TM or mentor has had with those in your circle.",
+    "tags": [
+      "sermon",
+      "author:chaotishrabe",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/sermon-from-the-stove-knifework"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-knifework",
+    "author": "ChaotishRabe",
+    "sortOrder": 3,
+    "publishedAt": "2026-05-01T00:00:06.000Z",
+    "updatedAt": "2026-05-24T09:25:41.000Z",
+    "checksum": "fnv1a-c8f32673"
+  }
+}
