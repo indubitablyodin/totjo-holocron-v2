@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-a-good-turn",
+    "slug": "a-good-turn",
+    "title": "A Good Turn",
+    "summary": "We spend a great deal of time talking about the big things. Doctrine, practicality and philosophy.",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "We spend a great deal of time talking about the big things. Doctrine, practicality and philosophy.\n\nWe talk about leadership. We talk about justice. We talk about the future of our communities, our nation, and our world. We debate grand ideas because grand ideas matter. They have never been more important.\n\nBut civilizations and life are not held together by grand ideas alone.\n\nThey are held together by ordinary acts of decency. Everyday acts.\n\nThe future is shaped not only in Council Chambers, Governmental bodies and courtrooms, but in grocery stores and school hallways. It is shaped when someone returns a lost wallet. When a neighbor shovels a sidewalk that isn't theirs. When a stranger chooses patience instead of anger, honesty instead of convenience, kindness instead of indifference.\n\nThese moments rarely make headlines. No one erects monuments to them. History books seldom record them.\n\nAnd yet, without them, everything else begins to fray. Our connections begin to fragment.\n\nDecency is one of those virtues that seems almost too modest to celebrate. Courage sounds more exciting. Ambition sounds more powerful. Success sounds more impressive.\n\nBut decency is what makes all of those things trustworthy.\n\nCourage without decency, becomes recklessness. Ambition without decency, becomes selfishness. Power without decency, becomes something far more dangerous that we have seen far too often.\n\nDecency is not weakness. It is discipline. As Jedi, Discipline and Decency are in our Maxims. These are not points of procedure, but principles we have dedicated ourselves to understanding and projecting.\n\nIt is the decision to treat another person's dignity as something sacred, even when it would be easier not to.\n\nIt is listening before speaking. It is telling the truth when a lie would be profitable. It is giving credit when no one would notice if you kept it for yourself.\n\nAnd perhaps most importantly, it is remembering that every person we encounter is carrying burdens we cannot see:\n\nThe parent rushing through a crowded store.\n\nThe employee struggling through a difficult day.\n\nThe student wondering whether they belong.\n\nThe elderly neighbor hoping someone will stop and talk for a few minutes.\n\nWe do not know their stories. We rarely know their struggles. But we have the opportunity, every single day, to make those stories a little lighter.\n\nThere is a temptation in every age to believe that our problems are so large that only large solutions matter.\n\nBut societies are built from the ground up.\n\nEvery act of respect strengthens the foundation.\n\nEvery act of honesty reinforces it.\n\nEvery act of generosity adds another stone.\n\nAnd every act of decency reminds us that we belong to one another.\n\nI am not asking for perfection. I am asking for something both simpler and more difficult.\n\nHold the door.\n\nKeep your word.\n\nOffer grace.\n\nSay thank you.\n\nAdmit when you're wrong.\n\nHelp someone who cannot repay you.\n\nChoose, whenever possible, to leave people better than you found them.\n\nBecause at the end of our lives, few of us will be remembered for the arguments we won.\n\nJediism is new in the world. We are very young, but we stand on the shoulders of those who came before us. We teach forward through our failures, and even more so, through our successes. Each of the actions we take are foot prints in sand, washed away by the waters of time. We will intersect with other footprints. We will, scientifically, adjust their path by interacting with our own.\n\nWe will be remembered for the people we lifted up.\n\nFor the respect we showed.\n\nFor the kindness we extended.\n\nFor the decency we practiced when nobody was watching.\n\nAnd if enough of us do that—if enough of us choose that path, day after day, in a thousand ordinary moments—then we will discover something remarkable.\n\nThe world changes.\n\nNot all at once.\n\nNot with a thunderclap.\n\nBut steadily, quietly, and permanently.\n\nOne decent act at a time.\n\nWe are Jedi. We can show it not just with grand gestures, but with everyday acts.",
+    "tags": [
+      "sermon",
+      "author:zanthan-storm",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/a-good-turn"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/a-good-turn",
+    "author": "Zanthan Storm",
+    "sortOrder": 0,
+    "publishedAt": "2026-06-05T12:12:39.000Z",
+    "updatedAt": "2026-06-06T09:30:21.000Z",
+    "checksum": "fnv1a-d1e19c26"
+  }
+}
