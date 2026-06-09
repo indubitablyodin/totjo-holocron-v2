@@ -175,7 +175,7 @@ export async function syncSermonArchive(database: HolocronDatabase = appDb): Pro
 
     await database.documents.bulkPut(documentsToStore);
 
-    const nextDownloads = documentsToStore.map((document) => {
+    const nextDownloads = documentsToStore.map((document): SermonDownloadRecord | null => {
       if (!document.bodyMarkdown.trim()) {
         return null;
       }
