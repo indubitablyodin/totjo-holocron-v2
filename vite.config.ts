@@ -156,7 +156,7 @@ export default defineConfig({
       includeAssets: ['apple-touch-icon.png', 'favicon.png', 'icons/icon-192.png', 'icons/icon-512.png'],
       manifest: false,
       injectManifest: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest,wav,mp3}'],
+        globPatterns: ['**/*.{js,css,html,ico,json,png,svg,webmanifest,wav,mp3}'],
       },
     }),
   ],
