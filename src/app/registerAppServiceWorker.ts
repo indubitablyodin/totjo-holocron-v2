@@ -26,7 +26,6 @@ function getServiceWorkerPath(): string {
 function waitForControllerChange(timeoutMs = CONTROLLER_CHANGE_TIMEOUT_MS): Promise<boolean> {
   return new Promise((resolve) => {
     let isSettled = false;
-    let timeoutId: number | undefined;
 
     const finish = (didControllerChange: boolean) => {
       if (isSettled) {
@@ -34,11 +33,7 @@ function waitForControllerChange(timeoutMs = CONTROLLER_CHANGE_TIMEOUT_MS): Prom
       }
 
       isSettled = true;
-
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
-
+      window.clearTimeout(timeoutId);
       navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
       resolve(didControllerChange);
     };
@@ -47,7 +42,7 @@ function waitForControllerChange(timeoutMs = CONTROLLER_CHANGE_TIMEOUT_MS): Prom
       finish(true);
     };
 
-    timeoutId = window.setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       finish(false);
     }, timeoutMs);
 
