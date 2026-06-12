@@ -1,10 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { AppTestRouter } from '@/App';
 
 describe('supplementary-library authority labels', () => {
   it('presents /library as the Read surface with distinct doctrine, supplemental, and sermon entry points', async () => {
+    const user = userEvent.setup();
+
     render(<AppTestRouter initialEntries={['/library']} />);
 
     await waitFor(() => {
@@ -13,6 +16,11 @@ describe('supplementary-library authority labels', () => {
       expect(screen.getByRole('heading', { name: 'Supplemental' })).toBeVisible();
       expect(screen.getByRole('heading', { name: 'Sermons' })).toBeVisible();
       expect(screen.getByTestId('library-card-jedi-believe')).toBeVisible();
+    });
+
+    await user.click(screen.getByRole('button', { name: /Supplemental/ }));
+
+    await waitFor(() => {
       expect(screen.getByTestId('library-card-knights-code')).toBeVisible();
     });
 
