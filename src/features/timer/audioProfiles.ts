@@ -1,3 +1,4 @@
+import { getAppAssetPath } from '@/lib/appAssets';
 import audioRightsPolicy from '../../../content/policy/audio-rights.json';
 
 import type { ApprovalStatus, ProvenanceStatus } from '@/lib/content';
@@ -57,9 +58,9 @@ export const SOUND_PROFILES: SoundProfile[] = [
     label: 'Meditation bowl gong',
     description: 'Short bundled bowl-gong cues for opening, optional reminders, and completion.',
     cuePaths: {
-      start: '/audio/default-gong-start.mp3',
-      interval: '/audio/default-gong-interval.mp3',
-      complete: '/audio/default-gong-complete.mp3',
+      start: getAppAssetPath('audio/default-gong-start.mp3'),
+      interval: getAppAssetPath('audio/default-gong-interval.mp3'),
+      complete: getAppAssetPath('audio/default-gong-complete.mp3'),
     },
     rightsAsset: defaultGongRightsAsset,
   },

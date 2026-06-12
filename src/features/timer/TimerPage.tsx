@@ -169,12 +169,29 @@ export function TimerPage() {
         audio.currentTime = 0;
         await audio.play();
       } catch {
-        // Some browsers block programmatic playback outside a gesture. Keep the cue state visible anyway.
+        setLastCueMessage(
+          'Bell playback was blocked or unavailable. Tap Test bell, check device volume, or choose another sound.',
+        );
+        return;
       }
 
-      setLastCueMessage(`${getCueKindLabel(cueKind)} cue armed with ${profile.label}.`);
+      setLastCueMessage(`${getCueKindLabel(cueKind)} cue played with ${profile.label}.`);
     },
     [audioElementsRef],
+  );
+
+  const testBell = useCallback(
+    async (soundProfileId: SoundProfileId) => {
+      const profile = getSoundProfileById(soundProfileId);
+
+      if (profile.id === 'silent') {
+        setLastCueMessage('Silent profile selected. No cue to play.');
+        return;
+      }
+
+      await playCue('start', soundProfileId);
+    },
+    [playCue],
   );
 
   const persistCompletion = useCallback(
@@ -245,6 +262,33 @@ export function TimerPage() {
     };
   }, [persistCompletion, playCue, session.phase]);
 
+  const primeAudio = useCallback(() => {
+    const profile = getSoundProfileById(session.soundProfileId);
+
+    if (profile.id === 'silent' || typeof Audio === 'undefined') {
+      return;
+    }
+
+    const startCuePath = profile.cuePaths.start;
+
+    if (!startCuePath) {
+      return;
+    }
+
+    try {
+      const primer = new Audio(startCuePath);
+      primer.volume = 0.01;
+      void primer.play().then(() => {
+        primer.pause();
+        primer.src = '';
+      }).catch(() => {
+        // Priming can fail if already primed.
+      });
+    } catch {
+      // Not critical.
+    }
+  }, [session.soundProfileId]);
+
   const canEditSession = session.phase === 'idle' || session.phase === 'complete';
   const soundProfile = getSoundProfileById(session.soundProfileId);
   const timerStatusLabel = toSentenceCase(session.phase);
@@ -301,6 +345,7 @@ export function TimerPage() {
                   className="primary-button"
                   data-testid="timer-start"
                     onClick={() => {
+                      primeAudio();
                       const nextSession = startTimerSession(sessionRef.current, Date.now());
                       setShowSessionSettings(false);
                       setSession(nextSession);
@@ -335,6 +380,7 @@ export function TimerPage() {
                   className="primary-button"
                   data-testid="timer-resume"
                     onClick={() => {
+                      primeAudio();
                       const nextSession = resumeTimerSession(sessionRef.current, Date.now());
                       setShowSessionSettings(false);
                       setSession(nextSession);
@@ -499,6 +545,21 @@ export function TimerPage() {
                       ))}
                     </select>
                   </label>
+
+                  <div className="field-card">
+                    <span className="field-label">Test bell</span>
+                    <span className="field-help">Hear the selected sound now.</span>
+                    <button
+                      className="secondary-button"
+                      data-testid="timer-test-bell"
+                      onClick={() => {
+                        void testBell(session.soundProfileId);
+                      }}
+                      type="button"
+                    >
+                      Test bell
+                    </button>
+                  </div>
 
                   <label className="field-card field-card--toggle" htmlFor="timer-record-history">
                     <span className="field-label">Save session history</span>
