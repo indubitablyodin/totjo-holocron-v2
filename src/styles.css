@@ -938,9 +938,60 @@ input {
   padding: 0 var(--space-1);
 }
 
+.page-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.page-header-text {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.page-header-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+}
+
 .page-header-badge {
   display: flex;
   align-items: center;
+}
+
+.gear-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  text-decoration: none;
+  transition:
+    border-color var(--transition-base),
+    color var(--transition-base),
+    background-color var(--transition-base);
+}
+
+.gear-link:hover,
+.gear-link:focus-visible {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.gear-link:focus-visible {
+  outline: var(--border-width-strong) solid var(--color-accent);
+  outline-offset: var(--space-1);
 }
 
 .breadcrumb {
@@ -2059,6 +2110,72 @@ input {
   font-family: var(--font-display);
   font-size: clamp(3rem, 10dvw, 5rem);
   line-height: 1;
+}
+
+.timer-clock--editable {
+  appearance: none;
+  cursor: pointer;
+  background: none;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  padding: var(--space-1) var(--space-2);
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base);
+}
+
+.timer-clock--editable:hover,
+.timer-clock--editable:focus-visible {
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+}
+
+.timer-clock--editable:focus-visible {
+  outline: var(--border-width-strong) solid var(--color-accent);
+  outline-offset: var(--space-1);
+}
+
+.timer-clock--editable:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.inline-duration-edit {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: center;
+}
+
+.timer-clock-input {
+  width: 8rem;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6dvw, 3rem);
+  text-align: center;
+}
+
+.timer-clock-input:focus-visible {
+  outline: var(--border-width-strong) solid var(--color-accent);
+  outline-offset: var(--space-1);
+}
+
+.timer-inline-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.inline-control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .timer-controls {

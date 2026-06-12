@@ -63,8 +63,7 @@ describe('audio-rights settings', () => {
 
     render(<AppTestRouter initialEntries={['/timer']} />);
 
-    await user.click(screen.getByTestId('timer-settings-toggle'));
-
+    await user.click(screen.getByTestId('timer-remaining'));
     expect(screen.getByTestId('timer-duration-seconds')).toHaveValue(600);
     expect(screen.getByTestId('timer-cue-mode')).toHaveValue('custom');
     expect(screen.getByTestId('timer-interval-seconds')).toHaveValue(60);
