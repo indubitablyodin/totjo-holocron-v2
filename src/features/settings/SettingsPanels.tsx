@@ -530,6 +530,34 @@ export function TimerDefaultsSettingsPage() {
 
 export function AboutLegalSettingsPage() {
   const bundledAudioRightsAssets = getBundledAudioRightsAssets();
+  const [isRepairing, setIsRepairing] = useState(false);
+
+  const handleRepairOfflineCache = async () => {
+    if (isRepairing) {
+      return;
+    }
+
+    setIsRepairing(true);
+
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+
+      await Promise.all(registrations.map(async (registration) => {
+        await registration.unregister();
+      }));
+
+      const cacheKeys = await caches.keys();
+      const workboxCaches = cacheKeys.filter((key) => key.startsWith('workbox-'));
+
+      await Promise.all(workboxCaches.map(async (key) => {
+        await caches.delete(key);
+      }));
+
+      window.location.href = import.meta.env.BASE_URL || '/';
+    } catch {
+      setIsRepairing(false);
+    }
+  };
 
     return (
       <PageLayout
@@ -550,6 +578,21 @@ export function AboutLegalSettingsPage() {
           <div className="detail-card">
             <h3>Install on this device</h3>
             <p>The install action stays in the shell header whenever your browser makes it available.</p>
+          </div>
+          <div className="detail-card">
+            <h3>Refresh installed app</h3>
+            <p>If the app behaves unexpectedly — such as repeated errors after an update — this clears the cached offline layer and reloads with a fresh copy.</p>
+            <button
+              className="secondary-button"
+              data-testid="repair-offline-cache"
+              disabled={isRepairing}
+              onClick={() => {
+                void handleRepairOfflineCache();
+              }}
+              type="button"
+            >
+              {isRepairing ? 'Refreshing…' : 'Repair offline cache'}
+            </button>
           </div>
           <div className="detail-card">
             <h3>Creator and support links</h3>
