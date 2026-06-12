@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
-import type { BookmarkRecord, DocumentRecord, LibraryCounts, NoteRecord } from '@/lib/content';
-import { appDb, ensureStorageReady, getLibraryCounts, getLibraryDocuments } from '@/lib/db';
+import type { BookmarkRecord, DocumentRecord, NoteRecord } from '@/lib/content';
+import { appDb, ensureStorageReady, getLibraryDocuments } from '@/lib/db';
 
 import {
   getAuthorityPresentation,
@@ -142,42 +142,60 @@ function LibraryCard({ document }: { document: LibraryDocumentRecord }) {
   );
 }
 
-function LibraryLane({ description, documents, title }: { description: string; documents: LibraryDocumentRecord[]; title: string }) {
+function CollapsibleLane({ defaultOpen = false, description, documents, title }: { defaultOpen?: boolean; description: string; documents: LibraryDocumentRecord[]; title: string }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+
   return (
-    <PageSection description={description} title={title}>
-      {documents.length > 0 ? (
-        <div className="library-grid" role="list">
-          {documents.map((document) => (
-            <LibraryCard document={document} key={document.id} />
-          ))}
+    <section className="content-section content-section--page" ref={sectionRef}>
+      <button
+        aria-expanded={isOpen}
+        className="lane-toggle"
+        onClick={() => setIsOpen(!isOpen)}
+        type="button"
+      >
+        <span className="lane-toggle__icon" aria-hidden="true">{isOpen ? '▾' : '▸'}</span>
+        <span className="section-heading">
+          <h2>{title}</h2>
+          {description ? <p>{description}</p> : null}
+        </span>
+      </button>
+      {isOpen ? (
+        <div className="section-body">
+          {documents.length > 0 ? (
+            <div className="library-grid" role="list">
+              {documents.map((document) => (
+                <LibraryCard document={document} key={document.id} />
+              ))}
+            </div>
+          ) : (
+            <p className="support-copy">No entries match the current view.</p>
+          )}
         </div>
-      ) : (
-        <p className="support-copy">No entries match the current view.</p>
-      )}
-    </PageSection>
+      ) : null}
+    </section>
   );
 }
 
 export function LibraryPage() {
-  const [counts, setCounts] = useState<LibraryCounts | null>(null);
   const [documents, setDocuments] = useState<DocumentRecord[]>([]);
   const [bookmarks, setBookmarks] = useState<BookmarkRecord[]>([]);
   const [notes, setNotes] = useState<NoteRecord[]>([]);
   const [hasError, setHasError] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchScopes, setSearchScopes] = useState(DEFAULT_SEARCH_SCOPES);
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
     void ensureStorageReady(appDb)
-      .then(() => Promise.all([getLibraryCounts(), getLibraryDocuments(), appDb.bookmarks.toArray(), appDb.notes.toArray()]))
-      .then(([nextCounts, nextDocuments, nextBookmarks, nextNotes]) => {
+      .then(() => Promise.all([getLibraryDocuments(), appDb.bookmarks.toArray(), appDb.notes.toArray()]))
+      .then(([nextDocuments, nextBookmarks, nextNotes]) => {
         if (!isMounted) {
           return;
         }
 
-        setCounts(nextCounts);
         setDocuments(nextDocuments);
         setBookmarks(nextBookmarks);
         setNotes(nextNotes);
@@ -278,53 +296,42 @@ export function LibraryPage() {
 
     return results.sort((left, right) => left.title.localeCompare(right.title) || left.scopeLabel.localeCompare(right.scopeLabel));
   }, [bookmarks, documentMap, documents, notes, searchScopes, searchTerm]);
-  const bookmarkSummary = `${bookmarks.length} bookmark${bookmarks.length === 1 ? '' : 's'} · ${notes.length} note${notes.length === 1 ? '' : 's'}`;
 
   return (
       <PageLayout
         description="Open doctrine, study texts, sermons, bookmarks, and notes."
         eyebrow="Reading library"
         title="Read"
+        headerActions={<Link aria-label="Open bookmarks" className="gear-link" data-testid="library-bookmarks-link" to="/library/bookmarks" title="Bookmarks">❋</Link>}
       >
       <PageSection
         description="Jump straight to doctrine, study texts, or sermons."
-        title="What you can read"
+        title="Library"
       >
-        <div className="metric-grid" role="list">
+        <div className="library-nav-chips" role="list">
           <button
-            className="metric-card metric-card--button"
+            className="nav-chip"
             onClick={() => document.getElementById('read-doctrine')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
             role="listitem"
             type="button"
           >
-            <span className="metric-label">{READ_LANE_COPY.canonical.countLabel}</span>
-            <strong className="metric-value" data-testid="library-count-canon">
-              {counts ? counts.canonical : '…'}
-            </strong>
-            <p className="metric-copy">{READ_LANE_COPY.canonical.countSummary}</p>
+            <span aria-hidden="true">✧</span> Doctrine
           </button>
           <button
-            className="metric-card metric-card--button"
+            className="nav-chip"
             onClick={() => document.getElementById('read-supplemental')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
             role="listitem"
             type="button"
           >
-            <span className="metric-label">{READ_LANE_COPY.supplemental.countLabel}</span>
-            <strong className="metric-value" data-testid="library-count-supplemental">
-              {counts ? counts.supplemental : '…'}
-            </strong>
-            <p className="metric-copy">{READ_LANE_COPY.supplemental.countSummary}</p>
+            <span aria-hidden="true">◈</span> Supplemental
           </button>
-          <button
-            className="metric-card metric-card--button"
-            onClick={() => document.getElementById('read-sermons')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-            role="listitem"
-            type="button"
-          >
-            <span className="metric-label">{READ_LANE_COPY.sermon.countLabel}</span>
-            <strong className="metric-value">{counts ? counts.sermon : '…'}</strong>
-            <p className="metric-copy">{READ_LANE_COPY.sermon.countSummary}</p>
-          </button>
+          <Link className="nav-chip" to="/library/sermons" role="listitem">
+            <span aria-hidden="true">☰</span> Sermons
+          </Link>
+          <Link className="nav-chip" to="/library/bookmarks" role="listitem">
+            <span aria-hidden="true">❋</span> Bookmarks
+            {bookmarks.length > 0 ? <span className="nav-chip__count">{bookmarks.length}</span> : null}
+          </Link>
         </div>
 
         {hasError ? (
@@ -333,80 +340,80 @@ export function LibraryPage() {
           </p>
         ) : null}
 
-        <div className="document-actions">
-          <Link className="primary-button" to="/library/bookmarks">
-            Open bookmarks
-          </Link>
-        </div>
-        <p className="support-copy">Bookmarks and notes are saved together. {bookmarkSummary}</p>
-      </PageSection>
+        <button
+          aria-expanded={showSearch}
+          className="secondary-button button-inline"
+          onClick={() => setShowSearch(!showSearch)}
+          type="button"
+        >
+          {showSearch ? 'Hide search' : 'Search readings'}
+        </button>
 
-      <PageSection
-        description="Search titles, summaries, full text, bookmarks, and notes. Choose what to include."
-        title="Find a reading"
-      >
-        <div className="settings-form">
-          <label className="field-card" htmlFor="library-search">
-            <span className="field-label">Search</span>
-            <span className="field-help">Search within the text and decide which sections to search.</span>
-            <input
-              className="field-select"
-              data-testid="library-search"
-              id="library-search"
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-              }}
-              placeholder="Search doctrine, sermons, bookmarks, or notes"
-              type="search"
-              value={searchTerm}
-            />
-          </label>
-          <div className="field-card">
-            <span className="field-label">Search in</span>
-            <div className="filter-toggle-group">
-              {(Object.keys(SEARCH_SCOPE_LABELS) as SearchScope[]).map((scope) => (
-                <label className="filter-toggle" htmlFor={`library-search-scope-${scope}`} key={scope}>
-                  <input
-                    checked={searchScopes[scope]}
-                    id={`library-search-scope-${scope}`}
-                    onChange={(event) => {
-                      setSearchScopes((currentValue) => ({
-                        ...currentValue,
-                        [scope]: event.target.checked,
-                      }));
-                    }}
-                    type="checkbox"
-                  />
-                  {SEARCH_SCOPE_LABELS[scope]}
-                </label>
-              ))}
+        {showSearch ? (
+          <div className="settings-form" data-testid="library-search-panel">
+            <label className="field-card" htmlFor="library-search">
+              <span className="field-label">Search</span>
+              <span className="field-help">Search within the text and decide which sections to search.</span>
+              <input
+                className="field-select"
+                data-testid="library-search"
+                id="library-search"
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                }}
+                placeholder="Search doctrine, sermons, bookmarks, or notes"
+                type="search"
+                value={searchTerm}
+              />
+            </label>
+            <div className="field-card">
+              <span className="field-label">Search in</span>
+              <div className="filter-toggle-group">
+                {(Object.keys(SEARCH_SCOPE_LABELS) as SearchScope[]).map((scope) => (
+                  <label className="filter-toggle" htmlFor={`library-search-scope-${scope}`} key={scope}>
+                    <input
+                      checked={searchScopes[scope]}
+                      id={`library-search-scope-${scope}`}
+                      onChange={(event) => {
+                        setSearchScopes((currentValue) => ({
+                          ...currentValue,
+                          [scope]: event.target.checked,
+                        }));
+                      }}
+                      type="checkbox"
+                    />
+                    {SEARCH_SCOPE_LABELS[scope]}
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
 
-        {searchTerm.trim() ? (
-          <div className="library-grid" role="list">
-            {searchResults.length > 0 ? (
-              searchResults.map((result) => (
-                <article className="library-card" key={result.id} role="listitem">
-                  <span className="authority-badge">{result.scopeLabel}</span>
-                  <h3 className="library-card__title">
-                    <Link className="library-card__link" to={result.href}>
-                      {result.title}
-                    </Link>
-                  </h3>
-                  <p className="library-card__summary">{result.summary}</p>
-                </article>
-              ))
-            ) : (
-              <p className="support-copy">No results matched the current search.</p>
-            )}
+            {searchTerm.trim() ? (
+              <div className="library-grid" role="list">
+                {searchResults.length > 0 ? (
+                  searchResults.map((result) => (
+                    <article className="library-card" key={result.id} role="listitem">
+                      <span className="authority-badge">{result.scopeLabel}</span>
+                      <h3 className="library-card__title">
+                        <Link className="library-card__link" to={result.href}>
+                          {result.title}
+                        </Link>
+                      </h3>
+                      <p className="library-card__summary">{result.summary}</p>
+                    </article>
+                  ))
+                ) : (
+                  <p className="support-copy">No results matched the current search.</p>
+                )}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </PageSection>
 
       <div id="read-doctrine">
-        <LibraryLane
+        <CollapsibleLane
+          defaultOpen={true}
           description={READ_LANE_COPY.canonical.laneDescription}
           documents={doctrineDocuments}
           title={READ_LANE_COPY.canonical.laneTitle}
@@ -414,36 +421,29 @@ export function LibraryPage() {
       </div>
 
       <div id="read-supplemental">
-        <PageSection
+        <CollapsibleLane
+          defaultOpen={false}
           description={READ_LANE_COPY.supplemental.laneDescription}
+          documents={supplementalDocuments}
           title={READ_LANE_COPY.supplemental.laneTitle}
-        >
-          <p className="support-copy">These texts sit beside doctrine as study material.</p>
-
-          {supplementalDocuments.length > 0 ? (
-            <div className="library-grid" role="list">
-              {supplementalDocuments.map((document) => (
-                <LibraryCard document={document} key={document.id} />
-              ))}
-            </div>
-          ) : (
-            <p className="support-copy">{getAuthorityPresentation('supplemental').emptyState}</p>
-          )}
-        </PageSection>
+        />
       </div>
 
       <div id="read-sermons">
-        <PageSection
-          description="Browse the public sermon archive and include it in library search."
-          title="Sermons"
-        >
-          <p className="support-copy">Read sermons online or save individual sermons for offline reading.</p>
-          <div className="document-actions">
-            <Link className="secondary-button" to="/library/sermons">
-              Open sermons
-            </Link>
+        <section className="content-section content-section--page">
+          <div className="section-heading">
+            <h2>Sermons</h2>
+            <p>Browse the public sermon archive and include it in library search.</p>
           </div>
-        </PageSection>
+          <div className="section-body">
+            <p className="support-copy">Read sermons online or save individual sermons for offline reading.</p>
+            <div className="document-actions">
+              <Link className="secondary-button" to="/library/sermons">
+                Open sermons
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     </PageLayout>
   );
