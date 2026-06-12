@@ -338,6 +338,18 @@ If memory tools become available:
 - Store durable lessons after non-trivial fixes in `.vibe-work/learnings.md`
 - Never store: secrets, tokens, credentials, private keys, sensitive data
 
+## Stale PWA Recovery
+
+If a user reports persistent 404s or "No routes matched location" errors after a deploy, their service worker may be serving a stale cached bundle. This can happen because the SW update cycle requires the user to close all tabs before the new SW activates.
+
+**Recovery steps for the user:**
+1. Uninstall the Holocron PWA from the device
+2. Clear site data for `indubitablyodin.github.io`
+3. Open `https://indubitablyodin.github.io/totjo-holocron-v2/` fresh
+4. Reinstall the PWA when prompted
+
+**Developer note:** The SW navigation denylist (PR #16) prevents future occurrences by rejecting `/imports/`, `/assets/`, and other static asset paths from being served `index.html` by the navigation fallback. If stale SW issues recur after a deploy, manually trigger a Pages deploy from `main` via: `gh workflow run deploy-pages.yml --repo indubitablyodin/totjo-holocron-v2 --ref main`
+
 ## Subdirectory AGENTS.md
 
 **Created:** None in this prep pass.

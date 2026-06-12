@@ -17,6 +17,7 @@ type CompactReaderShellProps = {
   controls?: CompactReaderControl[];
   description: string;
   eyebrow: string;
+  headerActions?: ReactNode;
   meta?: ReactNode;
   navigation?: ReactNode;
   title: string;
@@ -54,12 +55,13 @@ export function CompactReaderShell({
   controls = [],
   description,
   eyebrow,
+  headerActions,
   meta,
   navigation,
   title,
 }: CompactReaderShellProps) {
   const visibleControls = useMemo(() => controls.filter((control) => control.panel), [controls]);
-  const [controlsOpen, setControlsOpen] = useState(false);
+  const [controlsOpen, setControlsOpen] = useState(true);
   const [activeControlId, setActiveControlId] = useState<string | null>(null);
   const resolvedActiveControlId = activeControlId && visibleControls.some((control) => control.id === activeControlId) ? activeControlId : null;
   const activeControl = visibleControls.find((control) => control.id === resolvedActiveControlId) ?? null;
@@ -68,11 +70,16 @@ export function CompactReaderShell({
     <article className="reader-shell" data-testid="reader-shell">
       <header className="reader-shell__header" data-testid="page-header">
         {breadcrumbs?.length ? <Breadcrumb items={breadcrumbs} /> : null}
-        <p className="page-eyebrow">{eyebrow}</p>
-        <h1 className="reader-shell__title" data-testid="page-title">
-          {title}
-        </h1>
-        {badges ? <div className="reader-shell__badges">{badges}</div> : null}
+        <div className="page-header-row">
+          <div className="page-header-text">
+            <p className="page-eyebrow">{eyebrow}</p>
+            <h1 className="reader-shell__title" data-testid="page-title">
+              {title}
+            </h1>
+            {badges ? <div className="reader-shell__badges">{badges}</div> : null}
+          </div>
+          {headerActions ? <div className="page-header-actions">{headerActions}</div> : null}
+        </div>
         <p className="reader-shell__description">{description}</p>
         {meta ? <div className="reader-shell__meta">{meta}</div> : null}
       </header>

@@ -386,9 +386,11 @@ export function AppShell() {
       </header>
 
       <div className="shell-status-stack">
-        <div className="offline-banner" data-testid="offline-banner" hidden={isOnline} role="status">
-          You’re offline. Reading and settings still work with saved content.
-        </div>
+        {!isOnline ? (
+          <div className="offline-banner" data-testid="offline-banner" role="status">
+            You’re offline. Reading and settings still work with saved content.
+          </div>
+        ) : null}
         {showUpdatePrompt ? (
           <div aria-live="polite" className="app-update-card" data-testid="app-update-prompt" role="status">
             <div className="app-update-card__copy">

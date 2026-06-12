@@ -15,7 +15,7 @@ describe('App shell', () => {
     expect(screen.getByTestId('install-cta')).toBeInTheDocument();
     expect(screen.getByTestId('creator-home-link')).toHaveTextContent('Home');
     expect(screen.getByTestId('creator-donate-link')).toHaveTextContent('Support');
-    expect(screen.getByTestId('offline-banner')).toBeInTheDocument();
+    expect(screen.queryByTestId('offline-banner')).not.toBeInTheDocument();
     expect(screen.queryByTestId('app-update-prompt')).not.toBeInTheDocument();
     expect(screen.getByTestId('page-header')).toBeVisible();
     expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
