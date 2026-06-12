@@ -19,6 +19,7 @@ import {
 } from '@/features/practice/dailyQuickAccess';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
+import { getAppAssetPath } from '@/lib/appAssets';
 import { getBundledAudioRightsAssets, SOUND_PROFILES, type AudioRightsAsset } from '@/features/timer/audioProfiles';
 import { appDb, ensureStorageReady } from '@/lib/db';
 import {
@@ -580,7 +581,7 @@ export function AboutLegalSettingsPage() {
                 <ul className="source-list">
                   {asset.files.map((file) => (
                     <li key={file.path}>
-                      {toSentenceCase(file.cue)} cue · <a href={file.path}>{file.path}</a>
+                      {toSentenceCase(file.cue)} cue · <a href={getAppAssetPath(file.path)}>{file.path}</a>
                     </li>
                   ))}
                 </ul>
