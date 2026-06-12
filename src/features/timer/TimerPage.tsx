@@ -319,12 +319,23 @@ export function TimerPage() {
                     className="timer-clock-input"
                     data-testid="timer-duration-seconds"
                     inputMode="numeric"
-                    min={1}
                     onBlur={() => setEditingDuration(false)}
                     onChange={(event) => {
+                      const raw = event.target.value;
+
+                      if (raw === '') {
+                        return;
+                      }
+
+                      const parsed = Number.parseInt(raw, 10);
+
+                      if (Number.isNaN(parsed)) {
+                        return;
+                      }
+
                       setSession((currentSession) =>
                         applyEditableTimerConfig(currentSession, {
-                          totalDurationSeconds: event.target.value,
+                          totalDurationSeconds: parsed,
                         }),
                       );
                     }}
@@ -333,8 +344,8 @@ export function TimerPage() {
                         setEditingDuration(false);
                       }
                     }}
-                    type="number"
-                    value={session.totalDurationSeconds}
+                    type="text"
+                    value={String(session.totalDurationSeconds)}
                   />
                 </label>
               ) : (
