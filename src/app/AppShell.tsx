@@ -137,7 +137,6 @@ const NAV_GROUP_LABELS: Record<PageDefinition['group'], string> = {
   settings: 'Settings',
 };
 
-const BOTTOM_NAV_BACK_ICON = '←';
 const FALLBACK_BACK_PATH = '/daily';
 const IN_APP_HISTORY_LIMIT = 24;
 
@@ -205,6 +204,7 @@ export function AppShell() {
   const navigationType = useNavigationType();
   const pwaUpdate = useSyncExternalStore(subscribePwaUpdate, getPwaUpdateSnapshot, getPwaUpdateSnapshot);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [hasInAppHistory, setHasInAppHistory] = useState(false);
   const inAppHistoryRef = useRef<string[]>([]);
   const wheelScrollRef = useRef<HTMLDivElement | null>(null);
   const wheelSegmentRef = useRef<HTMLDivElement | null>(null);
@@ -241,6 +241,7 @@ export function AppShell() {
     }
 
     inAppHistoryRef.current = [...historyStack, currentRoutePath].slice(-IN_APP_HISTORY_LIMIT);
+    setHasInAppHistory(inAppHistoryRef.current.length > 1);
   }, [currentRoutePath, navigationType]);
 
   useEffect(() => {
@@ -311,7 +312,7 @@ export function AppShell() {
 
   const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
   const bottomNavPages = useMemo(
-    () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'settings'),
+    () => navGroups.core,
     [navGroups.core],
   );
 
@@ -348,15 +349,15 @@ export function AppShell() {
         <div className="shell-support">
           <div className="creator-support" aria-label="Creator links">
             <a
-              aria-label="Open creator homepage at odinhalvorson.com"
+              aria-label="Open creator homepage"
               className="creator-link creator-link--home"
               data-testid="creator-home-link"
               href="https://odinhalvorson.com"
               rel="noreferrer"
               target="_blank"
             >
-              <span className="creator-link__eyebrow">Creator home</span>
-              <span className="creator-link__label">odinhalvorson.com</span>
+              <span aria-hidden="true" className="creator-link__icon">⌂</span>
+              <span className="creator-link__label">Home</span>
             </a>
             <a
               aria-label="Support the creator on Ko-fi"
@@ -366,8 +367,8 @@ export function AppShell() {
               rel="noreferrer"
               target="_blank"
             >
-              <span className="creator-link__eyebrow">Support</span>
-              <span className="creator-link__label">Ko-fi</span>
+              <span aria-hidden="true" className="creator-link__icon">♥</span>
+              <span className="creator-link__label">Support</span>
             </a>
           </div>
           <button
@@ -424,27 +425,36 @@ export function AppShell() {
         ) : null}
       </div>
 
-      <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav">
-        <button className="bottom-nav__link bottom-nav__button" data-testid="bottom-nav-back" onClick={handleBottomNavBack} type="button">
-          <span aria-hidden="true" className="bottom-nav__icon" data-icon={BOTTOM_NAV_BACK_ICON} />
-          <span>Back</span>
-        </button>
-        {bottomNavPages.map((page) => {
-          const isActive = page.match(location.pathname, location.hash);
+      <div className="bottom-nav-wrapper">
+        {hasInAppHistory ? (
+          <button
+            aria-label="Go back"
+            className="bottom-nav-back"
+            data-testid="bottom-nav-back"
+            onClick={handleBottomNavBack}
+            type="button"
+          >
+            <span aria-hidden="true">←</span>
+          </button>
+        ) : null}
+        <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav">
+          {bottomNavPages.map((page) => {
+            const isActive = page.match(location.pathname, location.hash);
 
-          return (
-            <Link
-              className={`bottom-nav__link${isActive ? ' bottom-nav__link--active' : ''}`}
-              data-testid={`bottom-${page.navTestId}`}
-              key={page.id}
-              to={page.path}
-            >
-              <span aria-hidden="true" className="bottom-nav__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
-              <span>{page.title === 'Read' ? 'Library' : page.title}</span>
-            </Link>
-          );
-        })}
-      </nav>
+            return (
+              <Link
+                className={`bottom-nav__link${isActive ? ' bottom-nav__link--active' : ''}`}
+                data-testid={`bottom-${page.navTestId}`}
+                key={page.id}
+                to={page.path}
+              >
+                <span aria-hidden="true" className="bottom-nav__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
+                <span>{page.title === 'Read' ? 'Library' : page.title}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
 
       <div className="shell-layout">
         <nav aria-label="Primary" className="primary-nav" data-testid="primary-nav">

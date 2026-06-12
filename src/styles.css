@@ -354,15 +354,20 @@ input {
 }
 
 .creator-link {
-  display: grid;
+  display: inline-flex;
+  align-items: center;
   gap: var(--space-1);
-  min-width: min(100%, 10.5rem);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-1) var(--space-2);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-pill);
   background: var(--color-surface);
   color: var(--color-text);
-  text-align: left;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
   transition:
     transform var(--transition-base),
     border-color var(--transition-base),
@@ -393,29 +398,16 @@ input {
   background: var(--color-surface-soft);
 }
 
-.creator-link__eyebrow,
-.creator-link__label {
-  min-width: 0;
-  font-family: var(--font-ui);
-}
-
-.creator-link__eyebrow {
-  color: var(--color-text-soft);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.creator-link__label {
-  overflow: hidden;
-  color: var(--color-text);
+.creator-link__icon {
   font-size: 0.88rem;
+  line-height: 1;
+}
+
+.creator-link__label {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
   font-weight: 700;
-  line-height: 1.15;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1;
 }
 
 .creator-link--donate .creator-link__label {
@@ -774,12 +766,53 @@ input {
   line-height: 1.18;
 }
 
-.bottom-nav {
+.bottom-nav-wrapper {
   position: fixed;
   z-index: 50;
   bottom: max(var(--space-3), env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bottom-nav-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(var(--blur-surface));
+  transition:
+    transform var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base),
+    background-color var(--transition-base);
+}
+
+.bottom-nav-back:hover,
+.bottom-nav-back:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+}
+
+.bottom-nav-back:focus-visible {
+  outline: var(--border-width-strong) solid var(--color-accent);
+  outline-offset: var(--space-1);
+}
+
+.bottom-nav {
   display: flex;
   justify-content: center;
   gap: var(--space-2);
@@ -2246,12 +2279,30 @@ input {
   }
 
   .shell-header {
-    grid-template-columns: 1fr;
-    align-items: stretch;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+  }
+
+  .brand-block {
+    gap: 0;
+  }
+
+  .shell-subtitle {
+    display: none;
+  }
+
+  .shell-kicker {
+    font-size: 0.6rem;
+  }
+
+  .shell-title {
+    font-size: 0.9rem;
   }
 
   .shell-support {
-    justify-items: stretch;
+    justify-items: end;
   }
 
   .app-update-card {
@@ -2263,13 +2314,22 @@ input {
   }
 
   .creator-support {
-    justify-content: stretch;
+    justify-content: end;
     max-width: none;
   }
 
+  .creator-link__label {
+    display: none;
+  }
+
   .creator-link {
-    flex: 1 1 12rem;
-    min-width: min(100%, 12rem);
+    padding: var(--space-1);
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+
+  .creator-link__icon {
+    font-size: 1rem;
   }
 
   .primary-button,
@@ -2277,19 +2337,33 @@ input {
     width: 100%;
   }
 
+  .bottom-nav-wrapper {
+    gap: var(--space-1);
+  }
+
   .bottom-nav {
+    gap: var(--space-1);
+    padding: var(--space-1);
     margin-inline: auto;
+    width: min(calc(100% - var(--space-2) * 2), 24rem);
   }
 
   .bottom-nav__link {
     min-width: 0;
     flex: 1 1 0;
-    padding-inline: var(--space-2);
-    font-size: 0.72rem;
+    padding: var(--space-1) var(--space-1);
+    font-size: 0.65rem;
+    gap: var(--space-1);
   }
 
   .bottom-nav__icon {
-    display: none;
+    font-size: 0.85rem;
+  }
+
+  .bottom-nav-back {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.95rem;
   }
 
   .shell-layout {

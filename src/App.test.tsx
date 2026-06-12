@@ -13,10 +13,8 @@ describe('App shell', () => {
     expect(screen.getByTestId('nav-settings')).toBeVisible();
     expect(screen.getByTestId('bottom-nav')).toBeVisible();
     expect(screen.getByTestId('install-cta')).toBeInTheDocument();
-    expect(screen.getByTestId('creator-home-link')).toHaveTextContent('Creator home');
-    expect(screen.getByTestId('creator-home-link')).toHaveTextContent('odinhalvorson.com');
+    expect(screen.getByTestId('creator-home-link')).toHaveTextContent('Home');
     expect(screen.getByTestId('creator-donate-link')).toHaveTextContent('Support');
-    expect(screen.getByTestId('creator-donate-link')).toHaveTextContent('Ko-fi');
     expect(screen.getByTestId('offline-banner')).toBeInTheDocument();
     expect(screen.queryByTestId('app-update-prompt')).not.toBeInTheDocument();
     expect(screen.getByTestId('page-header')).toBeVisible();
