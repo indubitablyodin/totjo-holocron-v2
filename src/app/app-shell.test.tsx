@@ -54,7 +54,7 @@ describe('app-shell routes', () => {
     expect(within(primaryNav).queryByTestId('offline-banner')).not.toBeInTheDocument();
     expect(screen.queryByTestId('app-update-prompt')).not.toBeInTheDocument();
     expect(screen.getByTestId('creator-home-link')).toHaveAttribute('href', 'https://odinhalvorson.com');
-    expect(screen.getByTestId('creator-home-link')).toHaveAccessibleName('Open creator homepage at odinhalvorson.com');
+    expect(screen.getByTestId('creator-home-link')).toHaveAccessibleName('Open creator homepage');
     expect(screen.getByTestId('creator-donate-link')).toHaveAttribute('href', 'https://ko-fi.com/indubitablyodin');
     expect(screen.getByTestId('creator-donate-link')).toHaveAccessibleName('Support the creator on Ko-fi');
 
@@ -62,8 +62,7 @@ describe('app-shell routes', () => {
     expect(screen.getByTestId('page-header')).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
     expect(screen.getByTestId('bottom-nav')).toBeVisible();
-    expect(getBottomNavLabels()).toEqual(['Back', 'Focus', 'Library', 'Settings']);
-    expect(screen.getByTestId('bottom-nav')).not.toHaveTextContent('Timer');
+    expect(getBottomNavLabels()).toEqual(['Focus', 'Library', 'Timer', 'Settings']);
 
     await user.click(screen.getByTestId('nav-daily'));
     expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
@@ -97,6 +96,7 @@ describe('app-shell routes', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+      expect(screen.getByTestId('bottom-nav-back')).toBeVisible();
     });
 
     await user.click(screen.getByTestId('bottom-nav-back'));
@@ -106,13 +106,22 @@ describe('app-shell routes', () => {
     });
   });
 
-  it('falls Back to Daily Focus when no useful in-app route is known', async () => {
+  it('shows Back after navigation and returns to Daily Focus', async () => {
     const user = userEvent.setup();
 
-    render(<AppTestRouter initialEntries={['/settings']} />);
+    render(<AppTestRouter />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('page-title')).toHaveTextContent('Settings');
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+    });
+
+    expect(screen.queryByTestId('bottom-nav-back')).not.toBeInTheDocument();
+
+    await user.click(screen.getByTestId('bottom-nav-library'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+      expect(screen.getByTestId('bottom-nav-back')).toBeVisible();
     });
 
     await user.click(screen.getByTestId('bottom-nav-back'));
