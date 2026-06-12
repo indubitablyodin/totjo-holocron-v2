@@ -2207,6 +2207,12 @@ input {
   gap: var(--space-1);
 }
 
+.timer-advanced-toggle {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-1) 0;
+}
+
 .timer-controls {
   grid-template-columns: repeat(auto-fit, minmax(10rem, max-content));
   align-items: start;

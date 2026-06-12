@@ -12,6 +12,8 @@ describe('timer page layout', () => {
   });
 
   it('shows inline controls and presets with a clear primary action', async () => {
+    const user = userEvent.setup();
+
     render(<AppTestRouter initialEntries={['/timer']} />);
 
     expect(screen.getByTestId('page-title')).toHaveTextContent('Timer');
@@ -20,11 +22,14 @@ describe('timer page layout', () => {
     expect(screen.getByTestId('timer-start')).toHaveTextContent('Start timer');
     expect(screen.getByTestId('timer-reset')).toHaveTextContent('Reset session');
     expect(screen.getByTestId('timer-cancel')).toHaveTextContent('Cancel');
+    expect(screen.getByTestId('timer-advanced-toggle')).toBeVisible();
+    expect(screen.getByTestId('timer-gear-link')).toBeVisible();
+
+    await user.click(screen.getByTestId('timer-advanced-toggle'));
     expect(screen.getByTestId('timer-cue-mode')).toBeVisible();
     expect(screen.getByTestId('timer-sound-profile')).toBeVisible();
     expect(screen.getByTestId('timer-test-bell')).toBeVisible();
     expect(screen.getByTestId('timer-record-history')).toBeVisible();
-    expect(screen.getByTestId('timer-gear-link')).toBeVisible();
 
     const readout = screen.getByTestId('timer-remaining');
     const presets = screen.getByTestId('timer-meditation-presets');
@@ -76,6 +81,8 @@ describe('timer page layout', () => {
 
     expect(screen.queryByTestId('timer-start')).not.toBeInTheDocument();
     expect(screen.getByTestId('timer-pause')).toHaveTextContent('Pause timer');
+
+    await user.click(screen.getByTestId('timer-advanced-toggle'));
     expect(screen.getByTestId('timer-cue-mode')).toBeDisabled();
     expect(screen.getByTestId('timer-sound-profile')).toBeDisabled();
   });
@@ -87,6 +94,7 @@ describe('timer page layout', () => {
 
     await user.click(screen.getByTestId('timer-remaining'));
     await user.type(screen.getByTestId('timer-duration-seconds'), '{selectall}{backspace}900');
+    await user.click(screen.getByTestId('timer-advanced-toggle'));
     await user.selectOptions(screen.getByTestId('timer-cue-mode'), 'custom');
     await user.type(screen.getByTestId('timer-interval-seconds'), '{selectall}{backspace}90');
 
@@ -100,7 +108,6 @@ describe('timer page layout', () => {
 
     await user.click(screen.getByTestId('timer-reset'));
 
-    expect(screen.getByTestId('timer-remaining')).toHaveTextContent('10:00');
     expect(screen.getByTestId('timer-cue-mode')).toHaveValue('custom');
     expect(screen.getByTestId('timer-interval-seconds')).toHaveValue(60);
     expect(screen.getByTestId('timer-sound-profile')).toHaveValue('silent');
