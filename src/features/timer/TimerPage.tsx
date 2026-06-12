@@ -119,8 +119,8 @@ export function TimerPage() {
   const [session, setSession] = useState<TimerSessionState>(() => loadTimerSession());
   const [lastCueMessage, setLastCueMessage] = useState('No cue has played yet.');
   const [historyEntries, setHistoryEntries] = useState<Array<{ id: string; completedAt: string; durationSeconds: number }>>([]);
-  const [showSessionSettings, setShowSessionSettings] = useState(false);
   const [showTimerDetails, setShowTimerDetails] = useState(false);
+  const [editingDuration, setEditingDuration] = useState(false);
   const sessionRef = useRef(session);
   const bundledAudioRightsAssets = useMemo(() => getBundledAudioRightsAssets(), []);
   const { audioElementsRef, audioStatus } = useAudioElements(session.soundProfileId);
@@ -300,15 +300,54 @@ export function TimerPage() {
         : 'Audio unavailable';
 
   return (
-    <PageLayout description="" eyebrow="Meditation timer" title="Timer">
+    <PageLayout
+      description=""
+      eyebrow="Meditation timer"
+      title="Timer"
+      headerActions={<Link aria-label="Open timer defaults in settings" className="gear-link" data-testid="timer-gear-link" to="/settings/timer-defaults" title="Timer defaults">⚙</Link>}
+    >
       <PageSection description="" title="Start a session">
         <div className="timer-grid">
           <section className="content-section timer-display timer-display--hero" data-testid="timer-panel">
             <div className="timer-readout timer-readout--centered">
               <p className="metric-label">Remaining</p>
-              <p className="timer-clock" data-testid="timer-remaining">
-                {formatTimerClock(session.remainingSeconds)}
-              </p>
+              {canEditSession && editingDuration ? (
+                <label className="inline-duration-edit">
+                  <span className="field-help">Seconds</span>
+                  <input
+                    autoFocus
+                    className="timer-clock-input"
+                    data-testid="timer-duration-seconds"
+                    inputMode="numeric"
+                    min={1}
+                    onBlur={() => setEditingDuration(false)}
+                    onChange={(event) => {
+                      setSession((currentSession) =>
+                        applyEditableTimerConfig(currentSession, {
+                          totalDurationSeconds: event.target.value,
+                        }),
+                      );
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === 'Escape') {
+                        setEditingDuration(false);
+                      }
+                    }}
+                    type="number"
+                    value={session.totalDurationSeconds}
+                  />
+                </label>
+              ) : (
+                <button
+                  className="timer-clock timer-clock--editable"
+                  data-testid="timer-remaining"
+                  disabled={!canEditSession}
+                  onClick={() => setEditingDuration(true)}
+                  type="button"
+                >
+                  {formatTimerClock(session.remainingSeconds)}
+                </button>
+              )}
               <p className="status-pill" data-testid="timer-status">
                 {timerStatusLabel}
               </p>
@@ -325,6 +364,7 @@ export function TimerPage() {
                     disabled={!canEditSession}
                     key={preset.seconds}
                     onClick={() => {
+                      setEditingDuration(false);
                       setSession((currentSession) =>
                         applyEditableTimerConfig(currentSession, {
                           totalDurationSeconds: preset.seconds,
@@ -339,6 +379,107 @@ export function TimerPage() {
               </div>
             </fieldset>
 
+            <div className="timer-inline-controls">
+              <label className="inline-control">
+                <span className="field-help">Bell mode</span>
+                <select
+                  className="field-select"
+                  data-testid="timer-cue-mode"
+                  disabled={!canEditSession}
+                  onChange={(event) => {
+                    const nextCueMode = event.target.value as TimerCueMode;
+                    setSession((currentSession) =>
+                      applyEditableTimerConfig(currentSession, {
+                        cueMode: nextCueMode,
+                        intervalSeconds: nextCueMode === 'custom' && currentSession.intervalSeconds === 0 ? 60 : currentSession.intervalSeconds,
+                      }),
+                    );
+                  }}
+                  value={session.cueMode}
+                >
+                  {(Object.keys(TIMER_CUE_MODE_LABELS) as TimerCueMode[]).map((cueMode) => (
+                    <option key={cueMode} value={cueMode}>
+                      {TIMER_CUE_MODE_LABELS[cueMode]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {session.cueMode === 'custom' ? (
+                <label className="inline-control">
+                  <span className="field-help">Ring every (s)</span>
+                  <input
+                    className="field-select"
+                    data-testid="timer-interval-seconds"
+                    disabled={!canEditSession}
+                    inputMode="numeric"
+                    min={1}
+                    onChange={(event) => {
+                      setSession((currentSession) =>
+                        applyEditableTimerConfig(currentSession, {
+                          intervalSeconds: event.target.value,
+                        }),
+                      );
+                    }}
+                    type="number"
+                    value={session.intervalSeconds}
+                  />
+                </label>
+              ) : null}
+
+              <label className="inline-control">
+                <span className="field-help">Bell sound</span>
+                <select
+                  className="field-select"
+                  data-testid="timer-sound-profile"
+                  disabled={!canEditSession}
+                  onChange={(event) => {
+                    setSession((currentSession) =>
+                      applyEditableTimerConfig(currentSession, {
+                        soundProfileId: event.target.value as SoundProfileId,
+                      }),
+                    );
+                  }}
+                  value={session.soundProfileId}
+                >
+                  {SOUND_PROFILES.map((profileOption) => (
+                    <option key={profileOption.id} value={profileOption.id}>
+                      {profileOption.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <button
+                className="secondary-button button-inline"
+                data-testid="timer-test-bell"
+                disabled={!canEditSession}
+                onClick={() => {
+                  void testBell(session.soundProfileId);
+                }}
+                type="button"
+              >
+                Test bell
+              </button>
+
+              <label className="filter-toggle timer-checkbox">
+                <input
+                  checked={session.recordPracticeHistory}
+                  data-testid="timer-record-history"
+                  disabled={!canEditSession}
+                  onChange={(event) => {
+                    setSession((currentSession) =>
+                      applyEditableTimerConfig(currentSession, {
+                        recordPracticeHistory: event.target.checked,
+                      }),
+                    );
+                  }}
+                  type="checkbox"
+                />
+                <span className="field-help">Save history</span>
+              </label>
+            </div>
+
             <div className="timer-controls">
               {(session.phase === 'idle' || session.phase === 'complete') && (
                 <button
@@ -347,7 +488,7 @@ export function TimerPage() {
                     onClick={() => {
                       primeAudio();
                       const nextSession = startTimerSession(sessionRef.current, Date.now());
-                      setShowSessionSettings(false);
+                      setEditingDuration(false);
                       setSession(nextSession);
                       if (shouldPlayTimerCue(nextSession, 'start')) {
                         void playCue('start', nextSession.soundProfileId);
@@ -382,7 +523,7 @@ export function TimerPage() {
                     onClick={() => {
                       primeAudio();
                       const nextSession = resumeTimerSession(sessionRef.current, Date.now());
-                      setShowSessionSettings(false);
+                      setEditingDuration(false);
                       setSession(nextSession);
                       if (shouldPlayTimerCue(nextSession, 'start')) {
                         void playCue('start', nextSession.soundProfileId);
@@ -412,178 +553,14 @@ export function TimerPage() {
                 data-testid="timer-cancel"
                 onClick={() => {
                   clearTimerSessionStorage();
-                  setShowSessionSettings(false);
                   setShowTimerDetails(false);
+                  setEditingDuration(false);
                   void navigate('/daily');
                 }}
                 type="button"
               >
                 Cancel
               </button>
-            </div>
-
-            <div className="panel-toggle-block">
-              <div className="button-row">
-                <button
-                  aria-expanded={showSessionSettings}
-                  className="secondary-button button-inline"
-                  data-testid="timer-settings-toggle"
-                  onClick={() => {
-                    setShowSessionSettings((currentValue) => !currentValue);
-                  }}
-                  type="button"
-                >
-                  {showSessionSettings ? 'Hide session setup' : 'Session setup'}
-                </button>
-
-                <Link className="secondary-button button-inline" to="/settings/timer-defaults">
-                  Timer defaults in Settings
-                </Link>
-              </div>
-
-              {showSessionSettings ? (
-                <form className="settings-form timer-config timer-config--compact panel-toggle-body" data-testid="timer-defaults" onSubmit={(event) => event.preventDefault()}>
-                  <div className="timer-config__intro">
-                    <p className="field-label">Session setup</p>
-                    <p className="field-help">Change this session here. Durable timer defaults still live in Settings.</p>
-                  </div>
-
-                  <label className="field-card" htmlFor="timer-duration-seconds">
-                    <span className="field-label">Total duration</span>
-                    <span className="field-help">Set the full session length in seconds.</span>
-                    <input
-                      className="field-select"
-                      data-testid="timer-duration-seconds"
-                      disabled={!canEditSession}
-                      id="timer-duration-seconds"
-                      inputMode="numeric"
-                      min={1}
-                      onChange={(event) => {
-                        setSession((currentSession) =>
-                          applyEditableTimerConfig(currentSession, {
-                            totalDurationSeconds: event.target.value,
-                          }),
-                        );
-                      }}
-                      type="number"
-                      value={session.totalDurationSeconds}
-                    />
-                  </label>
-
-                  <label className="field-card" htmlFor="timer-cue-mode">
-                    <span className="field-label">Bell mode</span>
-                    <span className="field-help">Choose whether the bowl rings at the beginning, the end, both, or on a custom spacing.</span>
-                    <select
-                      className="field-select"
-                      data-testid="timer-cue-mode"
-                      disabled={!canEditSession}
-                      id="timer-cue-mode"
-                      onChange={(event) => {
-                        const nextCueMode = event.target.value as TimerCueMode;
-                        setSession((currentSession) =>
-                          applyEditableTimerConfig(currentSession, {
-                            cueMode: nextCueMode,
-                            intervalSeconds: nextCueMode === 'custom' && currentSession.intervalSeconds === 0 ? 60 : currentSession.intervalSeconds,
-                          }),
-                        );
-                      }}
-                      value={session.cueMode}
-                    >
-                      {(Object.keys(TIMER_CUE_MODE_LABELS) as TimerCueMode[]).map((cueMode) => (
-                        <option key={cueMode} value={cueMode}>
-                          {TIMER_CUE_MODE_LABELS[cueMode]}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  {session.cueMode === 'custom' ? (
-                    <label className="field-card" htmlFor="timer-interval-seconds">
-                      <span className="field-label">Ring every</span>
-                      <span className="field-help">Play a bowl strike this many seconds apart while the timer is running.</span>
-                      <input
-                        className="field-select"
-                        data-testid="timer-interval-seconds"
-                        disabled={!canEditSession}
-                        id="timer-interval-seconds"
-                        inputMode="numeric"
-                        min={1}
-                        onChange={(event) => {
-                          setSession((currentSession) =>
-                            applyEditableTimerConfig(currentSession, {
-                              intervalSeconds: event.target.value,
-                            }),
-                          );
-                        }}
-                        type="number"
-                        value={session.intervalSeconds}
-                      />
-                    </label>
-                  ) : null}
-
-                  <label className="field-card" htmlFor="timer-sound-profile">
-                    <span className="field-label">Bell sound</span>
-                    <span className="field-help">Choose the sound this session should use for opening, reminder, and closing bells.</span>
-                    <select
-                      className="field-select"
-                      data-testid="timer-sound-profile"
-                      disabled={!canEditSession}
-                      id="timer-sound-profile"
-                      onChange={(event) => {
-                        setSession((currentSession) =>
-                          applyEditableTimerConfig(currentSession, {
-                            soundProfileId: event.target.value as SoundProfileId,
-                          }),
-                        );
-                      }}
-                      value={session.soundProfileId}
-                    >
-                      {SOUND_PROFILES.map((profileOption) => (
-                        <option key={profileOption.id} value={profileOption.id}>
-                          {profileOption.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <div className="field-card">
-                    <span className="field-label">Test bell</span>
-                    <span className="field-help">Hear the selected sound now.</span>
-                    <button
-                      className="secondary-button"
-                      data-testid="timer-test-bell"
-                      onClick={() => {
-                        void testBell(session.soundProfileId);
-                      }}
-                      type="button"
-                    >
-                      Test bell
-                    </button>
-                  </div>
-
-                  <label className="field-card field-card--toggle" htmlFor="timer-record-history">
-                    <span className="field-label">Save session history</span>
-                    <span className="field-help">Save completed sessions on this device.</span>
-                    <span className="filter-toggle timer-checkbox">
-                      <input
-                        checked={session.recordPracticeHistory}
-                        data-testid="timer-record-history"
-                        disabled={!canEditSession}
-                        id="timer-record-history"
-                        onChange={(event) => {
-                          setSession((currentSession) =>
-                            applyEditableTimerConfig(currentSession, {
-                              recordPracticeHistory: event.target.checked,
-                            }),
-                          );
-                        }}
-                        type="checkbox"
-                      />
-                      Save completed sessions on this device
-                    </span>
-                  </label>
-                </form>
-              ) : null}
             </div>
 
             <div className="panel-toggle-block">
