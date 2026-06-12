@@ -396,6 +396,7 @@ export function DoctrinePage() {
       controls={controls}
       description={document.summary}
       eyebrow="Doctrine library"
+      headerActions={<Link aria-label="Open reading display settings" className="gear-link" to="/settings/reading-display" title="Reading & Display">⚙</Link>}
       navigation={<DoctrineReaderNavigation currentSlug={document.slug} />}
       title={document.title}
     >
