@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-persistence",
+    "slug": "persistence",
+    "title": "Persistence",
+    "summary": "There was a saying in the recovery community that used to drive me crazy: “Don't give up five minutes before the miracle.” I mean, I understand the idea behind it. But it sort o...",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "There was a saying in the recovery community that used to drive me crazy: “Don't give up five minutes before the miracle.” I mean, I understand the idea behind it. But it sort of implies that everything will always work out if you just stay the course, and that's not really the way the world works, is it?\n\nMy friend, a lifelong Knicks fan, had been having the best season ever up until this week. His team made it to the NBA finals for the first time in decades, then took a two-game lead on the road, setting them up for a four-game sweep at home. But game 3 was marked by, let's call it questionable officiating, and Wednesday's game 4 looked like it was going to be more of the same. Disgusted, my friend turned off the game with about seven minutes left and the Knicks down by over a dozen points.\n\nAnd thereby missed one of the greatest comebacks in NBA history, when the Knicks rallied brilliantly to win game 4 by a single point, outscoring the Spurs by a 2-1 margin in the fourth quarter.\n\nAnd sure, this would have been a somewhat sadder story when we were kids, when games aired live and there weren't streaming services where you could find the game later. But while I'm hearing this story, I couldn't help thinking of that old saying about giving up before the miracle.\n\nPersistence, hanging in there until things get better, is no guarantee that they will. But giving up is a sure-fire way to make certain you won't be there to see it if they do.",
+    "tags": [
+      "sermon",
+      "author:atticus",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/persistence"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/persistence",
+    "author": "Atticus",
+    "sortOrder": 0,
+    "publishedAt": "2026-06-12T00:00:28.000Z",
+    "updatedAt": "2026-06-13T10:07:32.000Z",
+    "checksum": "fnv1a-948483e1"
+  }
+}
