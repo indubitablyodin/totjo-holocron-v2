@@ -157,6 +157,19 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
             <Link className="first-order-link" data-testid="nav-settings" to="/settings">
               Settings
             </Link>
+            <Link className="first-order-link" data-testid="daily-quick-access-jedi-code" to="/library/doctrine/code">
+              Jedi Code
+            </Link>
+            <Link
+              className="first-order-link"
+              data-testid="daily-quick-access-middle-slot"
+              to={middleQuickAccessSlot?.href ?? '/settings/focus-practice'}
+            >
+              {middleQuickAccessSlot?.title ?? 'Default slot'}
+            </Link>
+            <Link className="first-order-link" data-testid="daily-quick-access-bookmarks" to="/library/bookmarks">
+              Bookmarks
+            </Link>
           </div>
         </section>
 
@@ -184,24 +197,6 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
               </Link>
             </div>
           </article>
-        </section>
-
-        <section className="dashboard-region">
-          <div className="daily-quick-access" data-testid="daily-quick-access">
-            <Link className="daily-quick-access__button" data-testid="daily-quick-access-jedi-code" to="/library/doctrine/code">
-              Jedi Code
-            </Link>
-            <Link
-              className="daily-quick-access__button"
-              data-testid="daily-quick-access-middle-slot"
-              to={middleQuickAccessSlot?.href ?? '/settings/focus-practice'}
-            >
-              {middleQuickAccessSlot?.title ?? 'Default slot'}
-            </Link>
-            <Link className="daily-quick-access__button" data-testid="daily-quick-access-bookmarks" to="/library/bookmarks">
-              Bookmarks
-            </Link>
-          </div>
         </section>
       </div>
     </PageLayout>

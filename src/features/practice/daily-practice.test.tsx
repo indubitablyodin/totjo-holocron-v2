@@ -189,14 +189,9 @@ describe('daily focus selection and front page', () => {
       renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
 
       await waitFor(() => {
-        expect(screen.getByTestId('daily-quick-access')).toBeVisible();
+        expect(screen.getByTestId('daily-quick-access-jedi-code')).toBeVisible();
       });
 
-      expect(within(screen.getByTestId('daily-quick-access')).getAllByRole('link').map((link) => link.textContent?.trim())).toEqual([
-        'Jedi Code',
-        'Default slot',
-        'Bookmarks',
-      ]);
       expect(screen.getByTestId('daily-quick-access-jedi-code')).toHaveAttribute('href', '/library/doctrine/code');
       expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');
       expect(screen.getByTestId('daily-quick-access-bookmarks')).toHaveAttribute('href', '/library/bookmarks');
@@ -213,15 +208,7 @@ describe('daily focus selection and front page', () => {
       renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
 
       await waitFor(() => {
-        expect(screen.getByTestId('daily-quick-access')).toBeVisible();
-      });
-
-      await waitFor(() => {
-        expect(within(screen.getByTestId('daily-quick-access')).getAllByRole('link').map((link) => link.textContent?.trim())).toEqual([
-          'Jedi Code',
-          "Knight's Code",
-          'Bookmarks',
-        ]);
+        expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveTextContent("Knight's Code");
       });
       expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/supplemental/knights-code');
     } finally {

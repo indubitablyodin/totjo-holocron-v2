@@ -302,6 +302,24 @@ export function AppShell() {
         })}
       </nav>
 
+      <nav aria-label="App" className="app-nav" data-testid="app-nav">
+        {bottomNavPages.map((page) => {
+          const isActive = page.match(location.pathname, location.hash);
+
+          return (
+            <Link
+              aria-current={isActive ? 'page' : undefined}
+              className={`app-nav__link${isActive ? ' app-nav__link--active' : ''}`}
+              data-testid={`app-${page.navTestId}`}
+              key={page.id}
+              to={page.path}
+            >
+              {page.title === 'Read' ? 'Library' : page.title}
+            </Link>
+          );
+        })}
+      </nav>
+
       <div className="shell-layout">
         <main className="shell-main" data-testid="shell-main">
           <Outlet />
