@@ -1752,3 +1752,162 @@ input {
     padding-bottom: var(--space-5);
   }
 }
+
+/* ==========================================================================
+   Announcement Modal
+   ========================================================================== */
+
+.announcement-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-4);
+  backdrop-filter: blur(4px);
+}
+
+.announcement-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  max-width: 28rem;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: grid;
+}
+
+.announcement-close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.announcement-content {
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.announcement-content h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.announcement-content p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.announcement-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* ==========================================================================
+   Quick-Lane Cards
+   ========================================================================== */
+
+.lane-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-3);
+}
+
+.lane-card {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  text-decoration: none;
+  color: var(--color-text);
+  transition:
+    transform 0.12s ease,
+    border-color var(--transition-base),
+    background-color var(--transition-base);
+}
+
+.lane-card:hover,
+.lane-card:focus-visible {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-soft);
+  transform: translateY(-2px);
+}
+
+.lane-card:active {
+  transform: scale(0.97);
+}
+
+.lane-card__icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.lane-card__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.lane-card__summary {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* Lane card color variants: accent left border for visual personality */
+.lane-card--focus {
+  border-left: 3px solid var(--color-accent);
+}
+
+.lane-card--sermon {
+  border-left: 3px solid var(--color-authority-sermon-text);
+}
+
+.lane-card--study {
+  border-left: 3px solid var(--color-authority-canonical-text);
+}
+
+.lane-card--bookmark {
+  border-left: 3px solid var(--color-authority-supplemental-text);
+}
+
+/* Badge for new/updated content */
+.lane-card__badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.15em 0.5em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+}

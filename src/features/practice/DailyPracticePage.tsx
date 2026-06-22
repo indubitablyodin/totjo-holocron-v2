@@ -4,6 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 
+import { getSermonDocuments } from '@/features/sermons/sermonSync';
+import type { SermonDocumentRecord } from '@/features/sermons/types';
+
 import {
   loadDailyPracticeClockOverride,
   resolveDailyPracticeNow,
@@ -47,6 +50,8 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const [meditationStats, setMeditationStats] = useState<MeditationPracticeStats>(EMPTY_MEDITATION_STATS);
   const [middleQuickAccessSlot, setMiddleQuickAccessSlot] = useState<DailyQuickAccessChoice | null>(null);
   const [statsStatus, setStatsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [latestSermon, setLatestSermon] = useState<SermonDocumentRecord | null>(null);
+  const [sermonStatus, setSermonStatus] = useState<'loading' | 'ready' | 'empty'>('loading');
 
   useEffect(() => {
     let isMounted = true;
@@ -86,10 +91,17 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
         if (isMounted) {
           setMiddleQuickAccessSlot(selectedChoice);
         }
+
+        const sermons = await getSermonDocuments(database);
+        if (isMounted) {
+          setLatestSermon(sermons[0] ?? null);
+          setSermonStatus(sermons.length > 0 ? 'ready' : 'empty');
+        }
       })
       .catch(() => {
         if (isMounted) {
           setMiddleQuickAccessSlot(null);
+          setSermonStatus('empty');
         }
       });
 
@@ -140,35 +152,61 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
           </div>
         </section>
 
-        <section className="dashboard-region" aria-labelledby="quick-nav-heading">
-          <h2 className="dashboard-region__title" id="quick-nav-heading">
-            Go to
+        <section className="dashboard-region" aria-labelledby="lanes-heading">
+          <h2 className="dashboard-region__title" id="lanes-heading">
+            Quick lanes
           </h2>
-          <div className="action-grid">
-            <Link className="first-order-link" data-testid="nav-daily" to="/daily">
-              Focus
-            </Link>
-            <Link className="first-order-link" data-testid="nav-library" to="/library">
-              Library
-            </Link>
-            <Link className="first-order-link" data-testid="nav-timer" to="/timer">
-              Timer
-            </Link>
-            <Link className="first-order-link" data-testid="nav-settings" to="/settings">
-              Settings
-            </Link>
-            <Link className="first-order-link" data-testid="daily-quick-access-jedi-code" to="/library/doctrine/code">
-              Jedi Code
-            </Link>
+          <div className="lane-grid">
+            {sermonStatus === 'ready' && latestSermon ? (
+              <Link
+                className="lane-card lane-card--sermon"
+                data-testid="daily-quick-access-jedi-code"
+                to={`/library/sermons/${latestSermon.slug}`}
+              >
+                <span className="lane-card__badge">New</span>
+                <p className="lane-card__title">{latestSermon.title}</p>
+                <p className="lane-card__summary">{latestSermon.summary}</p>
+              </Link>
+            ) : (
+              <Link
+                className="lane-card lane-card--study"
+                data-testid="daily-quick-access-jedi-code"
+                to="/library/doctrine/code"
+              >
+                <span className="lane-card__icon">&#9997;</span>
+                <p className="lane-card__title">Study Doctrine</p>
+                <p className="lane-card__summary">Read the Jedi Code and core teachings.</p>
+              </Link>
+            )}
+
             <Link
-              className="first-order-link"
+              className="lane-card lane-card--focus"
               data-testid="daily-quick-access-middle-slot"
               to={middleQuickAccessSlot?.href ?? '/settings/focus-practice'}
             >
-              {middleQuickAccessSlot?.title ?? 'Default slot'}
+              <span className="lane-card__icon">&#9733;</span>
+              <p className="lane-card__title">{middleQuickAccessSlot?.title ?? 'Default slot'}</p>
+              <p className="lane-card__summary">Continue where you left off.</p>
             </Link>
-            <Link className="first-order-link" data-testid="daily-quick-access-bookmarks" to="/library/bookmarks">
-              Bookmarks
+
+            <Link
+              className="lane-card lane-card--bookmark"
+              data-testid="daily-quick-access-bookmarks"
+              to="/library/bookmarks"
+            >
+              <span className="lane-card__icon">&#10022;</span>
+              <p className="lane-card__title">My Bookmarks</p>
+              <p className="lane-card__summary">Pick up where you left off.</p>
+            </Link>
+
+            <Link
+              className="lane-card lane-card--focus"
+              data-testid="daily-quick-access-timer"
+              to="/timer"
+            >
+              <span className="lane-card__icon">&#9716;</span>
+              <p className="lane-card__title">Meditation Timer</p>
+              <p className="lane-card__summary">Set a focus session.</p>
             </Link>
           </div>
         </section>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Link, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 
+import { AnnouncementModal } from '@/features/announcements/AnnouncementModal';
 import { BackToTopButton } from '@/app/BackToTopButton';
 import { applyPwaUpdate, dismissPwaUpdate, getPwaUpdateSnapshot, subscribePwaUpdate } from '@/app/pwaUpdate';
 
@@ -319,6 +320,8 @@ export function AppShell() {
           );
         })}
       </nav>
+
+      <AnnouncementModal />
 
       <div className="shell-layout">
         <main className="shell-main" data-testid="shell-main">
