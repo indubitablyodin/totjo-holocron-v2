@@ -8,7 +8,7 @@ describe('copy pass', () => {
     const libraryView = render(<AppTestRouter initialEntries={['/library']} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Library');
     });
 
     expect(screen.getByRole('link', { name: 'Open sermons' })).toBeVisible();
@@ -22,7 +22,7 @@ describe('copy pass', () => {
     });
 
     expect(screen.getByTestId('daily-focus-card')).toBeVisible();
-    expect(screen.getByTestId('meditation-subtitle')).toHaveTextContent('Center yourself.');
+    expect(screen.getByTestId('daily-begin-meditation')).toBeVisible();
     expect(screen.queryByTestId('reader-controls-toggle')).not.toBeInTheDocument();
 
     todayView.unmount();

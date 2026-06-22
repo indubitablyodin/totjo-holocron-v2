@@ -58,7 +58,7 @@ describe('app-shell routes', () => {
     expect(screen.queryByTestId('settings-group-account-sync')).not.toBeInTheDocument();
 
     await user.click(screen.getByTestId('bottom-nav-library'));
-    expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+    expect(screen.getByTestId('page-title')).toHaveTextContent('Library');
   });
 
   it('uses the in-app route stack for Back before falling back', async () => {
@@ -73,7 +73,7 @@ describe('app-shell routes', () => {
     await user.click(screen.getByTestId('bottom-nav-library'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Library');
     });
 
     await user.click(screen.getByTestId('bottom-nav-back'));

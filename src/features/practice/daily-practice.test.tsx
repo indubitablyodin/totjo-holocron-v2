@@ -161,17 +161,12 @@ describe('daily focus selection and front page', () => {
       renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
 
       await waitFor(() => {
-        expect(screen.getByTestId('daily-meditation-card')).toBeVisible();
+        expect(screen.getByTestId('daily-begin-meditation')).toBeVisible();
       });
 
-      const meditationCard = screen.getByTestId('daily-meditation-card');
-
-      expect(screen.getByTestId('meditation-subtitle')).toHaveTextContent('Center yourself.');
-      expect(within(meditationCard).queryAllByText('Center yourself.')).toHaveLength(0);
-      expect(screen.getAllByText('Center yourself.')).toHaveLength(1);
+      expect(screen.getByText('Center yourself.')).toBeVisible();
       expect(screen.queryByText('Quick meditation')).not.toBeInTheDocument();
       expect(screen.getByTestId('meditation-total-days')).toHaveTextContent(/Loading|0 days/);
-      expect(meditationCard).not.toHaveTextContent(/Duration|1 minute|5 minutes|30 minutes|Cancel/);
       expect(screen.queryByTestId('daily-meditation-presets')).not.toBeInTheDocument();
       expect(screen.queryByTestId('daily-meditation-preset-60')).not.toBeInTheDocument();
       expect(screen.queryByTestId('daily-meditation-preset-300')).not.toBeInTheDocument();

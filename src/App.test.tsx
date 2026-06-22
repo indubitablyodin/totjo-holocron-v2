@@ -20,7 +20,7 @@ describe('App shell', () => {
 
     await waitFor(() => {
       expect(screen.getByTestId('daily-focus-card')).toBeVisible();
-      expect(screen.getByTestId('daily-meditation-card')).toBeVisible();
+      expect(screen.getByTestId('meditation-total-days')).toBeVisible();
     });
   });
 
