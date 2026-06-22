@@ -14,11 +14,6 @@ type PageDefinition = {
   match: (pathname: string, hash: string) => boolean;
 };
 
-type BeforeInstallPromptEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
-};
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const PRIMARY_PAGES: PageDefinition[] = [
   {
@@ -131,12 +126,6 @@ export const PRIMARY_PAGES: PageDefinition[] = [
   },
 ];
 
-const NAV_GROUP_LABELS: Record<PageDefinition['group'], string> = {
-  core: 'Core',
-  library: 'Library',
-  settings: 'Settings',
-};
-
 const BOTTOM_NAV_BACK_ICON = '←';
 const FALLBACK_BACK_PATH = '/daily';
 const IN_APP_HISTORY_LIMIT = 24;
@@ -182,34 +171,14 @@ function getRoutePath(location: { hash: string; pathname: string; search: string
   return `${location.pathname}${location.search}${location.hash}`;
 }
 
-  function createNavLinkClickHandler(page: PageDefinition) {
-    return (event: React.MouseEvent) => {
-      const url = new URL(page.path, window.location.origin);
-      const currentUrl = new URL(window.location.href);
-
-      // If clicking a hash link on the same page, scroll to the element
-      if (url.pathname === currentUrl.pathname && url.hash && url.hash !== currentUrl.hash) {
-        event.preventDefault();
-        const targetElement = document.querySelector(url.hash);
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }
-    };
-  }
-
 export function AppShell() {
   const isOnline = useOnlineStatus();
   const location = useLocation();
   const navigate = useNavigate();
   const navigationType = useNavigationType();
   const pwaUpdate = useSyncExternalStore(subscribePwaUpdate, getPwaUpdateSnapshot, getPwaUpdateSnapshot);
-  const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const inAppHistoryRef = useRef<string[]>([]);
-  const wheelScrollRef = useRef<HTMLDivElement | null>(null);
-  const wheelSegmentRef = useRef<HTMLDivElement | null>(null);
   const currentRoutePath = getRoutePath(location);
-  const handleNavLinkClick = createNavLinkClickHandler;
   const navGroups = useMemo(
     () => ({
       core: PRIMARY_PAGES.filter((page) => page.group === 'core'),
@@ -218,7 +187,6 @@ export function AppShell() {
     }),
     [],
   );
-  const secondaryPages = useMemo(() => [...navGroups.library, ...navGroups.settings], [navGroups.library, navGroups.settings]);
 
   useEffect(() => {
     const historyStack = inAppHistoryRef.current;
@@ -244,79 +212,6 @@ export function AppShell() {
   }, [currentRoutePath, navigationType]);
 
   useEffect(() => {
-    const handleBeforeInstallPrompt = (event: Event) => {
-      event.preventDefault();
-      setInstallPrompt(event as BeforeInstallPromptEvent);
-    };
-
-    const clearPrompt = () => {
-      setInstallPrompt(null);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
-    window.addEventListener('appinstalled', clearPrompt);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt as EventListener);
-      window.removeEventListener('appinstalled', clearPrompt);
-    };
-  }, []);
-
-  useEffect(() => {
-    const scrollContainer = wheelScrollRef.current;
-    const loopSegment = wheelSegmentRef.current;
-
-    if (!scrollContainer || !loopSegment) {
-      return;
-    }
-
-    const segmentHeight = loopSegment.offsetHeight;
-
-    if (segmentHeight <= 0) {
-      return;
-    }
-
-    scrollContainer.scrollTop = segmentHeight;
-
-    const handleScroll = () => {
-      const loopHeight = loopSegment.offsetHeight;
-
-      if (loopHeight <= 0) {
-        return;
-      }
-
-      if (scrollContainer.scrollTop < loopHeight * 0.25) {
-        scrollContainer.scrollTop += loopHeight;
-      } else if (scrollContainer.scrollTop > loopHeight * 1.75) {
-        scrollContainer.scrollTop -= loopHeight;
-      }
-    };
-
-    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      scrollContainer.removeEventListener('scroll', handleScroll);
-    };
-  }, [secondaryPages]);
-
-  const handleInstall = async () => {
-    if (!installPrompt) {
-      return;
-    }
-
-    await installPrompt.prompt();
-    await installPrompt.userChoice;
-    setInstallPrompt(null);
-  };
-
-  const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
-  const bottomNavPages = useMemo(
-    () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'settings'),
-    [navGroups.core],
-  );
-
-  // Scroll to element when hash changes (for in-page navigation like /library#read-doctrine)
-  useEffect(() => {
     if (location.hash) {
       const targetElement = document.querySelector(location.hash);
       if (targetElement) {
@@ -324,6 +219,12 @@ export function AppShell() {
       }
     }
   }, [location.hash]);
+
+  const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
+  const bottomNavPages = useMemo(
+    () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'timer' || page.id === 'settings'),
+    [navGroups.core],
+  );
 
   const handleBottomNavBack = () => {
     const historyStack = inAppHistoryRef.current;
@@ -339,51 +240,6 @@ export function AppShell() {
 
   return (
     <div className="app-shell">
-      <header className="shell-header">
-        <div className="brand-block">
-          <p className="shell-kicker">Temple of the Jedi Order</p>
-          <p className="shell-title">TOTJO Holocron</p>
-          <p className="shell-subtitle">Practice daily, serve willingly, and let the Force guide you.</p>
-        </div>
-        <div className="shell-support">
-          <div className="creator-support" aria-label="Creator links">
-            <a
-              aria-label="Open creator homepage at odinhalvorson.com"
-              className="creator-link creator-link--home"
-              data-testid="creator-home-link"
-              href="https://odinhalvorson.com"
-              rel="noreferrer"
-              target="_blank"
-            >
-              <span className="creator-link__eyebrow">Creator home</span>
-              <span className="creator-link__label">odinhalvorson.com</span>
-            </a>
-            <a
-              aria-label="Support the creator on Ko-fi"
-              className="creator-link creator-link--donate creator-donate-link"
-              data-testid="creator-donate-link"
-              href="https://ko-fi.com/indubitablyodin"
-              rel="noreferrer"
-              target="_blank"
-            >
-              <span className="creator-link__eyebrow">Support</span>
-              <span className="creator-link__label">Ko-fi</span>
-            </a>
-          </div>
-          <button
-            className="primary-button"
-            data-testid="install-cta"
-            hidden={!installPrompt}
-            onClick={() => {
-              void handleInstall();
-            }}
-            type="button"
-          >
-            Install on this device
-          </button>
-        </div>
-      </header>
-
       <div className="shell-status-stack">
         <div className="offline-banner" data-testid="offline-banner" hidden={isOnline} role="status">
           You’re offline. Reading and settings still work with saved content.
@@ -447,80 +303,6 @@ export function AppShell() {
       </nav>
 
       <div className="shell-layout">
-        <nav aria-label="Primary" className="primary-nav" data-testid="primary-nav">
-          <div className="primary-nav__list primary-nav__list--wheel">
-            <section className="nav-wheel__core" key="core">
-              <p className="nav-wheel__label">{NAV_GROUP_LABELS.core}</p>
-              <div className="nav-wheel__items nav-wheel__items--core">
-                {navGroups.core.map((page) => {
-                  const isActive = page.match(location.pathname, location.hash);
-
-                  return (
-                    <Link
-                      className={`nav-link nav-link--wheel nav-link--wheel-core${isActive ? ' nav-link--active' : ''}`}
-                      data-testid={page.navTestId}
-                      key={page.id}
-                      onClick={handleNavLinkClick(page)}
-                      to={page.path}
-                    >
-                      <span aria-hidden="true" className="nav-link__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
-                      <span className="nav-link__title">{page.title}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-
-            <div className="nav-wheel__scroll" ref={wheelScrollRef}>
-              <div className="nav-wheel__track">
-                {[0, 1, 2].map((segmentIndex) => (
-                  <div className="nav-wheel__segment" key={`wheel-segment-${segmentIndex}`} ref={segmentIndex === 1 ? wheelSegmentRef : undefined}>
-                    {(['library', 'settings'] as const).map((groupKey) => (
-                      <section className={`nav-wheel__section nav-wheel__section--${groupKey}`} key={`${segmentIndex}-${groupKey}`}>
-                        <p className="nav-wheel__label">{NAV_GROUP_LABELS[groupKey]}</p>
-                        <div className="nav-wheel__items">
-                          {navGroups[groupKey].map((page) => {
-                            const isActive = page.match(location.pathname, location.hash);
-
-                            if (segmentIndex !== 1) {
-                              return (
-                                <Link
-                                  aria-hidden="true"
-                                  className={`nav-link nav-link--wheel nav-link--wheel-ghost${isActive ? ' nav-link--active' : ''}`}
-                                  key={`${segmentIndex}-${page.id}`}
-                                  onClick={handleNavLinkClick(page)}
-                                  tabIndex={-1}
-                                  to={page.path}
-                                >
-                                  <span aria-hidden="true" className="nav-link__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
-                                  <span className="nav-link__title">{page.title}</span>
-                                </Link>
-                              );
-                            }
-
-                            return (
-                              <Link
-                                className={`nav-link nav-link--wheel${isActive ? ' nav-link--active' : ''}`}
-                                data-testid={page.navTestId}
-                                key={`${segmentIndex}-${page.id}`}
-                                onClick={handleNavLinkClick(page)}
-                                to={page.path}
-                              >
-                                <span aria-hidden="true" className="nav-link__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
-                                <span className="nav-link__title">{page.title}</span>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </section>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </nav>
-
         <main className="shell-main" data-testid="shell-main">
           <Outlet />
         </main>

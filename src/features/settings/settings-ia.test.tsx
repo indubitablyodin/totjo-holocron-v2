@@ -109,14 +109,15 @@ describe('settings information architecture', () => {
     expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('document:supplemental-knights-code');
 
     await user.click(screen.getByText('Back to settings'));
-    await user.click(screen.getByTestId('nav-daily'));
+    await user.click(screen.getByTestId('bottom-nav-daily'));
 
     expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent("Knight's Code");
     expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/supplemental/knights-code');
 
-    await user.click(screen.getByTestId('nav-focus-practice'));
+    await user.click(screen.getByTestId('bottom-nav-settings'));
+    await user.click(screen.getByTestId('settings-group-focus-practice'));
     await user.click(screen.getByTestId('setting-daily-quick-access-clear'));
-    await user.click(screen.getByTestId('nav-daily'));
+    await user.click(screen.getByTestId('bottom-nav-daily'));
 
     expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Default slot');
     expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');
@@ -131,7 +132,7 @@ describe('settings information architecture', () => {
     await user.selectOptions(screen.getByTestId('setting-daily-quick-access-middle-slot'), 'document:canon-three-tenets');
     expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('document:canon-three-tenets');
 
-    await user.click(screen.getByTestId('nav-daily'));
+    await user.click(screen.getByTestId('bottom-nav-daily'));
 
     await waitFor(() => {
       expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveTextContent('The Three Tenets');
@@ -162,7 +163,7 @@ describe('settings information architecture', () => {
     );
     expect(screen.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue(`document:${savedSermonOptionDocument.id}`);
 
-    await user.click(screen.getByTestId('nav-daily'));
+    await user.click(screen.getByTestId('bottom-nav-daily'));
 
     expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Saved Morning Homily');
     expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/sermons/saved-morning-homily');

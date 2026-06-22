@@ -71,7 +71,7 @@ describe('timer page layout', () => {
 
     expect(await screen.findByTestId('page-title')).toHaveTextContent('Daily Focus');
 
-    await user.click(screen.getByTestId('nav-timer'));
+    await user.click(screen.getByTestId('bottom-nav-timer'));
 
     expect(await screen.findByTestId('timer-remaining')).toHaveTextContent('05:00');
   });

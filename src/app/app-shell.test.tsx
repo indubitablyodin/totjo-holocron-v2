@@ -34,53 +34,30 @@ describe('app-shell routes', () => {
       expect(screen.getByTestId('daily-focus-card')).toBeVisible();
     });
 
-    const primaryNav = screen.getByTestId('primary-nav');
-    expect(within(primaryNav).getAllByRole('link').map((link) => link.querySelector('.nav-link__title')?.textContent?.trim())).toEqual([
-      'Focus',
-      'Read',
-      'Timer',
-      'Settings',
-      'Doctrine',
-      'Supplemental',
-      'Sermons',
-      'Bookmarks',
-      'Reading & Display',
-      'Focus & Practice',
-      'Timer Defaults',
-      'About & Legal',
-    ]);
-    expect(within(primaryNav).queryByTestId('nav-account-sync')).not.toBeInTheDocument();
-    expect(within(primaryNav).queryByTestId('install-cta')).not.toBeInTheDocument();
-    expect(within(primaryNav).queryByTestId('offline-banner')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('app-update-prompt')).not.toBeInTheDocument();
-    expect(screen.getByTestId('creator-home-link')).toHaveAttribute('href', 'https://odinhalvorson.com');
-    expect(screen.getByTestId('creator-home-link')).toHaveAccessibleName('Open creator homepage at odinhalvorson.com');
-    expect(screen.getByTestId('creator-donate-link')).toHaveAttribute('href', 'https://ko-fi.com/indubitablyodin');
-    expect(screen.getByTestId('creator-donate-link')).toHaveAccessibleName('Support the creator on Ko-fi');
+    expect(screen.getByTestId('page-header')).toBeVisible();
 
     expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
     expect(screen.getByTestId('page-header')).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
     expect(screen.getByTestId('bottom-nav')).toBeVisible();
-    expect(getBottomNavLabels()).toEqual(['Back', 'Focus', 'Library', 'Settings']);
-    expect(screen.getByTestId('bottom-nav')).not.toHaveTextContent('Timer');
+    expect(getBottomNavLabels()).toEqual(['Back', 'Focus', 'Library', 'Timer', 'Settings']);
 
-    await user.click(screen.getByTestId('nav-daily'));
+    await user.click(screen.getByTestId('bottom-nav-daily'));
     expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
     expect(screen.getByTestId('page-content')).toBeVisible();
 
-    await user.click(screen.getByTestId('nav-timer'));
+    await user.click(screen.getByTestId('bottom-nav-timer'));
     expect(screen.getByTestId('page-title')).toHaveTextContent('Timer');
     expect(screen.getByTestId('page-content')).toBeVisible();
 
-    await user.click(screen.getByTestId('nav-settings'));
+    await user.click(screen.getByTestId('bottom-nav-settings'));
     expect(screen.getByTestId('page-title')).toHaveTextContent('Settings');
     expect(screen.getByTestId('settings-group-reading-display')).toBeVisible();
     expect(screen.getByTestId('settings-group-timer-defaults')).toBeVisible();
     expect(screen.getByTestId('settings-group-about-legal')).toBeVisible();
     expect(screen.queryByTestId('settings-group-account-sync')).not.toBeInTheDocument();
 
-    await user.click(screen.getByTestId('nav-library'));
+    await user.click(screen.getByTestId('bottom-nav-library'));
     expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
   });
 

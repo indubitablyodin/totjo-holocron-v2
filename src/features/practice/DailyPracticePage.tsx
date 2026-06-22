@@ -134,33 +134,31 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
       </PageSection>
 
       <PageSection title="Meditation">
-        <div className="daily-meditation-container">
-          <h3 className="daily-practice-card__title" data-testid="meditation-subtitle">Center yourself.</h3>
-          <button className="primary-button button-inline" data-testid="daily-begin-meditation" onClick={beginMeditation} type="button">
-            Begin meditation
-          </button>
-          <article className="daily-meditation-card" data-testid="daily-meditation-card">
-            <dl className="timer-stat-strip" data-testid="meditation-stats">
-              <div className="timer-stat-card">
-                <dt>Total meditation days</dt>
-                <dd data-testid="meditation-total-days">
-                  {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.totalDistinctDays)}
-                </dd>
-              </div>
-              <div className="timer-stat-card">
-                <dt>Current streak</dt>
-                <dd data-testid="meditation-current-streak">
-                  {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.currentStreakDays)}
-                </dd>
-              </div>
-            </dl>
-            {statsStatus === 'error' ? (
-              <p className="surface-error" role="alert">
-                Meditation stats could not be loaded on this device.
-              </p>
-            ) : null}
-          </article>
-        </div>
+        <h3 className="daily-practice-card__title" data-testid="meditation-subtitle">Center yourself.</h3>
+        <button className="primary-button button-inline" data-testid="daily-begin-meditation" onClick={beginMeditation} type="button">
+          Begin meditation
+        </button>
+        <article className="daily-meditation-card" data-testid="daily-meditation-card">
+          <dl className="timer-stat-strip" data-testid="meditation-stats">
+            <div className="timer-stat-card">
+              <dt>Total meditation days</dt>
+              <dd data-testid="meditation-total-days">
+                {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.totalDistinctDays)}
+              </dd>
+            </div>
+            <div className="timer-stat-card">
+              <dt>Current streak</dt>
+              <dd data-testid="meditation-current-streak">
+                {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.currentStreakDays)}
+              </dd>
+            </div>
+          </dl>
+          {statsStatus === 'error' ? (
+            <p className="surface-error" role="alert">
+              Meditation stats could not be loaded on this device.
+            </p>
+          ) : null}
+        </article>
       </PageSection>
 
       <PageSection title="">
