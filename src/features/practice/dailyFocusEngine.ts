@@ -1,4 +1,5 @@
 import { doctrineDocuments } from '@/lib/content';
+import { resolveThreeTenetsItems } from '@/content/contentRegistry';
 
 const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 const DAILY_FOCUS_ANCHOR_DATE = '2026-04-26';
@@ -96,7 +97,7 @@ export const dailyFocusPool: DailyFocusEntry[] = (() => {
       preface: JEDI_BELIEVE_PREFACE,
       sourceActionLabel: 'Read Jedi Believe',
     }),
-    ...createFocusEntries(threeTenets, 'three-tenets', threeTenets.sections?.map((section) => section.body[0] ?? section.title) ?? (threeTenets.tenets && threeTenets.tenets.length > 0 ? threeTenets.tenets : threeTenets.items ?? []), {
+    ...createFocusEntries(threeTenets, 'three-tenets', resolveThreeTenetsItems(threeTenets.sections, threeTenets.tenets, threeTenets.items), {
       sourceActionLabel: 'Read the Three Tenets',
     }),
     ...createFocusEntries(sixteenTeachings, 'sixteen-teachings', sixteenTeachings.items ?? [], {

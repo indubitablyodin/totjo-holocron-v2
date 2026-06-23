@@ -101,6 +101,15 @@ export function getDocumentRoute(document: HolocronDocument): string {
   }
 }
 
+/**
+ * Type guard that returns true when an array is present and has at least one element.
+ * Useful for safely falling through empty arrays without conflating "missing"
+ * with "present but empty".
+ */
+export function nonEmptyArray<T>(value: T[] | null | undefined): value is T[] {
+  return Array.isArray(value) && value.length > 0;
+}
+
 export function normalizeDocumentRecord(record: DocumentRecord): HolocronDocument {
   const authorityClass = getHolocronAuthorityClass(record.authorityClass);
   const body = record.bodyMarkdown || '';
