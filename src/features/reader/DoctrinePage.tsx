@@ -255,6 +255,7 @@ export function DoctrinePage() {
 
   const activePersonalizationEnabled = pronounMode === 'he' || pronounMode === 'she' || pronounMode === 'they';
   const showOriginalBlockIds = new Set<string>();
+  const [showSiblingNav, setShowSiblingNav] = useState(false);
 
   const controls: CompactReaderControl[] = resolvedDocument
     ? [
@@ -364,7 +365,6 @@ export function DoctrinePage() {
     <CompactReaderShell
       badges={<HeaderBadges />}
       controls={controls}
-      navigation={<DoctrineReaderNavigation currentSlug={document.slug} />}
       title={document.title}
     >
       <ReaderSurface>
@@ -377,6 +377,24 @@ export function DoctrinePage() {
           showOriginalBlockIds={showOriginalBlockIds}
         />
       </ReaderSurface>
+
+      <button
+        aria-expanded={showSiblingNav}
+        className="secondary-button button-inline"
+        data-testid="doctrine-sibling-toggle"
+        onClick={() => {
+          setShowSiblingNav(!showSiblingNav);
+        }}
+        type="button"
+      >
+        {showSiblingNav ? 'Hide doctrine texts' : 'More doctrine'}
+      </button>
+
+      {showSiblingNav ? (
+        <div className="reader-shell__footer-actions" data-testid="doctrine-sibling-nav">
+          <DoctrineReaderNavigation currentSlug={document.slug} />
+        </div>
+      ) : null}
     </CompactReaderShell>
   );
 }

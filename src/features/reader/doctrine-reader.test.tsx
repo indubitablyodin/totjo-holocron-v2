@@ -35,6 +35,27 @@ describe('doctrine-reader', () => {
     expect(screen.getByTestId('reader-controls-toggle')).toBeVisible();
     expect(screen.getByText('In the Force, and in the inherent worth of all life within it.')).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
+    expect(screen.queryByTestId('breadcrumb')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Library\s*›/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Doctrine\s*›/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId('doctrine-sibling-toggle')).toBeVisible();
+    expect(screen.queryByTestId('doctrine-sibling-nav')).not.toBeInTheDocument();
+  });
+
+  it('shows doctrine sibling navigation behind a compact toggle', async () => {
+    const user = userEvent.setup();
+
+    render(<AppTestRouter initialEntries={['/library/doctrine/jedi-believe']} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Jedi Believe');
+    });
+
+    await user.click(screen.getByTestId('doctrine-sibling-toggle'));
+    expect(screen.getByTestId('doctrine-sibling-nav')).toBeVisible();
+
+    await user.click(screen.getByTestId('doctrine-sibling-toggle'));
+    expect(screen.queryByTestId('doctrine-sibling-nav')).not.toBeInTheDocument();
   });
 
   it('lets the reader adjust display settings from the contextual reader controls', async () => {
