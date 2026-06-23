@@ -5,6 +5,7 @@ import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { DashboardTimer } from '@/features/timer/DashboardTimer';
 import { TimerSettingsButton } from '@/features/timer/TimerSettingsButton';
 import { TimerSettingsPanel } from '@/features/timer/TimerSettingsPanel';
+import { loadTimerSettings } from '@/features/timer/timerSettingsStorage';
 import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 
 import { getSermonDocuments } from '@/features/sermons/sermonSync';
@@ -162,6 +163,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const [completedDates, setCompletedDates] = useState<Set<string>>(new Set());
   const [streakStartDate, setStreakStartDate] = useState<string | null>(null);
   const [timerSettingsOpen, setTimerSettingsOpen] = useState(false);
+  const [timerSettings, setTimerSettings] = useState(loadTimerSettings);
 
   useEffect(() => {
     let isMounted = true;
@@ -329,8 +331,11 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
             />
           </div>
 
-          <DashboardTimer />
-          <TimerSettingsPanel isOpen={timerSettingsOpen} />
+          <DashboardTimer defaultDurationMinutes={timerSettings.defaultDurationMinutes} />
+          <TimerSettingsPanel
+            isOpen={timerSettingsOpen}
+            onSettingsChange={setTimerSettings}
+          />
 
           <dl className="stat-strip" data-testid="meditation-stats">
             <div className="stat-card">

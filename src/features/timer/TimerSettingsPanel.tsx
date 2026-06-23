@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { SOUND_PROFILES } from '@/features/timer/audioProfiles';

@@ -97,6 +97,22 @@ describe('dashboard timer settings', () => {
     expect(screen.getByRole('link', { name: /more timer settings/i })).toBeVisible();
   });
 
+  it('changes default duration live via settings panel, persists to storage', async () => {
+    const user = userEvent.setup();
+
+    render(<AppTestRouter initialEntries={['/daily']} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('meditation-presets')).toBeVisible();
+    });
+
+    await user.click(screen.getByTestId('dashboard-timer-settings-toggle'));
+    await user.selectOptions(screen.getByLabelText('Default duration'), '20');
+
+    const prefs = loadTimerPreferences();
+    expect(prefs.defaultDurationSeconds).toBe(1200);
+  });
+
   it('saved default duration is reflected in dashboard timer', async () => {
     saveTimerPreferences({
       defaultDurationSeconds: 600,
