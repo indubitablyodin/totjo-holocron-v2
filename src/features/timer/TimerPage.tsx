@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import {
@@ -116,7 +116,24 @@ function useAudioElements(soundProfileId: SoundProfileId) {
 
 export function TimerPage() {
   const navigate = useNavigate();
-  const [session, setSession] = useState<TimerSessionState>(() => loadTimerSession());
+  const [searchParams] = useSearchParams();
+  const [session, setSession] = useState<TimerSessionState>(() => {
+    const savedSession = loadTimerSession();
+    const urlDuration = searchParams.get('duration');
+    const parsedDuration = urlDuration ? parseInt(urlDuration, 10) : NaN;
+
+    if (!Number.isNaN(parsedDuration) && parsedDuration > 0) {
+      const durationSeconds = parsedDuration * 60;
+
+      return {
+        ...savedSession,
+        totalDurationSeconds: durationSeconds,
+        remainingSeconds: durationSeconds,
+      };
+    }
+
+    return savedSession;
+  });
   const [lastCueMessage, setLastCueMessage] = useState('No cue has played yet.');
   const [historyEntries, setHistoryEntries] = useState<Array<{ id: string; completedAt: string; durationSeconds: number }>>([]);
   const [showSessionSettings, setShowSessionSettings] = useState(false);

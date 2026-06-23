@@ -33,8 +33,37 @@ const EMPTY_MEDITATION_STATS: MeditationPracticeStats = {
   currentStreakDays: 0,
 };
 
+const TIMER_OPTIONS = [5, 10, 15, 20, 30];
+
 function formatDayCount(value: number): string {
   return value === 1 ? '1 day' : `${value} days`;
+}
+
+function StreakCalendar({ completedDates }: { completedDates: Set<string> }) {
+  const days = Array.from({ length: 35 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (34 - i));
+    return d.toISOString().slice(0, 10);
+  });
+
+  const todayKey = new Date().toISOString().slice(0, 10);
+
+  return (
+    <div className="streak-grid" aria-hidden="true" data-testid="streak-calendar">
+      {days.map((day) => {
+        const isCompleted = completedDates.has(day);
+        const isToday = day === todayKey;
+
+        return (
+          <div
+            key={day}
+            className={`streak-day${isCompleted ? ' completed' : ''}${isToday ? ' today' : ''}`}
+            title={`${day}: ${isCompleted ? 'Completed' : 'Missed'}`}
+          />
+        );
+      })}
+    </div>
+  );
 }
 
 export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPracticePageProps) {
@@ -52,6 +81,9 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const [statsStatus, setStatsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [latestSermon, setLatestSermon] = useState<SermonDocumentRecord | null>(null);
   const [sermonStatus, setSermonStatus] = useState<'loading' | 'ready' | 'empty'>('loading');
+  const [selectedMinutes, setSelectedMinutes] = useState(15);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [completedDates, setCompletedDates] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let isMounted = true;
@@ -110,46 +142,154 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
     };
   }, [database]);
 
-  const beginMeditation = () => {
-    void navigate('/timer');
-  };
+  useEffect(() => {
+    let isMounted = true;
+
+    void ensureStorageReady(database)
+      .then(async () => {
+        const entries = await database.practiceHistory
+          .where('practiceKind').equals('meditation')
+          .toArray();
+
+        const dateSet = new Set<string>();
+
+        entries.forEach((entry) => {
+          if (entry.durationSeconds <= 0) {
+            return;
+          }
+
+          const date = new Date(entry.completedAt);
+
+          if (Number.isNaN(date.getTime())) {
+            return;
+          }
+
+          const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: resolvedTimeZone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }).formatToParts(date);
+
+          const year = parts.find((part) => part.type === 'year')?.value;
+          const month = parts.find((part) => part.type === 'month')?.value;
+          const day = parts.find((part) => part.type === 'day')?.value;
+
+          if (year && month && day) {
+            dateSet.add(`${year}-${month}-${day}`);
+          }
+        });
+
+        if (isMounted) {
+          setCompletedDates(dateSet);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setCompletedDates(new Set());
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [database, resolvedTimeZone]);
 
   return (
     <PageLayout description="" eyebrow="" title="Daily Focus">
       <div className="home-dashboard">
-        <section className="dashboard-region" aria-labelledby="meditation-heading">
-          <div className="primary-action-panel">
-            <h2 className="primary-action-panel__title" id="meditation-heading">
-              Center yourself.
-            </h2>
+        <section className="dashboard-region daily-practice-hero" aria-labelledby="practice-heading">
+          <h1 id="practice-heading">Today&rsquo;s Practice</h1>
+          <p className="practice-summary" data-testid="daily-practice-text">
+            {dailyFocus.text}
+          </p>
+          <Link
+            className="primary-button button-inline"
+            data-testid="daily-read-doctrine"
+            to={dailyFocus.sourceHref}
+          >
+            Read full {dailyFocus.sourceTitle}
+          </Link>
+        </section>
+
+        <section className="dashboard-region primary-action-panel" aria-labelledby="meditation-heading">
+          <h2 id="meditation-heading">Meditation</h2>
+
+          <div className="meditation-config">
+            <Link
+              className="meditation-start-btn"
+              data-testid="meditation-begin"
+              to={`/timer?duration=${selectedMinutes}`}
+            >
+              Begin
+            </Link>
+
             <button
-              className="primary-button button-inline primary-action-panel__action"
-              data-testid="daily-begin-meditation"
-              onClick={beginMeditation}
+              className="timer-picker-trigger"
+              aria-expanded={showTimePicker}
+              aria-label="Change meditation duration"
+              data-testid="meditation-time-picker"
+              onClick={() => {
+                setShowTimePicker(!showTimePicker);
+              }}
               type="button"
             >
-              Begin meditation
+              {selectedMinutes} min
             </button>
-            <dl className="stat-strip" data-testid="meditation-stats">
-              <div className="stat-card">
-                <dt>Total meditation days</dt>
-                <dd data-testid="meditation-total-days">
-                  {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.totalDistinctDays)}
-                </dd>
-              </div>
-              <div className="stat-card">
-                <dt>Current streak</dt>
-                <dd data-testid="meditation-current-streak">
-                  {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.currentStreakDays)}
-                </dd>
-              </div>
-            </dl>
-            {statsStatus === 'error' ? (
-              <p className="surface-error" role="alert">
-                Meditation stats could not be loaded on this device.
-              </p>
-            ) : null}
           </div>
+
+          {showTimePicker ? (
+            <div
+              className="timer-picker-dropdown"
+              data-testid="meditation-time-options"
+              role="listbox"
+              aria-label="Select duration"
+            >
+              {TIMER_OPTIONS.map((time) => (
+                <button
+                  key={time}
+                  role="option"
+                  aria-selected={time === selectedMinutes}
+                  className={`timer-option${time === selectedMinutes ? ' active' : ''}`}
+                  onClick={() => {
+                    setSelectedMinutes(time);
+                    setShowTimePicker(false);
+                  }}
+                  type="button"
+                >
+                  {time} min
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          <dl className="stat-strip" data-testid="meditation-stats">
+            <div className="stat-card">
+              <dt>Total meditation days</dt>
+              <dd data-testid="meditation-total-days">
+                {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.totalDistinctDays)}
+              </dd>
+            </div>
+            <div className="stat-card">
+              <dt>Current streak</dt>
+              <dd data-testid="meditation-current-streak">
+                {statsStatus === 'loading' ? 'Loading…' : formatDayCount(meditationStats.currentStreakDays)}
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <section className="dashboard-region streak-card" aria-labelledby="streak-heading">
+          <div className="streak-header">
+            <h2 id="streak-heading">Your Streak</h2>
+            <div className="streak-stats">
+              <span>
+                <strong>{meditationStats.currentStreakDays}</strong> days
+              </span>
+              <span className="streak-total">{meditationStats.totalDistinctDays} total</span>
+            </div>
+          </div>
+          <StreakCalendar completedDates={completedDates} />
         </section>
 
         <section className="dashboard-region" aria-labelledby="lanes-heading">
@@ -213,7 +353,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
 
         <section className="dashboard-region" aria-labelledby="daily-focus-heading">
           <h2 className="dashboard-region__title" id="daily-focus-heading">
-            Today&rsquo;s practice
+            Full reading
           </h2>
           <article className="daily-focus-block" data-testid="daily-focus-card">
             <p className="practice-status-pill practice-status-pill--ready" data-testid="daily-focus-day">
@@ -223,9 +363,6 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
               {dailyFocus.sourceTitle}
             </h3>
             {dailyFocus.preface ? <p className="daily-focus-card__preface">{dailyFocus.preface}</p> : null}
-            <p className="daily-focus-card__text" data-testid="daily-focus-text">
-              {dailyFocus.text}
-            </p>
             <p className="support-copy" data-testid="daily-focus-source">
               {dailyFocus.label}
             </p>

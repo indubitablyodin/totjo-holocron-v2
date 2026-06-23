@@ -1911,3 +1911,181 @@ input {
   letter-spacing: 0.06em;
   line-height: 1.4;
 }
+
+/* ==========================================================================
+   Snazzy Daily Practice Hero
+   ========================================================================== */
+
+.daily-practice-hero {
+  background: linear-gradient(135deg, var(--color-accent) 0%, #1e1b4b 100%);
+  color: #fff;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: none;
+}
+
+.daily-practice-hero h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.daily-practice-hero .practice-summary {
+  font-size: 1.125rem;
+  line-height: 1.5;
+  margin: var(--space-3) 0;
+  opacity: 0.95;
+}
+
+.daily-practice-hero .primary-button {
+  background: #fff;
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Configurable Meditation
+   ========================================================================== */
+
+.meditation-config {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.meditation-start-btn {
+  background: var(--color-text);
+  color: var(--color-surface);
+  padding: 0.75em 1.5em;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.35;
+  text-decoration: none;
+  min-height: 3.5rem;
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.12s ease;
+}
+
+.meditation-start-btn:active {
+  transform: scale(0.97);
+}
+
+.timer-picker-trigger {
+  background: transparent;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.5em 1em;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.timer-picker-trigger:hover,
+.timer-picker-trigger:focus-visible {
+  border-color: var(--color-accent);
+}
+
+.timer-picker-dropdown {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-2);
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.timer-option {
+  flex: 1;
+  padding: 0.5em;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--color-text);
+}
+
+.timer-option:hover {
+  background: var(--color-surface);
+}
+
+.timer-option.active {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border-color: var(--color-accent);
+}
+
+/* ==========================================================================
+   Streak Calendar
+   ========================================================================== */
+
+.streak-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-3);
+}
+
+.streak-header h2 {
+  margin: 0;
+}
+
+.streak-stats strong {
+  font-size: 1.5rem;
+  color: var(--color-accent);
+  margin-right: 0.25rem;
+}
+
+.streak-total {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin-left: var(--space-2);
+}
+
+.streak-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.streak-day {
+  aspect-ratio: 1;
+  background-color: var(--color-surface-soft);
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.streak-day.completed {
+  background: var(--color-accent);
+  opacity: 0.8;
+}
+
+.streak-day.today {
+  border: 2px solid var(--color-text);
+}
+
+/* ==========================================================================
+   Screen-reader-only utility
+   ========================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
