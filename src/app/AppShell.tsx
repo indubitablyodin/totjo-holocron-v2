@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'reac
 import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 
 import { AnnouncementModal } from '@/features/announcements/AnnouncementModal';
+import { TotjoBrandMark } from '@/app/TotjoBrandMark';
 import { BackToTopButton } from '@/app/BackToTopButton';
 import { applyPwaUpdate, dismissPwaUpdate, getPwaUpdateSnapshot, subscribePwaUpdate } from '@/app/pwaUpdate';
 
@@ -307,10 +308,7 @@ export function AppShell() {
 
       <nav aria-label="App" className="app-nav" data-testid="app-nav">
         <span className="app-nav__brand" aria-label="Temple of the Jedi Order">
-          <svg className="app-nav__brand-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.5" />
-            <circle cx="10" cy="10" r="4" fill="currentColor" />
-          </svg>
+          <TotjoBrandMark variant="compact" decorative={true} />
           <span className="app-nav__brand-text">TOTJO</span>
         </span>
         {bottomNavPages.map((page) => (
