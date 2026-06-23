@@ -2013,6 +2013,13 @@ input {
   line-height: 1.4;
 }
 
+.lane-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
 /* Lane card color variants: accent left border for visual personality */
 .lane-card--focus {
   border-left: 3px solid var(--color-accent);

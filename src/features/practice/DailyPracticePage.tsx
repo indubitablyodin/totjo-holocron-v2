@@ -366,32 +366,49 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
           <MonthCalendar completedDates={completedDates} streakStartDate={streakStartDate} />
         </section>
 
+        {sermonStatus === 'ready' && latestSermon ? (
+          <section className="dashboard-region" aria-labelledby="sermon-heading">
+            <h2 className="dashboard-region__title" id="sermon-heading">
+              Latest Sermon
+            </h2>
+            <article className="lane-card lane-card--sermon" data-testid="dashboard-latest-sermon">
+              <span className="lane-card__badge">New</span>
+              <p className="lane-card__title">{latestSermon.title}</p>
+              <p className="lane-card__summary">{latestSermon.summary}</p>
+              <div className="lane-card__actions">
+                <Link
+                  className="secondary-button button-inline"
+                  data-testid="daily-quick-access-jedi-code"
+                  to={`/library/sermons/${latestSermon.slug}`}
+                >
+                  Read sermon
+                </Link>
+                <Link
+                  className="secondary-button button-inline"
+                  data-testid="dashboard-browse-sermons"
+                  to="/library/sermons"
+                >
+                  Browse sermons
+                </Link>
+              </div>
+            </article>
+          </section>
+        ) : null}
+
         <section className="dashboard-region" aria-labelledby="lanes-heading">
           <h2 className="dashboard-region__title" id="lanes-heading">
             Quick lanes
           </h2>
           <div className="lane-grid">
-            {sermonStatus === 'ready' && latestSermon ? (
-              <Link
-                className="lane-card lane-card--sermon"
-                data-testid="daily-quick-access-jedi-code"
-                to={`/library/sermons/${latestSermon.slug}`}
-              >
-                <span className="lane-card__badge">New</span>
-                <p className="lane-card__title">{latestSermon.title}</p>
-                <p className="lane-card__summary">{latestSermon.summary}</p>
-              </Link>
-            ) : (
-              <Link
-                className="lane-card lane-card--study"
-                data-testid="daily-quick-access-jedi-code"
-                to="/library/doctrine/code"
-              >
-                <span className="lane-card__icon">&#9997;</span>
-                <p className="lane-card__title">Study Doctrine</p>
-                <p className="lane-card__summary">Read the Jedi Code and core teachings.</p>
-              </Link>
-            )}
+            <Link
+              className="lane-card lane-card--study"
+              data-testid="daily-quick-access-jedi-code"
+              to="/library/doctrine/code"
+            >
+              <span className="lane-card__icon">&#9997;</span>
+              <p className="lane-card__title">Study Doctrine</p>
+              <p className="lane-card__summary">Read the Jedi Code and core teachings.</p>
+            </Link>
 
             <Link
               className="lane-card lane-card--focus"
