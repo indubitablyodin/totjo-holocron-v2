@@ -1899,6 +1899,14 @@ input {
   gap: var(--space-3);
 }
 
+.announcement-kind {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 .announcement-content h2 {
   margin: 0;
   font-size: 1.25rem;
