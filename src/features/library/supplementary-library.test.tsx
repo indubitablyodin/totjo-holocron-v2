@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTestRouter } from '@/App';
 import { clearTimerPreferencesStorage } from '@/features/timer/timerPreferences';
+import { clearTimerSessionStorage } from '@/features/timer/timerSessionStorage';
 
 beforeEach(() => {
   clearTimerPreferencesStorage();
+  clearTimerSessionStorage();
 });
 
 describe('supplementary-library authority labels', () => {
