@@ -19,7 +19,7 @@ import {
   formatTimerClock,
   shouldPlayTimerCue,
 } from '@/features/timer/timerModel';
-import { type TimerCueMode } from '@/features/timer/timerPreferences';
+import { loadTimerPreferences, type TimerCueMode } from '@/features/timer/timerPreferences';
 import { listMeditationPracticeHistory, recordMeditationPractice } from '@/features/timer/timerHistory';
 import { useTimerSession } from '@/features/timer/useTimerSession';
 import { TimerControls } from '@/features/timer/TimerControls';
@@ -116,16 +116,22 @@ export function TimerPage() {
   const savedSession = useMemo(() => loadTimerSession(), []);
   const urlDuration = searchParams.get('duration');
   const parsedDuration = urlDuration ? parseInt(urlDuration, 10) : NaN;
+  const isActiveSession = savedSession.phase === 'running' || savedSession.phase === 'paused';
+
   const initialDurationSeconds = !Number.isNaN(parsedDuration) && parsedDuration > 0
     ? parsedDuration * 60
-    : savedSession.totalDurationSeconds;
+    : isActiveSession
+      ? savedSession.totalDurationSeconds
+      : undefined;
 
   const [lastCueMessage, setLastCueMessage] = useState('No cue has played yet.');
   const [historyEntries, setHistoryEntries] = useState<Array<{ id: string; completedAt: string; durationSeconds: number }>>([]);
   const [showTimerDetails, setShowTimerDetails] = useState(false);
   const [editingDuration, setEditingDuration] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  const [audioProfileId, setAudioProfileId] = useState(savedSession.soundProfileId);
+  const [audioProfileId, setAudioProfileId] = useState(
+    isActiveSession ? savedSession.soundProfileId : loadTimerPreferences().defaultSoundProfileId,
+  );
 
   const { audioElementsRef, audioStatus } = useAudioElements(audioProfileId);
 
@@ -211,7 +217,7 @@ export function TimerPage() {
     handleConfigUpdate,
   } = useTimerSession({
     initialDurationSeconds,
-    initialSession: savedSession,
+    initialSession: isActiveSession ? savedSession : undefined,
     onComplete: async (event) => {
       await recordMeditationPractice(event);
       await refreshHistory();
