@@ -80,7 +80,7 @@ describe('timer page layout', () => {
     await user.click(screen.getByTestId('timer-start'));
 
     expect(screen.queryByTestId('timer-start')).not.toBeInTheDocument();
-    expect(screen.getByTestId('timer-pause')).toHaveTextContent('Pause timer');
+    expect(screen.getByTestId('timer-pause')).toHaveTextContent('Pause');
 
     await user.click(screen.getByTestId('timer-advanced-toggle'));
     expect(screen.getByTestId('timer-cue-mode')).toBeDisabled();
@@ -108,7 +108,7 @@ describe('timer page layout', () => {
 
     await user.click(screen.getByTestId('timer-reset'));
 
-    expect(screen.getByTestId('timer-cue-mode')).toHaveValue('custom');
+    expect(await screen.findByTestId('timer-cue-mode')).toHaveValue('custom');
     expect(screen.getByTestId('timer-interval-seconds')).toHaveValue(60);
     expect(screen.getByTestId('timer-sound-profile')).toHaveValue('silent');
     expect(screen.getByTestId('timer-record-history')).not.toBeChecked();

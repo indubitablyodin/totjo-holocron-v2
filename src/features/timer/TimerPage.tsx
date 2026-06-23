@@ -16,17 +16,13 @@ import {
   saveTimerSession,
 } from '@/features/timer/timerSessionStorage';
 import {
-  applyEditableTimerConfig,
-  advanceTimerSession,
   formatTimerClock,
-  pauseTimerSession,
-  resumeTimerSession,
-  startTimerSession,
   shouldPlayTimerCue,
-  type TimerSessionState,
 } from '@/features/timer/timerModel';
 import { type TimerCueMode } from '@/features/timer/timerPreferences';
 import { listMeditationPracticeHistory, recordMeditationPractice } from '@/features/timer/timerHistory';
+import { useTimerSession } from '@/features/timer/useTimerSession';
+import { TimerControls } from '@/features/timer/TimerControls';
 
 type AudioStatus = 'ready' | 'silent' | 'unavailable';
 
@@ -117,55 +113,21 @@ function useAudioElements(soundProfileId: SoundProfileId) {
 export function TimerPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [session, setSession] = useState<TimerSessionState>(() => {
-    const savedSession = loadTimerSession();
-    const urlDuration = searchParams.get('duration');
-    const parsedDuration = urlDuration ? parseInt(urlDuration, 10) : NaN;
+  const savedSession = useMemo(() => loadTimerSession(), []);
+  const urlDuration = searchParams.get('duration');
+  const parsedDuration = urlDuration ? parseInt(urlDuration, 10) : NaN;
+  const initialDurationSeconds = !Number.isNaN(parsedDuration) && parsedDuration > 0
+    ? parsedDuration * 60
+    : savedSession.totalDurationSeconds;
 
-    if (!Number.isNaN(parsedDuration) && parsedDuration > 0) {
-      const durationSeconds = parsedDuration * 60;
-
-      return {
-        ...savedSession,
-        totalDurationSeconds: durationSeconds,
-        remainingSeconds: durationSeconds,
-      };
-    }
-
-    return savedSession;
-  });
   const [lastCueMessage, setLastCueMessage] = useState('No cue has played yet.');
   const [historyEntries, setHistoryEntries] = useState<Array<{ id: string; completedAt: string; durationSeconds: number }>>([]);
   const [showTimerDetails, setShowTimerDetails] = useState(false);
   const [editingDuration, setEditingDuration] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  const sessionRef = useRef(session);
-  const bundledAudioRightsAssets = useMemo(() => getBundledAudioRightsAssets(), []);
-  const { audioElementsRef, audioStatus } = useAudioElements(session.soundProfileId);
+  const [audioProfileId, setAudioProfileId] = useState(savedSession.soundProfileId);
 
-  useEffect(() => {
-    sessionRef.current = session;
-    saveTimerSession(session);
-  }, [session]);
-
-  const refreshHistory = useCallback(async () => {
-    const entries = await listMeditationPracticeHistory(5);
-    setHistoryEntries(entries);
-  }, []);
-
-  useEffect(() => {
-    let isActive = true;
-
-    void listMeditationPracticeHistory(5).then((entries) => {
-      if (isActive) {
-        setHistoryEntries(entries);
-      }
-    });
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
+  const { audioElementsRef, audioStatus } = useAudioElements(audioProfileId);
 
   const playCue = useCallback(
     async (cueKind: CueKind, soundProfileId: SoundProfileId) => {
@@ -212,76 +174,67 @@ export function TimerPage() {
     [playCue],
   );
 
-  const persistCompletion = useCallback(
-    async (completedSession: TimerSessionState) => {
-      if (completedSession.historyRecorded || !completedSession.recordPracticeHistory) {
-        return;
-      }
-
-      await recordMeditationPractice({
-        completedAt: new Date(completedSession.completedAtMs ?? Date.now()).toISOString(),
-        durationSeconds: completedSession.totalDurationSeconds,
-      });
-
-      setSession((currentSession) => {
-        if (currentSession.historyRecorded) {
-          return currentSession;
-        }
-
-        return {
-          ...currentSession,
-          historyRecorded: true,
-        };
-      });
-
-      await refreshHistory();
-    },
-    [refreshHistory],
-  );
+  const refreshHistory = useCallback(async () => {
+    const entries = await listMeditationPracticeHistory(5);
+    setHistoryEntries(entries);
+  }, []);
 
   useEffect(() => {
-    if (session.phase !== 'running') {
-      return;
-    }
+    let isActive = true;
 
-    const syncTimer = () => {
-      const currentSession = sessionRef.current;
-      const result = advanceTimerSession(currentSession, Date.now());
-
-      if (!result.changed && result.cueKind === null && !result.didComplete) {
-        return;
+    void listMeditationPracticeHistory(5).then((entries) => {
+      if (isActive) {
+        setHistoryEntries(entries);
       }
-
-      setSession(result.session);
-
-      if (result.cueKind) {
-        void playCue(result.cueKind, result.session.soundProfileId);
-      }
-
-      if (result.didComplete) {
-        void persistCompletion(result.session);
-      }
-    };
-
-    syncTimer();
-
-    const intervalId = window.setInterval(syncTimer, 250);
-    const handleVisibilitySync = () => {
-      syncTimer();
-    };
-
-    window.addEventListener('focus', handleVisibilitySync);
-    document.addEventListener('visibilitychange', handleVisibilitySync);
+    });
 
     return () => {
-      window.clearInterval(intervalId);
-      window.removeEventListener('focus', handleVisibilitySync);
-      document.removeEventListener('visibilitychange', handleVisibilitySync);
+      isActive = false;
     };
-  }, [persistCompletion, playCue, session.phase]);
+  }, []);
 
-  const primeAudio = useCallback(() => {
-    const profile = getSoundProfileById(session.soundProfileId);
+  const bundledAudioRightsAssets = useMemo(() => getBundledAudioRightsAssets(), []);
+
+  const {
+    session,
+    isIdle,
+    isRunning,
+    isPaused,
+    isComplete,
+    clockDisplay,
+    handleStart,
+    handlePause,
+    handleResume,
+    handleStop,
+    setDurationMinutes,
+    handleReset,
+    handleConfigUpdate,
+  } = useTimerSession({
+    initialDurationSeconds,
+    initialSession: savedSession,
+    onComplete: async (event) => {
+      await recordMeditationPractice(event);
+      await refreshHistory();
+    },
+    onCue: async (cue) => {
+      if (cue === 'start') {
+        primeAudio(session.soundProfileId);
+      }
+
+      if (cue === 'complete' || cue === 'start') {
+        const cueKind = cue === 'start' ? 'start' : 'complete';
+        await playCue(cueKind, session.soundProfileId);
+      }
+    },
+  });
+
+  useEffect(() => {
+    saveTimerSession(session);
+    setAudioProfileId(session.soundProfileId);
+  }, [session]);
+
+  const primeAudio = useCallback((soundProfileId: SoundProfileId) => {
+    const profile = getSoundProfileById(soundProfileId);
 
     if (profile.id === 'silent' || typeof Audio === 'undefined') {
       return;
@@ -305,9 +258,9 @@ export function TimerPage() {
     } catch {
       // Not critical.
     }
-  }, [session.soundProfileId]);
+  }, []);
 
-  const canEditSession = session.phase === 'idle' || session.phase === 'complete';
+  const canEditSession = isIdle || isComplete;
   const soundProfile = getSoundProfileById(session.soundProfileId);
   const timerStatusLabel = toSentenceCase(session.phase);
   const audioStatusLabel =
@@ -351,11 +304,7 @@ export function TimerPage() {
                         return;
                       }
 
-                      setSession((currentSession) =>
-                        applyEditableTimerConfig(currentSession, {
-                          totalDurationSeconds: parsed,
-                        }),
-                      );
+                      setDurationMinutes(parsed / 60);
                     }}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === 'Escape') {
@@ -374,7 +323,7 @@ export function TimerPage() {
                   onClick={() => setEditingDuration(true)}
                   type="button"
                 >
-                  {formatTimerClock(session.remainingSeconds)}
+                  {clockDisplay}
                 </button>
               )}
               <p className="status-pill" data-testid="timer-status">
@@ -394,11 +343,7 @@ export function TimerPage() {
                     key={preset.seconds}
                     onClick={() => {
                       setEditingDuration(false);
-                      setSession((currentSession) =>
-                        applyEditableTimerConfig(currentSession, {
-                          totalDurationSeconds: preset.seconds,
-                        }),
-                      );
+                      setDurationMinutes(preset.seconds / 60);
                     }}
                     type="button"
                   >
@@ -431,12 +376,10 @@ export function TimerPage() {
                     disabled={!canEditSession}
                     onChange={(event) => {
                       const nextCueMode = event.target.value as TimerCueMode;
-                      setSession((currentSession) =>
-                        applyEditableTimerConfig(currentSession, {
-                          cueMode: nextCueMode,
-                          intervalSeconds: nextCueMode === 'custom' && currentSession.intervalSeconds === 0 ? 60 : currentSession.intervalSeconds,
-                        }),
-                      );
+                      handleConfigUpdate({
+                        cueMode: nextCueMode,
+                        intervalSeconds: nextCueMode === 'custom' ? 60 : 0,
+                      });
                     }}
                     value={session.cueMode}
                   >
@@ -458,11 +401,9 @@ export function TimerPage() {
                       inputMode="numeric"
                       min={1}
                       onChange={(event) => {
-                        setSession((currentSession) =>
-                          applyEditableTimerConfig(currentSession, {
-                            intervalSeconds: event.target.value,
-                          }),
-                        );
+                      handleConfigUpdate({
+                        totalDurationSeconds: parsed,
+                      });
                       }}
                       type="number"
                       value={session.intervalSeconds}
@@ -477,11 +418,9 @@ export function TimerPage() {
                     data-testid="timer-sound-profile"
                     disabled={!canEditSession}
                     onChange={(event) => {
-                      setSession((currentSession) =>
-                        applyEditableTimerConfig(currentSession, {
-                          soundProfileId: event.target.value as SoundProfileId,
-                        }),
-                      );
+                      handleConfigUpdate({
+                        soundProfileId: event.target.value as SoundProfileId,
+                      });
                     }}
                     value={session.soundProfileId}
                   >
@@ -511,11 +450,9 @@ export function TimerPage() {
                     data-testid="timer-record-history"
                     disabled={!canEditSession}
                     onChange={(event) => {
-                      setSession((currentSession) =>
-                        applyEditableTimerConfig(currentSession, {
-                          recordPracticeHistory: event.target.checked,
-                        }),
-                      );
+                      handleConfigUpdate({
+                        recordPracticeHistory: event.target.checked,
+                      });
                     }}
                     type="checkbox"
                   />
@@ -525,66 +462,35 @@ export function TimerPage() {
             ) : null}
 
             <div className="timer-controls">
-              {(session.phase === 'idle' || session.phase === 'complete') && (
+              {isIdle ? (
                 <button
                   className="primary-button"
                   data-testid="timer-start"
                     onClick={() => {
-                      primeAudio();
-                      const nextSession = startTimerSession(sessionRef.current, Date.now());
-                      setEditingDuration(false);
-                      setSession(nextSession);
-                      if (shouldPlayTimerCue(nextSession, 'start')) {
-                        void playCue('start', nextSession.soundProfileId);
-                      }
+                      handleStart(session.totalDurationSeconds / 60);
                     }}
                   type="button"
                 >
                   Start timer
                 </button>
-              )}
+              ) : null}
 
-              {session.phase === 'running' && (
-                <button
-                  className="primary-button"
-                  data-testid="timer-pause"
-                  onClick={() => {
-                    const currentSession = advanceTimerSession(sessionRef.current, Date.now()).session;
-                    const nextSession = pauseTimerSession(currentSession, Date.now());
-                    setSession(nextSession);
-                    setLastCueMessage('Timer paused.');
-                  }}
-                  type="button"
-                >
-                  Pause timer
-                </button>
-              )}
-
-              {session.phase === 'paused' && (
-                <button
-                  className="primary-button"
-                  data-testid="timer-resume"
-                    onClick={() => {
-                      primeAudio();
-                      const nextSession = resumeTimerSession(sessionRef.current, Date.now());
-                      setEditingDuration(false);
-                      setSession(nextSession);
-                      if (shouldPlayTimerCue(nextSession, 'start')) {
-                        void playCue('start', nextSession.soundProfileId);
-                      }
-                    }}
-                  type="button"
-                >
-                  Resume timer
-                </button>
-              )}
+              {isRunning || isPaused ? (
+                <TimerControls
+                  isRunning={isRunning}
+                  isPaused={isPaused}
+                  onPause={handlePause}
+                  onResume={handleResume}
+                  onStop={handleStop}
+                />
+              ) : null}
 
               <button
                 className="secondary-button"
                 data-testid="timer-reset"
                 onClick={() => {
                   clearTimerSessionStorage();
-                  setSession(loadTimerSession());
+                  handleReset();
                   setLastCueMessage('Timer reset and ready for a new session.');
                 }}
                 type="button"

@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { loadTimerPreferences } from '@/features/timer/timerPreferences';
+
 import {
   advanceTimerSession,
+  applyEditableTimerConfig,
   formatTimerClock,
   pauseTimerSession,
   resetTimerSession,
   resumeTimerSession,
   startTimerSession,
+  type TimerConfigUpdate,
   type TimerSessionState,
 } from '@/features/timer/timerModel';
 
@@ -20,6 +24,7 @@ export type TimerCueEvent = 'start' | 'pause' | 'resume' | 'complete';
 type UseTimerSessionOptions = {
   defaultDurationMinutes?: number;
   initialDurationSeconds?: number;
+  initialSession?: Partial<TimerSessionState>;
   onComplete?: (event: TimerCompletionEvent) => void | Promise<void>;
   onCue?: (cue: TimerCueEvent) => void | Promise<void>;
 };
@@ -35,11 +40,15 @@ export type TimerSessionAPI = {
   handlePause: () => void;
   handleResume: () => void;
   handleStop: () => void;
+  setDurationMinutes: (minutes: number) => void;
+  handleReset: () => void;
+  handleConfigUpdate: (updates: Partial<TimerConfigUpdate>) => void;
 };
 
 export function useTimerSession({
   defaultDurationMinutes = 15,
   initialDurationSeconds,
+  initialSession,
   onComplete,
   onCue,
 }: UseTimerSessionOptions): TimerSessionAPI {
@@ -50,10 +59,10 @@ export function useTimerSession({
       phase: 'idle',
       totalDurationSeconds: seconds,
       remainingSeconds: seconds,
-      cueMode: 'start-end',
-      intervalSeconds: 0,
-      soundProfileId: 'silent',
-      recordPracticeHistory: true,
+      cueMode: initialSession?.cueMode ?? 'start-end',
+      intervalSeconds: initialSession?.intervalSeconds ?? 0,
+      soundProfileId: initialSession?.soundProfileId ?? 'silent',
+      recordPracticeHistory: initialSession?.recordPracticeHistory ?? true,
       targetEndAtMs: null,
       lastIntervalIndex: 0,
       historyRecorded: false,
@@ -142,6 +151,39 @@ export function useTimerSession({
     setSession((currentSession) => resetTimerSession(currentSession));
   }, []);
 
+  const setDurationMinutes = useCallback((minutes: number) => {
+    const seconds = minutes * 60;
+    setSession((currentSession) => ({
+      ...currentSession,
+      totalDurationSeconds: seconds,
+      remainingSeconds: seconds,
+    }));
+  }, []);
+
+  const handleConfigUpdate = useCallback((updates: Partial<TimerConfigUpdate>) => {
+    setSession((currentSession) => applyEditableTimerConfig(currentSession, updates));
+  }, []);
+
+  const handleReset = useCallback(() => {
+    const preferences = loadTimerPreferences();
+    const seconds = preferences.defaultDurationSeconds;
+
+    setSession((currentSession) => ({
+      ...currentSession,
+      phase: 'idle',
+      totalDurationSeconds: seconds,
+      remainingSeconds: seconds,
+      cueMode: preferences.defaultCueMode,
+      intervalSeconds: preferences.defaultIntervalSeconds,
+      soundProfileId: preferences.defaultSoundProfileId,
+      recordPracticeHistory: preferences.recordPracticeHistory,
+      targetEndAtMs: null,
+      lastIntervalIndex: 0,
+      historyRecorded: false,
+      completedAtMs: null,
+    }));
+  }, []);
+
   return {
     session,
     isIdle: session.phase === 'idle',
@@ -153,5 +195,8 @@ export function useTimerSession({
     handlePause,
     handleResume,
     handleStop,
+    setDurationMinutes,
+    handleReset,
+    handleConfigUpdate,
   };
 }
