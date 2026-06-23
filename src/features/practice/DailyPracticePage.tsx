@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
@@ -39,35 +39,43 @@ function formatDayCount(value: number): string {
   return value === 1 ? '1 day' : `${value} days`;
 }
 
+const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
 function StreakCalendar({ completedDates }: { completedDates: Set<string> }) {
-  const days = Array.from({ length: 35 }, (_, i) => {
+  const days = Array.from({ length: 70 }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() - (34 - i));
+    d.setDate(d.getDate() - (69 - i));
     return d.toISOString().slice(0, 10);
   });
 
   const todayKey = new Date().toISOString().slice(0, 10);
 
   return (
-    <div className="streak-grid" aria-hidden="true" data-testid="streak-calendar">
-      {days.map((day) => {
-        const isCompleted = completedDates.has(day);
-        const isToday = day === todayKey;
+    <div className="streak-calendar-container">
+      <div className="streak-weekdays">
+        {WEEKDAY_LABELS.map((label) => (
+          <span key={label}>{label}</span>
+        ))}
+      </div>
+      <div className="streak-grid" aria-hidden="true" data-testid="streak-calendar">
+        {days.map((day) => {
+          const isCompleted = completedDates.has(day);
+          const isToday = day === todayKey;
 
-        return (
-          <div
-            key={day}
-            className={`streak-day${isCompleted ? ' completed' : ''}${isToday ? ' today' : ''}`}
-            title={`${day}: ${isCompleted ? 'Completed' : 'Missed'}`}
-          />
-        );
-      })}
+          return (
+            <div
+              key={day}
+              className={`streak-day${isCompleted ? ' completed' : ''}${isToday ? ' today' : ''}`}
+              title={`${day}: ${isCompleted ? 'Completed' : 'Missed'}`}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 }
 
 export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPracticePageProps) {
-  const navigate = useNavigate();
   const [clockOverride] = useState(() => loadDailyPracticeClockOverride());
   const fallbackTimeZone = useMemo(() => timeZone ?? getResolvedDailyPracticeTimeZone(), [timeZone]);
   const resolvedNow = useMemo(() => (now ? now : resolveDailyPracticeNow(new Date(), clockOverride)), [clockOverride, now]);
@@ -198,14 +206,22 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   return (
     <PageLayout description="" eyebrow="" title="Daily Focus">
       <div className="home-dashboard">
-        <section className="dashboard-region daily-practice-hero" aria-labelledby="practice-heading">
+        <section
+          className="dashboard-region daily-practice-hero"
+          aria-labelledby="practice-heading"
+          data-testid="daily-focus-card"
+        >
           <h1 id="practice-heading">Today&rsquo;s Practice</h1>
+          {dailyFocus.preface ? <p className="daily-focus-card__preface">{dailyFocus.preface}</p> : null}
           <p className="practice-summary" data-testid="daily-practice-text">
             {dailyFocus.text}
           </p>
+          <p className="support-copy" data-testid="daily-focus-source">
+            {dailyFocus.label}
+          </p>
           <Link
             className="primary-button button-inline"
-            data-testid="daily-read-doctrine"
+            data-testid="daily-open-source"
             to={dailyFocus.sourceHref}
           >
             Read full {dailyFocus.sourceTitle}
@@ -349,29 +365,6 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
               <p className="lane-card__summary">Set a focus session.</p>
             </Link>
           </div>
-        </section>
-
-        <section className="dashboard-region" aria-labelledby="daily-focus-heading">
-          <h2 className="dashboard-region__title" id="daily-focus-heading">
-            Full reading
-          </h2>
-          <article className="daily-focus-block" data-testid="daily-focus-card">
-            <p className="practice-status-pill practice-status-pill--ready" data-testid="daily-focus-day">
-              UTC {dailyFocus.dayKey}
-            </p>
-            <h3 className="daily-practice-card__title" data-testid="daily-practice-title">
-              {dailyFocus.sourceTitle}
-            </h3>
-            {dailyFocus.preface ? <p className="daily-focus-card__preface">{dailyFocus.preface}</p> : null}
-            <p className="support-copy" data-testid="daily-focus-source">
-              {dailyFocus.label}
-            </p>
-            <div className="daily-practice-actions">
-              <Link className="secondary-button button-inline" data-testid="daily-open-source" to={dailyFocus.sourceHref}>
-                {dailyFocus.sourceActionLabel}
-              </Link>
-            </div>
-          </article>
         </section>
       </div>
     </PageLayout>

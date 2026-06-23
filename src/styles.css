@@ -2052,26 +2052,71 @@ input {
   margin-left: var(--space-2);
 }
 
+.streak-calendar-container {
+  display: grid;
+}
+
 .streak-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
 }
 
+.streak-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
 .streak-day {
   aspect-ratio: 1;
   background-color: var(--color-surface-soft);
   border-radius: 4px;
-  transition: background-color 0.2s;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s;
+}
+
+.streak-day:hover {
+  transform: scale(1.25);
+  z-index: 1;
 }
 
 .streak-day.completed {
   background: var(--color-accent);
   opacity: 0.8;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
 }
 
 .streak-day.today {
   border: 2px solid var(--color-text);
+}
+
+/* Fade-slide animation for timer picker */
+.timer-picker-dropdown {
+  animation: fadeSlideIn 0.2s ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero card text shadow for depth */
+.daily-practice-hero h1,
+.daily-practice-hero .practice-summary {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* ==========================================================================
