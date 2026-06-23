@@ -19,6 +19,7 @@ export type TimerCueEvent = 'start' | 'pause' | 'resume' | 'complete';
 
 type UseTimerSessionOptions = {
   defaultDurationMinutes?: number;
+  initialDurationSeconds?: number;
   onComplete?: (event: TimerCompletionEvent) => void | Promise<void>;
   onCue?: (cue: TimerCueEvent) => void | Promise<void>;
 };
@@ -38,11 +39,12 @@ export type TimerSessionAPI = {
 
 export function useTimerSession({
   defaultDurationMinutes = 15,
+  initialDurationSeconds,
   onComplete,
   onCue,
 }: UseTimerSessionOptions): TimerSessionAPI {
   const [session, setSession] = useState<TimerSessionState>(() => {
-    const seconds = defaultDurationMinutes * 60;
+    const seconds = initialDurationSeconds ?? defaultDurationMinutes * 60;
 
     return {
       phase: 'idle',
