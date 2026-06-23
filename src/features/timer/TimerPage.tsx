@@ -401,10 +401,11 @@ export function TimerPage() {
                       inputMode="numeric"
                       min={1}
                       onChange={(event) => {
+                      const raw = event.target.value;
                       handleConfigUpdate({
-                        totalDurationSeconds: parsed,
+                        intervalSeconds: raw,
                       });
-                      }}
+                    }}
                       type="number"
                       value={session.intervalSeconds}
                     />

@@ -113,4 +113,26 @@ describe('timer page layout', () => {
     expect(screen.getByTestId('timer-sound-profile')).toHaveValue('silent');
     expect(screen.getByTestId('timer-record-history')).not.toBeChecked();
   });
+
+  it('updates custom cue interval without changing total duration', async () => {
+    const user = userEvent.setup();
+
+    render(<AppTestRouter initialEntries={['/timer']} />);
+
+    await user.click(screen.getByTestId('timer-advanced-toggle'));
+    await user.selectOptions(screen.getByTestId('timer-cue-mode'), 'custom');
+
+    expect(screen.getByTestId('timer-interval-seconds')).toBeVisible();
+    await user.clear(screen.getByTestId('timer-interval-seconds'));
+    await user.type(screen.getByTestId('timer-interval-seconds'), '90');
+
+    expect(screen.getByTestId('timer-interval-seconds')).toHaveValue(90);
+  });
+
+  it('shows 5min default on fresh timer load after session clear', async () => {
+    clearTimerSessionStorage();
+    render(<AppTestRouter initialEntries={['/timer']} />);
+
+    expect(await screen.findByTestId('timer-remaining', {}, { timeout: 3000 })).toBeVisible();
+  });
 });

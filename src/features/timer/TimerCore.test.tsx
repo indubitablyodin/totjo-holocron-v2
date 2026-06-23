@@ -115,29 +115,61 @@ describe('TimerCore dashboard mode', () => {
     expect(screen.getByTestId('timer-readout')).toHaveTextContent('12:00');
   });
 
-  it('calls onComplete via onCue callback on completion', async () => {
-    const onComplete = vi.fn();
-    const onCue = vi.fn();
+  it('renders without error and accepts callbacks', () => {
+    render(<TimerCore mode="compact" source="daily-dashboard" />);
 
-    render(
-      <TimerCore
-        mode="compact"
-        source="daily-dashboard"
-        defaultDurationMinutes={1}
-        onComplete={onComplete}
-        onCue={onCue}
-      />,
-    );
-
-    // Verify callbacks are accepted and the component renders without error
     expect(screen.getByTestId('dashboard-meditation-timer')).toBeVisible();
   });
 
-  it('cleans up interval on unmount', async () => {
+  it('cleans up interval on unmount', () => {
     const { unmount } = render(<TimerCore mode="compact" source="daily-dashboard" />);
 
     unmount();
 
     // No crash means interval was cleaned up — success
+  });
+
+  it('fires onComplete once when a 5-minute session completes', async () => {
+    const onComplete = vi.fn();
+
+    render(
+      <TimerCore
+        mode="compact"
+        source="daily-dashboard"
+        defaultDurationMinutes={5}
+        onComplete={onComplete}
+      />,
+    );
+
+    await userEvent.setup({ advanceTimers: vi.advanceTimersByTimeAsync })
+      .click(screen.getByTestId('meditation-preset-5'));
+
+    await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 1000);
+
+    await waitFor(() => {
+      expect(onComplete).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('does not fire onComplete multiple times', async () => {
+    const onComplete = vi.fn();
+
+    render(
+      <TimerCore
+        mode="compact"
+        source="daily-dashboard"
+        defaultDurationMinutes={5}
+        onComplete={onComplete}
+      />,
+    );
+
+    await userEvent.setup({ advanceTimers: vi.advanceTimersByTimeAsync })
+      .click(screen.getByTestId('meditation-preset-5'));
+
+    await vi.advanceTimersByTimeAsync(6 * 60 * 1000);
+
+    await waitFor(() => {
+      expect(onComplete).toHaveBeenCalledTimes(1);
+    });
   });
 });

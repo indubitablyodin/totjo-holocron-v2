@@ -77,7 +77,7 @@ export function useTimerSession({
 
   const handleComplete = useCallback(
     async (completedSession: TimerSessionState) => {
-      if (completedSession.historyRecorded) {
+      if (completedSession.historyRecorded || sessionRef.current.historyRecorded) {
         return;
       }
 
@@ -85,6 +85,8 @@ export function useTimerSession({
         durationSeconds: completedSession.totalDurationSeconds,
         completedAt: new Date(completedSession.completedAtMs ?? Date.now()).toISOString(),
       });
+
+      sessionRef.current = { ...sessionRef.current, historyRecorded: true };
 
       setSession((currentSession) => {
         if (currentSession.historyRecorded) {
