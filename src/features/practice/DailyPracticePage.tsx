@@ -33,44 +33,111 @@ const EMPTY_MEDITATION_STATS: MeditationPracticeStats = {
   currentStreakDays: 0,
 };
 
-const TIMER_OPTIONS = [5, 10, 15, 20, 30];
-
 function formatDayCount(value: number): string {
   return value === 1 ? '1 day' : `${value} days`;
 }
 
-const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+function formatDateKey(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 
-function StreakCalendar({ completedDates }: { completedDates: Set<string> }) {
-  const days = Array.from({ length: 70 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (69 - i));
-    return d.toISOString().slice(0, 10);
+function MonthCalendar({ completedDates, streakStartDate }: { completedDates: Set<string>; streakStartDate: string | null }) {
+  const [viewMonth, setViewMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
   });
 
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const year = viewMonth.getFullYear();
+  const month = viewMonth.getMonth();
+
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+  type Cell = { date: Date; isCurrentMonth: boolean; dayKey: string };
+  const cells: Cell[] = [];
+
+  for (let i = firstDayOfMonth - 1; i >= 0; i--) {
+    const day = daysInPrevMonth - i;
+    const date = new Date(year, month - 1, day);
+    cells.push({ date, isCurrentMonth: false, dayKey: formatDateKey(date) });
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    cells.push({ date, isCurrentMonth: true, dayKey: formatDateKey(date) });
+  }
+
+  const remaining = 42 - cells.length;
+  for (let day = 1; day <= remaining; day++) {
+    const date = new Date(year, month + 1, day);
+    cells.push({ date, isCurrentMonth: false, dayKey: formatDateKey(date) });
+  }
+
+  const todayKey = formatDateKey(new Date());
+  const monthName = viewMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   return (
-    <div className="streak-calendar-container">
-      <div className="streak-weekdays">
-        {WEEKDAY_LABELS.map((label) => (
-          <span key={label}>{label}</span>
-        ))}
+    <div className="month-calendar" data-testid="streak-calendar">
+      <div className="calendar-nav">
+        <button
+          className="calendar-nav-btn"
+          aria-label="Previous month"
+          onClick={() => {
+            setViewMonth(new Date(year, month - 1, 1));
+          }}
+          type="button"
+        >
+          &larr;
+        </button>
+        <span className="calendar-month-label">{monthName}</span>
+        <button
+          className="calendar-nav-btn"
+          aria-label="Next month"
+          onClick={() => {
+            setViewMonth(new Date(year, month + 1, 1));
+          }}
+          type="button"
+        >
+          &rarr;
+        </button>
       </div>
-      <div className="streak-grid" aria-hidden="true" data-testid="streak-calendar">
-        {days.map((day) => {
-          const isCompleted = completedDates.has(day);
-          const isToday = day === todayKey;
+      <div className="calendar-weekdays">
+        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+      </div>
+      <div className="calendar-grid">
+        {cells.map((cell, i) => {
+          const isCompleted = completedDates.has(cell.dayKey);
+          const isToday = cell.dayKey === todayKey;
+          const classes = [
+            'calendar-day',
+            !cell.isCurrentMonth && 'other-month',
+            isCompleted && 'completed',
+            isToday && 'today',
+          ].filter(Boolean).join(' ');
 
           return (
-            <div
-              key={day}
-              className={`streak-day${isCompleted ? ' completed' : ''}${isToday ? ' today' : ''}`}
-              title={`${day}: ${isCompleted ? 'Completed' : 'Missed'}`}
-            />
+            <div key={i} className={classes} title={`${cell.dayKey}: ${isCompleted ? 'Completed' : 'Not completed'}`}>
+              {cell.date.getDate()}
+            </div>
           );
         })}
       </div>
+      {streakStartDate ? (
+        <p className="streak-start-info">
+          Current streak started:{' '}
+          <strong>
+            {new Date(streakStartDate).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            })}
+          </strong>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -89,9 +156,10 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const [statsStatus, setStatsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [latestSermon, setLatestSermon] = useState<SermonDocumentRecord | null>(null);
   const [sermonStatus, setSermonStatus] = useState<'loading' | 'ready' | 'empty'>('loading');
-  const [selectedMinutes, setSelectedMinutes] = useState(15);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [customMinutes, setCustomMinutes] = useState(20);
+  const [showCustomTime, setShowCustomTime] = useState(false);
   const [completedDates, setCompletedDates] = useState<Set<string>>(new Set());
+  const [streakStartDate, setStreakStartDate] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -188,13 +256,33 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
           }
         });
 
+        const todayKey = formatDateKey(new Date());
+        const yesterdayKey = formatDateKey(new Date(Date.now() - 86400000));
+
+        let streakStart: string | null = null;
+        const checkDate = dateSet.has(todayKey)
+          ? new Date()
+          : dateSet.has(yesterdayKey)
+            ? new Date(Date.now() - 86400000)
+            : null;
+
+        if (checkDate) {
+          const walkDate = new Date(checkDate);
+          while (dateSet.has(formatDateKey(walkDate))) {
+            streakStart = formatDateKey(walkDate);
+            walkDate.setDate(walkDate.getDate() - 1);
+          }
+        }
+
         if (isMounted) {
           setCompletedDates(dateSet);
+          setStreakStartDate(streakStart);
         }
       })
       .catch(() => {
         if (isMounted) {
           setCompletedDates(new Set());
+          setStreakStartDate(null);
         }
       });
 
@@ -204,7 +292,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   }, [database, resolvedTimeZone]);
 
   return (
-    <PageLayout description="" eyebrow="" title="Daily Focus">
+    <PageLayout description="" eyebrow="" title="">
       <div className="home-dashboard">
         <section
           className="dashboard-region daily-practice-hero"
@@ -231,51 +319,52 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
         <section className="dashboard-region primary-action-panel" aria-labelledby="meditation-heading">
           <h2 id="meditation-heading">Meditation</h2>
 
-          <div className="meditation-config">
-            <Link
-              className="meditation-start-btn"
-              data-testid="meditation-begin"
-              to={`/timer?duration=${selectedMinutes}`}
-            >
-              Begin
+          <div className="timer-presets" data-testid="meditation-presets">
+            <Link className="timer-preset-btn" data-testid="meditation-preset-5" to="/timer?duration=5">
+              <span className="timer-preset-num">5</span>
+              <span className="timer-preset-label">min</span>
             </Link>
-
-            <button
-              className="timer-picker-trigger"
-              aria-expanded={showTimePicker}
-              aria-label="Change meditation duration"
-              data-testid="meditation-time-picker"
-              onClick={() => {
-                setShowTimePicker(!showTimePicker);
-              }}
-              type="button"
-            >
-              {selectedMinutes} min
-            </button>
+            <Link className="timer-preset-btn" data-testid="meditation-preset-10" to="/timer?duration=10">
+              <span className="timer-preset-num">10</span>
+              <span className="timer-preset-label">min</span>
+            </Link>
+            <Link className="timer-preset-btn" data-testid="meditation-preset-15" to="/timer?duration=15">
+              <span className="timer-preset-num">15</span>
+              <span className="timer-preset-label">min</span>
+            </Link>
           </div>
 
-          {showTimePicker ? (
-            <div
-              className="timer-picker-dropdown"
-              data-testid="meditation-time-options"
-              role="listbox"
-              aria-label="Select duration"
-            >
-              {TIMER_OPTIONS.map((time) => (
-                <button
-                  key={time}
-                  role="option"
-                  aria-selected={time === selectedMinutes}
-                  className={`timer-option${time === selectedMinutes ? ' active' : ''}`}
-                  onClick={() => {
-                    setSelectedMinutes(time);
-                    setShowTimePicker(false);
-                  }}
-                  type="button"
-                >
-                  {time} min
-                </button>
-              ))}
+          <button
+            className="timer-custom-trigger"
+            data-testid="meditation-custom-trigger"
+            onClick={() => {
+              setShowCustomTime(!showCustomTime);
+            }}
+            type="button"
+          >
+            {showCustomTime ? 'Cancel' : 'Custom time'}
+          </button>
+
+          {showCustomTime ? (
+            <div className="timer-custom-input" data-testid="meditation-custom-input">
+              <input
+                type="number"
+                min="1"
+                max="120"
+                value={customMinutes}
+                aria-label="Custom meditation minutes"
+                onChange={(event) => {
+                  setCustomMinutes(Math.max(1, Math.min(120, parseInt(event.target.value) || 1)));
+                }}
+              />
+              <span className="timer-custom-unit">min</span>
+              <Link
+                className="meditation-start-btn"
+                data-testid="meditation-begin"
+                to={`/timer?duration=${customMinutes}`}
+              >
+                Begin
+              </Link>
             </div>
           ) : null}
 
@@ -300,12 +389,12 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
             <h2 id="streak-heading">Your Streak</h2>
             <div className="streak-stats">
               <span>
-                <strong>{meditationStats.currentStreakDays}</strong> days
+                <strong>{meditationStats.currentStreakDays}</strong> day streak
               </span>
-              <span className="streak-total">{meditationStats.totalDistinctDays} total</span>
+              <span className="streak-total">{meditationStats.totalDistinctDays} total days</span>
             </div>
           </div>
-          <StreakCalendar completedDates={completedDates} />
+          <MonthCalendar completedDates={completedDates} streakStartDate={streakStartDate} />
         </section>
 
         <section className="dashboard-region" aria-labelledby="lanes-heading">

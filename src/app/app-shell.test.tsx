@@ -36,14 +36,14 @@ describe('app-shell routes', () => {
 
     expect(screen.getByTestId('page-header')).toBeVisible();
 
-    expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+    expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
     expect(screen.getByTestId('page-header')).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
     expect(screen.getByTestId('bottom-nav')).toBeVisible();
     expect(getBottomNavLabels()).toEqual(['Back', 'Focus', 'Library', 'Timer', 'Settings']);
 
     await user.click(screen.getByTestId('bottom-nav-daily'));
-    expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+    expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
 
     await user.click(screen.getByTestId('bottom-nav-timer'));
@@ -67,7 +67,7 @@ describe('app-shell routes', () => {
     render(<AppTestRouter />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+      expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
     });
 
     await user.click(screen.getByTestId('bottom-nav-library'));
@@ -79,7 +79,7 @@ describe('app-shell routes', () => {
     await user.click(screen.getByTestId('bottom-nav-back'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+      expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
     });
   });
 
@@ -95,7 +95,7 @@ describe('app-shell routes', () => {
     await user.click(screen.getByTestId('bottom-nav-back'));
 
     await waitFor(() => {
-      expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+      expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
     });
   });
 

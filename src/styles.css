@@ -1974,59 +1974,132 @@ input {
   transform: scale(0.97);
 }
 
-.timer-picker-trigger {
-  background: transparent;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 0.5em 1em;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--color-accent);
-  cursor: pointer;
-  font-family: inherit;
-  transition: border-color 0.2s;
-}
+/* ==========================================================================
+   Timer Presets
+   ========================================================================== */
 
-.timer-picker-trigger:hover,
-.timer-picker-trigger:focus-visible {
-  border-color: var(--color-accent);
-}
-
-.timer-picker-dropdown {
-  display: flex;
-  gap: var(--space-2);
+.timer-presets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
   margin-top: var(--space-3);
+}
+
+.timer-preset-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-2);
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-text);
+  transition:
+    transform 0.12s ease,
+    border-color 0.2s,
+    background-color 0.2s;
+  min-height: 4rem;
+}
+
+.timer-preset-btn:hover,
+.timer-preset-btn:focus-visible {
+  border-color: var(--color-accent);
+  background: var(--color-surface);
+  transform: translateY(-2px);
+}
+
+.timer-preset-btn:active {
+  transform: scale(0.97);
+}
+
+.timer-preset-num {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.timer-preset-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+
+.timer-custom-trigger {
+  background: transparent;
+  border: none;
+  color: var(--color-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
   padding: var(--space-2);
+  margin-top: var(--space-2);
+  font-family: inherit;
+}
+
+.timer-custom-trigger:hover {
+  text-decoration: underline;
+}
+
+.timer-custom-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding: var(--space-3);
   background: var(--color-surface-soft);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
+  animation: fadeSlideIn 0.2s ease-out;
 }
 
-.timer-option {
-  flex: 1;
+.timer-custom-input input {
+  width: 4rem;
   padding: 0.5em;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  font: inherit;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-  color: var(--color-text);
-}
-
-.timer-option:hover {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
   background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-family: inherit;
 }
 
-.timer-option.active {
-  background: var(--color-accent);
-  color: var(--color-accent-ink);
+.timer-custom-input input:focus {
+  outline: none;
   border-color: var(--color-accent);
 }
 
+.timer-custom-unit {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.timer-custom-input .meditation-start-btn {
+  margin-left: auto;
+  padding: 0.5em 1.5em;
+  font-size: 1rem;
+  min-height: 2.5rem;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ==========================================================================
-   Streak Calendar
+   Streak / Month Calendar
    ========================================================================== */
 
 .streak-header {
@@ -2052,65 +2125,113 @@ input {
   margin-left: var(--space-2);
 }
 
-.streak-calendar-container {
+.month-calendar {
   display: grid;
+  gap: var(--space-2);
 }
 
-.streak-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
 }
 
-.streak-weekdays {
+.calendar-nav-btn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--color-text);
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+  font-family: inherit;
+}
+
+.calendar-nav-btn:hover,
+.calendar-nav-btn:focus-visible {
+  border-color: var(--color-accent);
+  background: var(--color-surface-soft);
+}
+
+.calendar-month-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-bottom: 6px;
+  gap: 2px;
   text-align: center;
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--color-text-muted);
   text-transform: uppercase;
+  margin-bottom: 2px;
 }
 
-.streak-day {
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-day {
   aspect-ratio: 1;
-  background-color: var(--color-surface-soft);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.2s;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-soft);
+  color: var(--color-text);
+  transition:
+    transform 0.12s ease,
+    background-color 0.2s;
+  cursor: default;
 }
 
-.streak-day:hover {
-  transform: scale(1.25);
-  z-index: 1;
+.calendar-day.other-month {
+  opacity: 0.25;
 }
 
-.streak-day.completed {
+.calendar-day.completed {
   background: var(--color-accent);
-  opacity: 0.8;
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+  color: var(--color-accent-ink);
+  font-weight: 700;
+  box-shadow: 0 0 6px rgba(99, 102, 241, 0.3);
 }
 
-.streak-day.today {
+.calendar-day.today {
   border: 2px solid var(--color-text);
 }
 
-/* Fade-slide animation for timer picker */
-.timer-picker-dropdown {
-  animation: fadeSlideIn 0.2s ease-out;
+.calendar-day.today.completed {
+  border: 2px solid var(--color-text);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
 }
 
-@keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.calendar-day:not(.other-month):hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+.streak-start-info {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: var(--space-2) 0 0 0;
+  text-align: center;
+}
+
+.streak-start-info strong {
+  color: var(--color-text);
 }
 
 /* Hero card text shadow for depth */

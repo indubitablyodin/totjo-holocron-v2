@@ -91,7 +91,7 @@ describe('daily focus selection and front page', () => {
       renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
 
       await waitFor(() => {
-        expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+        expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
       });
 
       expect(screen.getByText('Jediism is a religion based on the observance of the Force. We believe:')).toBeVisible();
@@ -161,7 +161,7 @@ describe('daily focus selection and front page', () => {
       renderDailyPractice({ database, now: new Date('2026-04-26T12:00:00.000Z') });
 
       await waitFor(() => {
-        expect(screen.getByTestId('meditation-begin')).toBeVisible();
+        expect(screen.getByTestId('meditation-presets')).toBeVisible();
       });
 
       expect(screen.getByText('Meditation')).toBeVisible();
@@ -173,7 +173,7 @@ describe('daily focus selection and front page', () => {
       expect(screen.queryByTestId('daily-meditation-preset-1800')).not.toBeInTheDocument();
       expect(screen.queryByTestId('daily-cancel-meditation')).not.toBeInTheDocument();
 
-      await user.click(screen.getByTestId('meditation-begin'));
+      await user.click(screen.getByTestId('meditation-preset-15'));
 
       expect(await screen.findByTestId('page-title')).toHaveTextContent('Timer');
       expect(screen.getByTestId('timer-meditation-presets')).toBeVisible();

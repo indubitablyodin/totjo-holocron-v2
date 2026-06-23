@@ -69,7 +69,7 @@ describe('timer page layout', () => {
 
     await user.click(screen.getByTestId('timer-cancel'));
 
-    expect(await screen.findByTestId('page-title')).toHaveTextContent('Daily Focus');
+    expect(await screen.findByText(/Today.?.s Practice/)).toBeVisible();
 
     await user.click(screen.getByTestId('bottom-nav-timer'));
 

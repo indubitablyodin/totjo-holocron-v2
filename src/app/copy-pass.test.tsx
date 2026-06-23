@@ -18,11 +18,11 @@ describe('copy pass', () => {
     const todayView = render(<AppTestRouter initialEntries={['/daily']} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+      expect(screen.getByTestId('daily-focus-card')).toBeVisible();
     });
 
-    expect(screen.getByTestId('daily-focus-card')).toBeVisible();
-    expect(screen.getByTestId('meditation-begin')).toBeVisible();
+    expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
+    expect(screen.getByTestId('meditation-presets')).toBeVisible();
     expect(screen.queryByTestId('reader-controls-toggle')).not.toBeInTheDocument();
 
     todayView.unmount();

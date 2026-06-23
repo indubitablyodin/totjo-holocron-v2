@@ -14,12 +14,11 @@ describe('App shell', () => {
     expect(screen.getByTestId('bottom-nav')).toBeVisible();
     expect(screen.getByTestId('offline-banner')).toBeInTheDocument();
     expect(screen.queryByTestId('app-update-prompt')).not.toBeInTheDocument();
-    expect(screen.getByTestId('page-header')).toBeVisible();
-    expect(screen.getByTestId('page-title')).toHaveTextContent('Daily Focus');
+    expect(screen.getByTestId('daily-focus-card')).toBeVisible();
+    expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
 
     await waitFor(() => {
-      expect(screen.getByTestId('daily-focus-card')).toBeVisible();
       expect(screen.getByTestId('meditation-total-days')).toBeVisible();
     });
   });
