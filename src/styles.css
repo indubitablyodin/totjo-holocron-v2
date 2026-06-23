@@ -1828,6 +1828,29 @@ input {
   border-color: var(--color-accent);
 }
 
+.app-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-inline-end: var(--space-2);
+  padding-inline-end: var(--space-3);
+  border-inline-end: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.app-nav__brand-icon {
+  flex-shrink: 0;
+}
+
+.app-nav__brand-text {
+  line-height: 1;
+}
+
 /* Mobile dock at narrow viewports, desktop nav at wider viewports */
 @media (min-width: 56rem) {
   .bottom-nav {
