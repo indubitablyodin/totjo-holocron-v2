@@ -2127,42 +2127,44 @@ input {
 
 .month-calendar {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  max-width: 320px;
+  margin: 0 auto;
+  background: var(--color-surface-soft);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .calendar-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-2);
 }
 
 .calendar-nav-btn {
   background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  width: 2rem;
-  height: 2rem;
+  border: none;
+  width: 1.75rem;
+  height: 1.75rem;
   display: grid;
   place-items: center;
   font-size: 1rem;
   cursor: pointer;
-  color: var(--color-text);
-  transition:
-    border-color 0.2s,
-    background-color 0.2s;
+  color: var(--color-text-muted);
+  transition: color 0.2s;
   font-family: inherit;
 }
 
-.calendar-nav-btn:hover,
-.calendar-nav-btn:focus-visible {
-  border-color: var(--color-accent);
-  background: var(--color-surface-soft);
+.calendar-nav-btn:hover {
+  color: var(--color-accent);
 }
 
 .calendar-month-label {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  text-transform: capitalize;
 }
 
 .calendar-weekdays {
@@ -2170,68 +2172,65 @@ input {
   grid-template-columns: repeat(7, 1fr);
   gap: 2px;
   text-align: center;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 700;
   color: var(--color-text-muted);
   text-transform: uppercase;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 3px;
 }
 
 .calendar-day {
   aspect-ratio: 1;
   display: grid;
   place-items: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-soft);
-  color: var(--color-text);
-  transition:
-    transform 0.12s ease,
-    background-color 0.2s;
-  cursor: default;
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  transition: transform 0.12s ease, background-color 0.2s;
 }
 
 .calendar-day.other-month {
-  opacity: 0.25;
+  opacity: 0.15;
 }
 
 .calendar-day.completed {
   background: var(--color-accent);
   color: var(--color-accent-ink);
   font-weight: 700;
-  box-shadow: 0 0 6px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 4px rgba(99, 102, 241, 0.3);
 }
 
 .calendar-day.today {
-  border: 2px solid var(--color-text);
+  border: 1.5px solid var(--color-accent);
 }
 
 .calendar-day.today.completed {
-  border: 2px solid var(--color-text);
+  border: 1.5px solid var(--color-text);
   box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
 }
 
 .calendar-day:not(.other-month):hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
   z-index: 1;
+  background: var(--color-surface);
 }
 
 .streak-start-info {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--color-text-muted);
   margin: var(--space-2) 0 0 0;
   text-align: center;
 }
 
 .streak-start-info strong {
-  color: var(--color-text);
+  color: var(--color-accent);
 }
 
 /* Hero card text shadow for depth */
