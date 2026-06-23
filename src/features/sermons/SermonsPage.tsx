@@ -49,41 +49,36 @@ function markAutoSyncAttemptedThisSession() {
 }
 
 function SermonCard({ sermon, cacheState }: SermonCardProps) {
+  const isCached = cacheState === 'cached-sermon';
+
   return (
-    <article className="library-card library-card--sermon" data-testid={`sermon-card-${sermon.slug}`}>
-      <span className="authority-badge authority-badge--sermon">TOTJO Sermon</span>
-      <h3 className="library-card__title">
-        <Link className="library-card__link" to={`/library/sermons/${sermon.slug}`}>
-          {sermon.title}
-        </Link>
-      </h3>
+    <article className="library-card" data-testid={`sermon-card-${sermon.slug}`} role="listitem">
+      <Link className="library-card__link" to={`/library/sermons/${sermon.slug}`}>
+        <h3 className="library-card__title">{sermon.title}</h3>
+      </Link>
       <p className="library-card__summary">{sermon.summary}</p>
-      <dl className="sermon-card__meta-group">
-        <div>
-          <dt>Author</dt>
-          <dd>{sermon.author ?? 'Unknown author'}</dd>
-        </div>
-        <div>
-          <dt>Published</dt>
-          <dd>{formatPublishedAt(sermon.publishedAt)}</dd>
-        </div>
-      </dl>
-      <p className={`sermon-status-pill sermon-status-pill--${cacheState}`}>
-        {cacheState === 'cached-sermon' ? 'Saved for offline reading' : 'Available to save'}
+      <p className="library-card__meta">
+        {sermon.author ? `${sermon.author} · ` : ''}
+        {formatPublishedAt(sermon.publishedAt)}
       </p>
+      <div className="library-card__actions">
+        <Link className="secondary-button library-card__cta" to={`/library/sermons/${sermon.slug}`}>
+          {isCached ? 'Read offline' : 'Read online'}
+        </Link>
+      </div>
     </article>
   );
 }
 
 export function SermonsPage() {
+  const isOnline = useOnlineStatus();
   const [sermons, setSermons] = useState<SermonDocumentRecord[]>([]);
   const [cacheStates, setCacheStates] = useState<Record<string, SermonCacheState>>({});
   const [pageStatus, setPageStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     kind: 'idle',
-    message: 'Connect to load the latest public sermon list on this device.',
+    message: isOnline ? 'Sermons ready. Tap Refresh to get the latest.' : 'Connect to load sermons.',
   });
-  const isOnline = useOnlineStatus();
 
   useEffect(() => {
     let isMounted = true;
@@ -132,7 +127,7 @@ export function SermonsPage() {
       setPageStatus('ready');
       setSyncStatus({
         kind: 'synced',
-        message: `Updated ${syncedSermons.length} sermons. Open one to read online or save it for offline reading.`,
+        message: `Updated ${syncedSermons.length} sermons.`,
       });
     } catch {
       setSyncStatus({
@@ -158,18 +153,14 @@ export function SermonsPage() {
     };
   }, [handleSync, isOnline, syncStatus.kind]);
 
-  const visibleSermons = useMemo(() => sermons.slice(0, 7), [sermons]);
+  const savedOffline = useMemo(
+    () => sermons.filter((s) => cacheStates[s.id] === 'cached-sermon'),
+    [cacheStates, sermons],
+  );
 
   return (
-    <PageLayout
-      description="Browse the public TOTJO sermon archive and save sermons for offline reading."
-      eyebrow="TOTJO sermons"
-      title="Sermons"
-    >
-      <PageSection
-        description="Open the latest sermons when they are available and save any sermon you want offline."
-        title="Sermon access"
-      >
+    <PageLayout title="Sermons">
+      <PageSection>
         <div className="document-actions">
           <button
             className="primary-button"
@@ -193,34 +184,33 @@ export function SermonsPage() {
         </p>
       </PageSection>
 
-      <PageSection
-        description="Browse the public sermon archive."
-        title="Public sermon archive"
-      >
-        {pageStatus === 'error' ? <p className="surface-error">Sermon storage could not be loaded.</p> : null}
+      {pageStatus === 'error' ? (
+        <p className="surface-error">Sermon storage could not be loaded.</p>
+      ) : null}
 
-        {pageStatus !== 'error' && sermons.length === 0 ? (
-          <p className="support-copy">No sermons are ready on this device yet. Connect and update sermons to browse the archive.</p>
+      {savedOffline.length > 0 ? (
+        <PageSection title="Saved offline">
+          <div className="library-grid" role="list">
+            {savedOffline.map((sermon) => (
+              <SermonCard cacheState={cacheStates[sermon.id] ?? 'uncached-sermon'} key={sermon.id} sermon={sermon} />
+            ))}
+          </div>
+        </PageSection>
+      ) : null}
+
+      <PageSection title="All sermons">
+        {sermons.length === 0 && pageStatus !== 'error' ? (
+          <p className="support-copy">No sermons are ready yet. Connect and refresh to browse the archive.</p>
         ) : null}
 
-        {visibleSermons.length > 0 ? (
+        {sermons.length > 0 ? (
           <div className="library-grid" role="list">
-            {visibleSermons.map((sermon) => (
+            {sermons.map((sermon) => (
               <SermonCard cacheState={cacheStates[sermon.id] ?? 'uncached-sermon'} key={sermon.id} sermon={sermon} />
             ))}
           </div>
         ) : null}
-
-        {sermons.length > visibleSermons.length ? (
-          <p className="support-copy">Showing the latest seven sermons here.</p>
-        ) : null}
       </PageSection>
-
-      <div className="document-actions">
-        <Link className="secondary-button" to="/library">
-          Back to Read
-        </Link>
-      </div>
     </PageLayout>
   );
 }
