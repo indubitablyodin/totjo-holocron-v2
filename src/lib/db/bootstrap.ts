@@ -12,6 +12,11 @@ import { appDb, CURRENT_DB_SCHEMA_VERSION, type HolocronDatabase } from './appDb
 
 let sharedBootstrapPromise: Promise<void> | null = null;
 
+/** Reset the cached bootstrap promise so the next ensureStorageReady call re-seeds the database. */
+export function resetBootstrapState(): void {
+  sharedBootstrapPromise = null;
+}
+
 function needsBundledContentBootstrap(existingMeta: ContentBootstrapMetaRecord | undefined): boolean {
   if (!existingMeta) {
     return true;

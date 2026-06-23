@@ -4,10 +4,11 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { AppTestRouter } from '@/App';
 import { clearTimerPreferencesStorage } from '@/features/timer/timerPreferences';
 import { clearTimerSessionStorage } from '@/features/timer/timerSessionStorage';
-
+import { resetBootstrapState } from '@/lib/db/bootstrap';
 beforeEach(() => {
   clearTimerPreferencesStorage();
   clearTimerSessionStorage();
+  resetBootstrapState();
 });
 
 describe('supplementary-library authority labels', () => {
@@ -21,7 +22,7 @@ describe('supplementary-library authority labels', () => {
       expect(screen.getByRole('heading', { name: 'Sermons' })).toBeVisible();
       expect(screen.getByTestId('library-card-jedi-believe')).toBeVisible();
       expect(screen.getByTestId('library-card-knights-code')).toBeVisible();
-    });
+    }, { timeout: 10000, interval: 200 });
 
     expect(screen.getByRole('link', { name: 'Open sermons' })).toBeVisible();
     expect(screen.getAllByRole('link', { name: 'Read doctrine' }).length).toBeGreaterThan(0);

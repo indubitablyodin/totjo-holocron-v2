@@ -7,6 +7,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ReadingSettingsProvider } from '@/features/settings/ReadingSettingsContext';
 import { createChecksum } from '@/lib/content';
 import { appDb } from '@/lib/db';
+import { resetBootstrapState } from '@/lib/db/bootstrap';
 
 import { SermonPage } from './SermonPage';
 import { SermonsPage } from './SermonsPage';
@@ -159,6 +160,7 @@ beforeEach(() => {
 afterEach(async () => {
   vi.restoreAllMocks();
   await clearAppDatabase();
+  resetBootstrapState();
 });
 
 describe('sync-fallback sermon reading', () => {
