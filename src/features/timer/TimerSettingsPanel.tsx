@@ -34,12 +34,13 @@ export function TimerSettingsPanel({ isOpen, onSettingsChange }: TimerSettingsPa
     [settings, onSettingsChange],
   );
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="timer-settings-panel" data-testid="dashboard-timer-settings-panel" id="dashboard-timer-settings">
+    <div
+      className="timer-settings-panel"
+      data-testid="dashboard-timer-settings-panel"
+      hidden={!isOpen}
+      id="dashboard-timer-settings"
+    >
       <label className="field-card">
         <span className="field-label">Default duration</span>
         <select

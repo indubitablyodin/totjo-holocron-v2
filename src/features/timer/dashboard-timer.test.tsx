@@ -33,13 +33,13 @@ describe('dashboard timer settings', () => {
       expect(screen.getByTestId('dashboard-timer-settings-toggle')).toBeVisible();
     });
 
-    expect(screen.queryByTestId('dashboard-timer-settings-panel')).not.toBeInTheDocument();
+    expect(screen.getByTestId('dashboard-timer-settings-panel')).not.toBeVisible();
 
     await user.click(screen.getByTestId('dashboard-timer-settings-toggle'));
     expect(screen.getByTestId('dashboard-timer-settings-panel')).toBeVisible();
 
     await user.click(screen.getByTestId('dashboard-timer-settings-toggle'));
-    expect(screen.queryByTestId('dashboard-timer-settings-panel')).not.toBeInTheDocument();
+    expect(screen.getByTestId('dashboard-timer-settings-panel')).not.toBeVisible();
   });
 
   it('changing default duration in settings panel updates storage', async () => {
@@ -111,6 +111,19 @@ describe('dashboard timer settings', () => {
 
     const prefs = loadTimerPreferences();
     expect(prefs.defaultDurationSeconds).toBe(1200);
+  });
+
+  it('records meditation practice on completion and updates stats', async () => {
+    render(<AppTestRouter initialEntries={['/daily']} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('meditation-presets')).toBeVisible();
+    });
+
+    await screen.getByTestId('meditation-total-days');
+    const totalDaysBefore = screen.getByTestId('meditation-total-days').textContent;
+
+    expect(totalDaysBefore).toMatch(/0 days|Loading/);
   });
 
   it('saved default duration is reflected in dashboard timer', async () => {
