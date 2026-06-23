@@ -96,7 +96,7 @@ export const dailyFocusPool: DailyFocusEntry[] = (() => {
       preface: JEDI_BELIEVE_PREFACE,
       sourceActionLabel: 'Read Jedi Believe',
     }),
-    ...createFocusEntries(threeTenets, 'three-tenets', threeTenets.sections?.map((section) => section.body[0] ?? section.title) ?? threeTenets.tenets ?? threeTenets.items ?? [], {
+    ...createFocusEntries(threeTenets, 'three-tenets', threeTenets.sections?.map((section) => section.body[0] ?? section.title) ?? (threeTenets.tenets && threeTenets.tenets.length > 0 ? threeTenets.tenets : threeTenets.items ?? []), {
       sourceActionLabel: 'Read the Three Tenets',
     }),
     ...createFocusEntries(sixteenTeachings, 'sixteen-teachings', sixteenTeachings.items ?? [], {
