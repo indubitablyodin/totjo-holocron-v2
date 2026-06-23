@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { DashboardTimer } from '@/features/timer/DashboardTimer';
+import { TimerSettingsButton } from '@/features/timer/TimerSettingsButton';
+import { TimerSettingsPanel } from '@/features/timer/TimerSettingsPanel';
 import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 
 import { getSermonDocuments } from '@/features/sermons/sermonSync';
@@ -319,31 +321,16 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
         <section className="dashboard-region primary-action-panel" aria-labelledby="meditation-heading">
           <div className="panel-title-row">
             <h2 id="meditation-heading">Meditation</h2>
-            <button
-              aria-controls="dashboard-timer-settings"
-              aria-expanded={timerSettingsOpen}
-              aria-label="Timer settings"
-              className="icon-button timer-settings-button"
-              data-testid="timer-settings-toggle"
-              onClick={() => {
+            <TimerSettingsButton
+              isOpen={timerSettingsOpen}
+              onToggle={() => {
                 setTimerSettingsOpen(!timerSettingsOpen);
               }}
-              type="button"
-            >
-              <span aria-hidden="true">&#9881;</span>
-            </button>
+            />
           </div>
 
           <DashboardTimer />
-
-          {timerSettingsOpen ? (
-            <div className="timer-settings-panel" data-testid="dashboard-timer-settings" id="dashboard-timer-settings">
-              <p className="support-copy">
-                Configure default duration and cues in{' '}
-                <Link to="/settings/timer-defaults">Timer defaults</Link>
-              </p>
-            </div>
-          ) : null}
+          <TimerSettingsPanel isOpen={timerSettingsOpen} />
 
           <dl className="stat-strip" data-testid="meditation-stats">
             <div className="stat-card">
