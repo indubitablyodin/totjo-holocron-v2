@@ -1843,10 +1843,6 @@ input {
   white-space: nowrap;
 }
 
-.app-nav__brand-icon {
-  flex-shrink: 0;
-}
-
 .app-nav__brand-text {
   line-height: 1;
 }
