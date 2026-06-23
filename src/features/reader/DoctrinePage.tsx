@@ -379,22 +379,26 @@ export function DoctrinePage() {
       </ReaderSurface>
 
       <button
+        aria-controls="doctrine-sibling-nav"
         aria-expanded={showSiblingNav}
         className="secondary-button button-inline"
         data-testid="doctrine-sibling-toggle"
         onClick={() => {
-          setShowSiblingNav(!showSiblingNav);
+          setShowSiblingNav((currentValue) => !currentValue);
         }}
         type="button"
       >
         {showSiblingNav ? 'Hide doctrine texts' : 'More doctrine'}
       </button>
 
-      {showSiblingNav ? (
-        <div className="reader-shell__footer-actions" data-testid="doctrine-sibling-nav">
-          <DoctrineReaderNavigation currentSlug={document.slug} />
-        </div>
-      ) : null}
+      <div
+        className="reader-shell__footer-actions"
+        data-testid="doctrine-sibling-nav"
+        hidden={!showSiblingNav}
+        id="doctrine-sibling-nav"
+      >
+        <DoctrineReaderNavigation currentSlug={document.slug} />
+      </div>
     </CompactReaderShell>
   );
 }

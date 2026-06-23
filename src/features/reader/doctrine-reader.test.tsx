@@ -39,7 +39,8 @@ describe('doctrine-reader', () => {
     expect(screen.queryByText(/Library\s*›/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Doctrine\s*›/i)).not.toBeInTheDocument();
     expect(screen.getByTestId('doctrine-sibling-toggle')).toBeVisible();
-    expect(screen.queryByTestId('doctrine-sibling-nav')).not.toBeInTheDocument();
+    expect(screen.getByTestId('doctrine-sibling-nav')).not.toBeVisible();
+    expect(screen.queryByRole('navigation', { name: /doctrine documents/i })).not.toBeInTheDocument();
   });
 
   it('shows doctrine sibling navigation behind a compact toggle', async () => {
@@ -53,9 +54,11 @@ describe('doctrine-reader', () => {
 
     await user.click(screen.getByTestId('doctrine-sibling-toggle'));
     expect(screen.getByTestId('doctrine-sibling-nav')).toBeVisible();
+    expect(screen.getByRole('navigation', { name: /doctrine documents/i })).toBeVisible();
 
     await user.click(screen.getByTestId('doctrine-sibling-toggle'));
-    expect(screen.queryByTestId('doctrine-sibling-nav')).not.toBeInTheDocument();
+    expect(screen.getByTestId('doctrine-sibling-nav')).not.toBeVisible();
+    expect(screen.queryByRole('navigation', { name: /doctrine documents/i })).not.toBeInTheDocument();
   });
 
   it('lets the reader adjust display settings from the contextual reader controls', async () => {
