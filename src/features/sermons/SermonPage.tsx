@@ -3,7 +3,6 @@ import { Link, useParams } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { CompactReaderShell, ReaderMetaList, ReaderOptionGroup, ReaderSurface, type CompactReaderControl } from '@/features/reader/CompactReaderShell';
-import type { BreadcrumbItem } from '@/app/Breadcrumb';
 import { DoctrineMarkdownContent } from '@/features/reader/doctrineMarkdown';
 import { ReaderUserStateSection } from '@/features/reader/ReaderUserStateSection';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
@@ -147,27 +146,9 @@ export function SermonPage() {
 
   const shouldUseOnlineDetail = routeState.status === 'ready' && routeState.document && routeState.cacheState !== 'cached-sermon' && isOnline;
 
-  // Compute breadcrumbs before early returns to satisfy Rules of Hooks
-  const breadcrumbs: BreadcrumbItem[] | null = useMemo(
-    () =>
-      routeState.document
-        ? [
-            { label: 'Library', href: '/library' },
-            { label: 'Sermons', href: '/library/sermons' },
-            { label: routeState.document.title, href: undefined },
-          ]
-        : null,
-    [routeState.document],
-  );
-
   if (routeState.status === 'loading') {
     return (
-      <PageLayout
-        description="Opening this sermon now."
-        eyebrow="TOTJO sermons"
-        headerBadge={<SermonAuthorityBadge />}
-        title="Loading sermon"
-      >
+      <PageLayout title="Loading sermon">
         <p className="support-copy">Opening this sermon…</p>
       </PageLayout>
     );
@@ -175,12 +156,7 @@ export function SermonPage() {
 
   if (routeState.status === 'error') {
     return (
-      <PageLayout
-        description="This sermon could not be opened right now."
-        eyebrow="TOTJO sermons"
-        headerBadge={<SermonAuthorityBadge />}
-        title="Sermon unavailable"
-      >
+      <PageLayout title="Sermon unavailable">
         <p className="surface-error">This sermon could not be opened on this device.</p>
       </PageLayout>
     );
@@ -188,15 +164,8 @@ export function SermonPage() {
 
   if (routeState.status === 'not-found' || !routeState.document) {
     return (
-      <PageLayout
-        description="This sermon is not ready on this device yet."
-        eyebrow="TOTJO sermons"
-        headerBadge={<SermonAuthorityBadge />}
-        title="Sermon not found"
-      >
-        <PageSection description="Open sermons while you are connected, then come back here." title="Unavailable sermon">
-          <p className="support-copy">Refresh the sermon list before opening this sermon.</p>
-        </PageSection>
+      <PageLayout title="Sermon not found">
+        <p className="support-copy">Refresh the sermon list before opening this sermon.</p>
         <div className="document-actions">
           <Link className="secondary-button" to="/library/sermons">
             Go to sermons
@@ -281,43 +250,7 @@ export function SermonPage() {
     <CompactReaderShell
       actionAside={actionAside}
       badges={<SermonAuthorityBadge />}
-      breadcrumbs={breadcrumbs ?? undefined}
       controls={controls}
-      description={document.summary}
-      eyebrow="TOTJO sermons"
-      meta={
-        <ReaderMetaList
-          items={[
-            {
-              label: 'Author',
-              value: document.author ?? 'Unknown author',
-            },
-            {
-              label: 'Published',
-              value: formatPublishedAt(document.publishedAt),
-            },
-            {
-              label: 'Availability',
-              value:
-                cacheState === 'cached-sermon'
-                  ? document.origin === 'bundled'
-                    ? 'Ready on this device'
-                    : 'Saved for offline reading'
-                  : 'Available to load when you are connected',
-            },
-            {
-              label: 'Source',
-              value: document.sourceUrl ? (
-                <a href={document.sourceUrl} rel="noreferrer" target="_blank">
-                  Open TOTJO source
-                </a>
-              ) : (
-                document.source.attribution
-              ),
-            },
-          ]}
-        />
-      }
       title={document.title}
     >
       <ReaderSurface>

@@ -195,7 +195,7 @@ describe('sync-fallback sermon reading', () => {
     await user.click(screen.getByRole('link', { name: 'The Force Works All Things Out' }));
 
     await waitFor(() => {
-      expect(screen.getByTestId('reader-control-strip')).toBeVisible();
+      expect(screen.getByTestId('reader-controls-toggle')).toBeVisible();
       expect(screen.getByRole('button', { name: 'Save offline' })).toBeVisible();
     });
 

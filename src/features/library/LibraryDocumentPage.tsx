@@ -14,8 +14,6 @@ import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
 import { doctrineLibraryEntries } from '@/lib/content';
 import { getLibraryDocumentBySlug } from '@/lib/db';
-import type { BreadcrumbItem } from '@/app/Breadcrumb';
-
 import {
   getAuthorityPresentation,
   type LibraryAuthorityClass,
@@ -151,59 +149,33 @@ export function LibraryDocumentPage({ authorityClass }: LibraryDocumentPageProps
     [document, pronounMode],
   );
 
-  const breadcrumbs: BreadcrumbItem[] | null = useMemo(
-    () =>
-      document
-        ? [
-            { label: 'Library', href: '/library' },
-            { label: presentation.laneTitle, href: `/library/${authorityClass}` },
-            { label: document.title, href: undefined },
-          ]
-        : null,
-    [authorityClass, document, presentation.laneTitle],
-  );
-
   if (resolvedStatus === 'not-found') {
     return (
-      <PageLayout
-        description="This reading is not available on this device right now."
-        eyebrow={presentation.eyebrow}
-        title="Document unavailable"
-      >
-        <PageSection description="Go back to Read to open another text." title="Unavailable entry">
-          <p className="support-copy">This {presentation.laneTitle.toLowerCase()} reading is not available on this device right now.</p>
-          <div className="document-actions">
-            <Link className="secondary-button" to="/library">
-              Back to Read
-            </Link>
-          </div>
-        </PageSection>
+      <PageLayout title="Document unavailable">
+        <p className="support-copy">This {presentation.laneTitle.toLowerCase()} reading is not available on this device right now.</p>
+        <div className="document-actions">
+          <Link className="secondary-button" to="/library">
+            Back to Read
+          </Link>
+        </div>
       </PageLayout>
     );
   }
 
   if (resolvedStatus === 'error') {
     return (
-      <PageLayout
-        description="This reading could not be opened right now."
-        eyebrow={presentation.eyebrow}
-        title="Reading unavailable"
-      >
-        <PageSection description="Try opening this reading again in a moment." title="Reading issue">
-          <p className="surface-error" role="alert">
-            This reading could not be opened on this device.
-          </p>
-        </PageSection>
+      <PageLayout title="Reading unavailable">
+        <p className="surface-error" role="alert">
+          This reading could not be opened on this device.
+        </p>
       </PageLayout>
     );
   }
 
   if (resolvedStatus === 'loading' || !document) {
     return (
-      <PageLayout description="Opening this reading now." eyebrow={presentation.eyebrow} title="Loading…">
-        <PageSection description="Getting this reading ready." title="Opening reading">
-          <p className="support-copy">Opening this reading…</p>
-        </PageSection>
+      <PageLayout title="Loading">
+        <p className="support-copy">Opening this reading…</p>
       </PageLayout>
     );
   }
@@ -215,7 +187,6 @@ export function LibraryDocumentPage({ authorityClass }: LibraryDocumentPageProps
           {presentation.badgeLabel}
         </span>
       }
-      breadcrumbs={breadcrumbs ?? undefined}
       controls={[
         {
           id: 'font-scale',
@@ -267,18 +238,6 @@ export function LibraryDocumentPage({ authorityClass }: LibraryDocumentPageProps
           panel: <ReaderUserStateSection documentId={document.id} documentTitle={document.title} panel="note" variant="compact" />,
         },
       ]}
-      description={document.summary}
-      eyebrow={presentation.eyebrow}
-      meta={
-        <ReaderMetaList
-          items={[
-            { label: 'Source', value: document.source.attribution },
-            { label: 'Section', value: presentation.laneTitle },
-            { label: 'Availability', value: document.origin === 'bundled' ? 'Ready on this device' : 'Added from TOTJO' },
-          ]}
-        />
-      }
-      navigation={authorityClass === 'canonical' ? <DoctrineReaderNavigation currentSlug={document.slug} /> : null}
       title={document.title}
     >
       <ReaderSurface>

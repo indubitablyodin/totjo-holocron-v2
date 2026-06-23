@@ -16,7 +16,6 @@ import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
 import { doctrineLibraryEntries, type DocumentRecord } from '@/lib/content';
 import { getDocumentBySlug } from '@/lib/db';
-import type { BreadcrumbItem } from '@/app/Breadcrumb';
 
 type CodeViewMode = 'side-by-side' | 'single-column';
 type DoctrineDocumentState = {
@@ -257,19 +256,6 @@ export function DoctrinePage() {
   const activePersonalizationEnabled = pronounMode === 'he' || pronounMode === 'she' || pronounMode === 'they';
   const showOriginalBlockIds = new Set<string>();
 
-  // Compute breadcrumbs early to avoid hooks-after-return violation
-  const breadcrumbs: BreadcrumbItem[] | null = useMemo(
-    () =>
-      resolvedDocument
-        ? [
-            { label: 'Library', href: '/library' },
-            { label: 'Doctrine', href: '/library/doctrine' },
-            { label: resolvedDocument.title, href: undefined },
-          ]
-        : null,
-    [resolvedDocument],
-  );
-
   const controls: CompactReaderControl[] = resolvedDocument
     ? [
         {
@@ -349,12 +335,7 @@ export function DoctrinePage() {
 
   if (status === 'loading') {
     return (
-        <PageLayout
-          description="Opening doctrine now."
-          eyebrow="Doctrine library"
-          headerBadge={<HeaderBadges />}
-          title="Loading doctrine"
-        >
+      <PageLayout title="Loading doctrine">
         <p className="reader-empty">Opening doctrine…</p>
       </PageLayout>
     );
@@ -362,12 +343,7 @@ export function DoctrinePage() {
 
   if (status === 'error') {
     return (
-        <PageLayout
-          description="Doctrine could not be opened right now."
-          eyebrow="Doctrine library"
-          headerBadge={<HeaderBadges />}
-          title="Doctrine unavailable"
-        >
+      <PageLayout title="Doctrine unavailable">
         <p className="surface-error" role="alert">
           Doctrine could not be opened on this device.
         </p>
@@ -377,12 +353,7 @@ export function DoctrinePage() {
 
   if (status === 'not-found' || !document) {
     return (
-        <PageLayout
-          description="This doctrine page is not available on this device right now."
-          eyebrow="Doctrine library"
-          headerBadge={<HeaderBadges />}
-          title="Document not found"
-        >
+      <PageLayout title="Document not found">
         <p className="reader-empty">Choose one of the doctrine texts in Read.</p>
         <DoctrineReaderNavigation currentSlug={slug} />
       </PageLayout>
@@ -392,11 +363,8 @@ export function DoctrinePage() {
   return (
     <CompactReaderShell
       badges={<HeaderBadges />}
-      breadcrumbs={breadcrumbs ?? undefined}
       controls={controls}
-      description={document.summary}
-      eyebrow="Doctrine library"
-      headerActions={<Link aria-label="Open reading display settings" className="gear-link" to="/settings/reading-display" title="Reading & Display">⚙</Link>}
+      headerActions={<Link aria-label="Open reading display settings" className="icon-button" to="/settings/reading-display" title="Reading & Display" aria-details="settings">⚙</Link>}
       navigation={<DoctrineReaderNavigation currentSlug={document.slug} />}
       title={document.title}
     >
