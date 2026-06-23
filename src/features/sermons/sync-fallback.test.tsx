@@ -223,9 +223,9 @@ describe('sync-fallback sermon reading', () => {
     render(<SermonTestRouter initialEntries={['/library/sermons/resilience-and-integration-of-practice']} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Connect to load this sermon')).toBeVisible();
+      expect(screen.getByText('Needs connection')).toBeVisible();
       expect(
-        screen.getByText('This sermon summary is saved here, but the full sermon is not on this device yet.'),
+        screen.getByText('This sermon is not available on this device yet. Connect to load it, or save it for offline reading next time.'),
       ).toBeVisible();
     });
   });
@@ -263,7 +263,7 @@ describe('sync-fallback sermon reading', () => {
 
     expect(screen.getByText(fullBody)).toBeVisible();
     expect(screen.getByText('Saved offline')).toBeVisible();
-    expect(screen.queryByText('Connect to load this sermon')).not.toBeInTheDocument();
+    expect(screen.queryByText('Needs connection')).not.toBeInTheDocument();
   });
 
   it('shows clear fallback for unsaved sermon detail without network', async () => {
@@ -289,7 +289,7 @@ describe('sync-fallback sermon reading', () => {
     });
 
     expect(
-      screen.getByText('This sermon summary is saved here, but the full sermon is not on this device yet.'),
+      screen.getByText('This sermon is not available on this device yet. Connect to load it, or save it for offline reading next time.'),
     ).toBeVisible();
   });
 

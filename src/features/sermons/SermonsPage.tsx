@@ -63,7 +63,7 @@ function SermonCard({ sermon, cacheState }: SermonCardProps) {
       </p>
       <div className="library-card__actions">
         <Link className="secondary-button library-card__cta" to={`/library/sermons/${sermon.slug}`}>
-          {isCached ? 'Read offline' : 'Read online'}
+          {isCached ? 'Read offline' : 'Read sermon'}
         </Link>
       </div>
     </article>
@@ -77,7 +77,7 @@ export function SermonsPage() {
   const [pageStatus, setPageStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     kind: 'idle',
-    message: isOnline ? 'Sermons ready. Tap Refresh to get the latest.' : 'Connect to load sermons.',
+    message: isOnline ? 'Sermons ready. Tap Refresh to get the latest.' : 'Connect to browse sermons.',
   });
 
   useEffect(() => {
@@ -180,7 +180,7 @@ export function SermonsPage() {
           data-testid="sermon-sync-status"
           role="status"
         >
-          {!isOnline && sermons.length === 0 ? 'Connect to load sermons.' : syncStatus.message}
+          {!isOnline && sermons.length === 0 ? 'Connect to browse sermons.' : syncStatus.message}
         </p>
       </PageSection>
 

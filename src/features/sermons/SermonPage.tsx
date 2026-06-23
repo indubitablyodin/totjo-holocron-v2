@@ -242,7 +242,7 @@ export function SermonPage() {
         )
       : (
           <p className="sermon-status-pill sermon-status-pill--uncached-sermon" data-testid="offline-sermon-message" role="alert">
-            Connect to load this sermon
+            Needs connection
           </p>
         );
 
@@ -263,7 +263,7 @@ export function SermonPage() {
             <DoctrineMarkdownContent markdown={onlineDetail.bodyMarkdown} />
           </div>
         ) : (
-          <p className="support-copy">This sermon summary is saved here, but the full sermon is not on this device yet.</p>
+          <p className="support-copy">This sermon is not available on this device yet. Connect to load it, or save it for offline reading next time.</p>
         )}
       </ReaderSurface>
 
