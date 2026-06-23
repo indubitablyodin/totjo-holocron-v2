@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 type Announcement = {
@@ -22,24 +22,34 @@ const STORAGE_KEY = 'holocron_dismissed_announcement';
 export function AnnouncementModal() {
   const [isVisible, setIsVisible] = useState(false);
 
-  useEffect(() => {
-    const storage = window.localStorage as Partial<Storage> | undefined;
-    const dismissedId = storage?.getItem?.(STORAGE_KEY);
-    if (dismissedId !== CURRENT_ANNOUNCEMENT.id) {
-      const timer = setTimeout(() => setIsVisible(true), 500);
-      return () => clearTimeout(timer);
+  const storage = window.localStorage as Partial<Storage> | undefined;
+  const dismissedId = storage?.getItem?.(STORAGE_KEY);
+  const isDismissed = dismissedId === CURRENT_ANNOUNCEMENT.id;
+
+  if (!isVisible) {
+    if (isDismissed) {
+      return null;
     }
-  }, []);
+
+    return (
+      <button
+        className="announcement-badge"
+        aria-label="Show announcement"
+        data-testid="announcement-badge"
+        onClick={() => {
+          setIsVisible(true);
+        }}
+        type="button"
+      >
+        <span aria-hidden="true">&#9432;</span>
+      </button>
+    );
+  }
 
   const handleDismiss = () => {
-    const storage = window.localStorage as Partial<Storage> | undefined;
     storage?.setItem?.(STORAGE_KEY, CURRENT_ANNOUNCEMENT.id);
     setIsVisible(false);
   };
-
-  if (!isVisible) {
-    return null;
-  }
 
   return (
     <div

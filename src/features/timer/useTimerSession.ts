@@ -46,23 +46,25 @@ export type TimerSessionAPI = {
 };
 
 export function useTimerSession({
-  defaultDurationMinutes = 15,
+  defaultDurationMinutes,
   initialDurationSeconds,
   initialSession,
   onComplete,
   onCue,
 }: UseTimerSessionOptions): TimerSessionAPI {
   const [session, setSession] = useState<TimerSessionState>(() => {
-    const seconds = initialDurationSeconds ?? defaultDurationMinutes * 60;
+    const preferences = loadTimerPreferences();
+    const resolvedDefaultMinutes = defaultDurationMinutes ?? preferences.defaultDurationSeconds / 60;
+    const seconds = initialDurationSeconds ?? resolvedDefaultMinutes * 60;
 
     return {
       phase: 'idle',
       totalDurationSeconds: seconds,
       remainingSeconds: seconds,
-      cueMode: initialSession?.cueMode ?? 'start-end',
-      intervalSeconds: initialSession?.intervalSeconds ?? 0,
-      soundProfileId: initialSession?.soundProfileId ?? 'silent',
-      recordPracticeHistory: initialSession?.recordPracticeHistory ?? true,
+      cueMode: initialSession?.cueMode ?? preferences.defaultCueMode,
+      intervalSeconds: initialSession?.intervalSeconds ?? preferences.defaultIntervalSeconds,
+      soundProfileId: initialSession?.soundProfileId ?? preferences.defaultSoundProfileId,
+      recordPracticeHistory: initialSession?.recordPracticeHistory ?? preferences.recordPracticeHistory,
       targetEndAtMs: null,
       lastIntervalIndex: 0,
       historyRecorded: false,

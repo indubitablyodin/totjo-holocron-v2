@@ -1,7 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTestRouter } from '@/App';
+import { clearTimerPreferencesStorage } from '@/features/timer/timerPreferences';
+
+beforeEach(() => {
+  clearTimerPreferencesStorage();
+});
 
 describe('supplementary-library authority labels', () => {
   it('presents /library as the Read surface with distinct doctrine, supplemental, and sermon entry points', async () => {
