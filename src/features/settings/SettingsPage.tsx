@@ -7,6 +7,9 @@ import { loadDailyQuickAccessMiddleSlotId } from '@/features/practice/dailyQuick
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { getSoundProfileById } from '@/features/timer/audioProfiles';
 import { loadTimerPreferences, type TimerCueMode } from '@/features/timer/timerPreferences';
+import { collectUserDataExport, formatUserDataMarkdown, createExportFilename, triggerDownload } from '@/features/settings/exportUserData';
+import { useState } from 'react';
+import { appDb } from '@/lib/db';
 
 const FONT_SCALE_LABELS = {
   compact: 'Compact',
@@ -56,6 +59,20 @@ function SettingsIndexLink({ actionLabel, description, summary, testId, title, t
 
 export function SettingsPage() {
   const { settings } = useReadingSettings();
+  const [exportStatus, setExportStatus] = useState<string | null>(null);
+
+  const handleExport = async () => {
+    setExportStatus('Preparing export…');
+    try {
+      const data = await collectUserDataExport(appDb);
+      const markdown = formatUserDataMarkdown(data);
+      const filename = createExportFilename();
+      triggerDownload(markdown, filename);
+      setExportStatus('Export downloaded.');
+    } catch {
+      setExportStatus('Export failed. Try again.');
+    }
+  };
   const { pronounMode } = usePersonalization();
   const timerPreferences = loadTimerPreferences();
   const focusClockOverride = loadDailyPracticeClockOverride();
@@ -105,6 +122,26 @@ export function SettingsPage() {
             to="/settings/about-legal"
           />
         </div>
+      </PageSection>
+
+      <PageSection title="User Data">
+        <p className="support-copy">
+          Your notes, bookmarks, practice history, and settings are stored on this device.
+        </p>
+        <div className="document-actions">
+          <button
+            className="primary-button"
+            data-testid="export-markdown-button"
+            disabled={exportStatus === 'Preparing export…'}
+            onClick={() => {
+              void handleExport();
+            }}
+            type="button"
+          >
+            {exportStatus === 'Preparing export…' ? 'Preparing…' : 'Export Markdown'}
+          </button>
+        </div>
+        {exportStatus ? <p className="support-copy">{exportStatus}</p> : null}
       </PageSection>
     </PageLayout>
   );
