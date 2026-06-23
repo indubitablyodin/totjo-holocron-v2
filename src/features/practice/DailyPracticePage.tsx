@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
+import { DashboardTimer } from '@/features/timer/DashboardTimer';
 import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 
 import { getSermonDocuments } from '@/features/sermons/sermonSync';
@@ -156,10 +157,9 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const [statsStatus, setStatsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [latestSermon, setLatestSermon] = useState<SermonDocumentRecord | null>(null);
   const [sermonStatus, setSermonStatus] = useState<'loading' | 'ready' | 'empty'>('loading');
-  const [customMinutes, setCustomMinutes] = useState(20);
-  const [showCustomTime, setShowCustomTime] = useState(false);
   const [completedDates, setCompletedDates] = useState<Set<string>>(new Set());
   const [streakStartDate, setStreakStartDate] = useState<string | null>(null);
+  const [timerSettingsOpen, setTimerSettingsOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -317,54 +317,31 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
         </section>
 
         <section className="dashboard-region primary-action-panel" aria-labelledby="meditation-heading">
-          <h2 id="meditation-heading">Meditation</h2>
-
-          <div className="timer-presets" data-testid="meditation-presets">
-            <Link className="timer-preset-btn" data-testid="meditation-preset-5" to="/timer?duration=5">
-              <span className="timer-preset-num">5</span>
-              <span className="timer-preset-label">min</span>
-            </Link>
-            <Link className="timer-preset-btn" data-testid="meditation-preset-10" to="/timer?duration=10">
-              <span className="timer-preset-num">10</span>
-              <span className="timer-preset-label">min</span>
-            </Link>
-            <Link className="timer-preset-btn" data-testid="meditation-preset-15" to="/timer?duration=15">
-              <span className="timer-preset-num">15</span>
-              <span className="timer-preset-label">min</span>
-            </Link>
+          <div className="panel-title-row">
+            <h2 id="meditation-heading">Meditation</h2>
+            <button
+              aria-controls="dashboard-timer-settings"
+              aria-expanded={timerSettingsOpen}
+              aria-label="Timer settings"
+              className="icon-button timer-settings-button"
+              data-testid="timer-settings-toggle"
+              onClick={() => {
+                setTimerSettingsOpen(!timerSettingsOpen);
+              }}
+              type="button"
+            >
+              <span aria-hidden="true">&#9881;</span>
+            </button>
           </div>
 
-          <button
-            className="timer-custom-trigger"
-            data-testid="meditation-custom-trigger"
-            onClick={() => {
-              setShowCustomTime(!showCustomTime);
-            }}
-            type="button"
-          >
-            {showCustomTime ? 'Cancel' : 'Custom time'}
-          </button>
+          <DashboardTimer />
 
-          {showCustomTime ? (
-            <div className="timer-custom-input" data-testid="meditation-custom-input">
-              <input
-                type="number"
-                min="1"
-                max="120"
-                value={customMinutes}
-                aria-label="Custom meditation minutes"
-                onChange={(event) => {
-                  setCustomMinutes(Math.max(1, Math.min(120, parseInt(event.target.value) || 1)));
-                }}
-              />
-              <span className="timer-custom-unit">min</span>
-              <Link
-                className="meditation-start-btn"
-                data-testid="meditation-begin"
-                to={`/timer?duration=${customMinutes}`}
-              >
-                Begin
-              </Link>
+          {timerSettingsOpen ? (
+            <div className="timer-settings-panel" data-testid="dashboard-timer-settings" id="dashboard-timer-settings">
+              <p className="support-copy">
+                Configure default duration and cues in{' '}
+                <Link to="/settings/timer-defaults">Timer defaults</Link>
+              </p>
             </div>
           ) : null}
 

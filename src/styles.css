@@ -2240,6 +2240,88 @@ input {
 }
 
 /* ==========================================================================
+   Icon button / Panel title row
+   ========================================================================== */
+
+.icon-button {
+  inline-size: 3rem;
+  block-size: 3rem;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-button:hover,
+.icon-button:focus-visible {
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-soft);
+}
+
+.panel-title-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.reader-title-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.reader-title-row h1 {
+  margin: 0;
+  min-width: 0;
+}
+
+/* ==========================================================================
+   Dashboard timer
+   ========================================================================== */
+
+.dashboard-timer {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.dashboard-timer__readout {
+  font-size: clamp(2.5rem, 12vw, 5rem);
+  line-height: 1;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-text);
+  margin: var(--space-3) 0;
+}
+
+.dashboard-timer__controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: var(--space-2);
+}
+
+.timer-complete-message {
+  text-align: center;
+  margin: var(--space-2) 0 0;
+}
+
+.timer-settings-panel,
+.reader-settings-panel {
+  display: grid;
+  gap: var(--space-3);
+  padding-block-start: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ==========================================================================
    Screen-reader-only utility
    ========================================================================== */
 

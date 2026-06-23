@@ -175,8 +175,8 @@ describe('daily focus selection and front page', () => {
 
       await user.click(screen.getByTestId('meditation-preset-15'));
 
-      expect(await screen.findByTestId('page-title')).toHaveTextContent('Timer');
-      expect(screen.getByTestId('timer-meditation-presets')).toBeVisible();
+      expect(await screen.findByTestId('dashboard-meditation-timer')).toBeVisible();
+      expect(screen.getByTestId('timer-readout')).toBeVisible();
     } finally {
       await closeAndDeleteDatabase(database);
     }
