@@ -11,6 +11,7 @@ type DailyFocusSourceDocument = {
   title: string;
   items?: string[];
   tenets?: string[];
+  sections?: Array<{ title: string; body: string[] }>;
 };
 
 export type DailyFocusEntry = {
@@ -95,7 +96,7 @@ export const dailyFocusPool: DailyFocusEntry[] = (() => {
       preface: JEDI_BELIEVE_PREFACE,
       sourceActionLabel: 'Read Jedi Believe',
     }),
-    ...createFocusEntries(threeTenets, 'three-tenets', threeTenets.tenets ?? threeTenets.items ?? [], {
+    ...createFocusEntries(threeTenets, 'three-tenets', threeTenets.sections?.map((section) => section.body[0] ?? section.title) ?? threeTenets.tenets ?? threeTenets.items ?? [], {
       sourceActionLabel: 'Read the Three Tenets',
     }),
     ...createFocusEntries(sixteenTeachings, 'sixteen-teachings', sixteenTeachings.items ?? [], {
