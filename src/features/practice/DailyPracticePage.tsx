@@ -6,6 +6,7 @@ import { DashboardTimer } from '@/features/timer/DashboardTimer';
 import { TimerSettingsButton } from '@/features/timer/TimerSettingsButton';
 import { TimerSettingsPanel } from '@/features/timer/TimerSettingsPanel';
 import { loadTimerSettings } from '@/features/timer/timerSettingsStorage';
+import { TotjoBrandMark } from '@/app/TotjoBrandMark';
 import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 
 import { getSermonDocuments } from '@/features/sermons/sermonSync';
@@ -303,6 +304,10 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
           aria-labelledby="practice-heading"
           data-testid="daily-focus-card"
         >
+          <div className="daily-practice-hero__brand">
+            <TotjoBrandMark variant="compact" />
+            <span>Temple of the Jedi Order</span>
+          </div>
           <h1 id="practice-heading">Today&rsquo;s Practice</h1>
           {dailyFocus.preface ? <p className="daily-focus-card__preface">{dailyFocus.preface}</p> : null}
           <p className="practice-summary" data-testid="daily-practice-text">

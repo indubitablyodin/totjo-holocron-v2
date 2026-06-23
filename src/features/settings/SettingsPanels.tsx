@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { SaveToast, useSaveToast } from '@/features/settings/SaveToast';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
+import { TotjoBrandMark } from '@/app/TotjoBrandMark';
 import { usePersonalization } from '@/features/personalization/PersonalizationContext';
 import { PRONOUN_MODE_OPTIONS } from '@/features/personalization/personalizationRules';
 import {
@@ -566,6 +567,14 @@ export function AboutLegalSettingsPage() {
       headerBadge={<SettingsBackLink />}
       title="About & Legal"
     >
+      <PageSection>
+        <div className="about-brand">
+          <TotjoBrandMark variant="full" />
+          <h2>Temple of the Jedi Order Holocron</h2>
+          <p className="support-copy">A local-first study and practice companion.</p>
+        </div>
+      </PageSection>
+
       <PageSection
         description="The app shell shows install and offline status."
         title="App access"
