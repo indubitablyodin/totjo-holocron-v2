@@ -42,7 +42,7 @@ describe('app-shell routes', () => {
     expect(screen.getByTestId('page-header')).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
     expect(screen.getByTestId('bottom-nav')).toBeVisible();
-    expect(getBottomNavLabels()).toEqual(['Back', 'Focus', 'Library', 'Timer', 'Settings']);
+    expect(getBottomNavLabels()).toEqual(['Back', 'Focus', 'Library', 'Sermons', 'Timer', 'Settings']);
 
     await user.click(screen.getByTestId('bottom-nav-daily'));
     expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();

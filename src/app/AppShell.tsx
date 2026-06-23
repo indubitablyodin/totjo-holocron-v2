@@ -33,7 +33,16 @@ export const PRIMARY_PAGES: PageDefinition[] = [
     path: '/library',
     title: 'Read',
     navTestId: 'nav-library',
-    match: (pathname) => pathname.startsWith('/library'),
+    match: (pathname) => pathname.startsWith('/library') && !pathname.startsWith('/library/sermons'),
+  },
+  {
+    group: 'core',
+    icon: 'sermons',
+    id: 'sermons',
+    path: '/library/sermons',
+    title: 'Sermons',
+    navTestId: 'nav-sermons',
+    match: (pathname) => pathname.startsWith('/library/sermons'),
   },
   {
     group: 'core',
@@ -219,7 +228,7 @@ export function AppShell() {
 
   const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
   const bottomNavPages = useMemo(
-    () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'timer' || page.id === 'settings'),
+    () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'sermons' || page.id === 'timer' || page.id === 'settings'),
     [navGroups.core],
   );
 
