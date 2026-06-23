@@ -230,6 +230,69 @@ describe('sync-fallback sermon reading', () => {
     });
   });
 
+  it('renders cached sermon detail directly from IndexedDB without requiring prior online fetch', async () => {
+    const fullBody =
+      'This is the full body of a cached sermon. It should render on the detail page without any network request.';
+    const cachedDoc = buildSermonDocument({
+      slug: 'cached-test-sermon',
+      title: 'Cached Test Sermon',
+      author: 'Test Author',
+      publishedAt: '2026-06-01T12:00:00.000Z',
+      summary: 'A cached sermon used for offline testing.',
+      bodyMarkdown: fullBody,
+      sortOrder: 1,
+    });
+
+    setNavigatorOnline(false);
+
+    await appDb.open();
+    await appDb.documents.put(cachedDoc);
+    await appDb.downloads.put({
+      id: `sermon-download:${cachedDoc.id}`,
+      documentId: cachedDoc.id,
+      status: 'ready',
+      storedChecksum: cachedDoc.checksum,
+      updatedAt: IMPORTED_AT,
+    });
+
+    render(<SermonTestRouter initialEntries={['/library/sermons/cached-test-sermon']} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Cached Test Sermon');
+    });
+
+    expect(screen.getByText(fullBody)).toBeVisible();
+    expect(screen.getByText('Saved offline')).toBeVisible();
+    expect(screen.queryByText('Connect to load this sermon')).not.toBeInTheDocument();
+  });
+
+  it('shows clear fallback for unsaved sermon detail without network', async () => {
+    const uncachedDoc = buildSermonDocument({
+      slug: 'uncached-test-sermon',
+      title: 'Uncached Test Sermon',
+      author: 'Test Author',
+      publishedAt: '2026-06-01T12:00:00.000Z',
+      summary: 'An uncached sermon used for offline fallback testing.',
+      bodyMarkdown: '',
+      sortOrder: 1,
+    });
+
+    setNavigatorOnline(false);
+
+    await appDb.open();
+    await appDb.documents.put(uncachedDoc);
+
+    render(<SermonTestRouter initialEntries={['/library/sermons/uncached-test-sermon']} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Uncached Test Sermon');
+    });
+
+    expect(
+      screen.getByText('This sermon summary is saved here, but the full sermon is not on this device yet.'),
+    ).toBeVisible();
+  });
+
   it('refreshes previously cached sermon bodies when synced imports change', async () => {
     const user = userEvent.setup();
     const staleCachedSermon = {
