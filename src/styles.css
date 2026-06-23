@@ -2474,6 +2474,11 @@ input {
   border-top: 1px solid var(--color-border);
 }
 
+.timer-settings-panel[hidden],
+.reader-settings-panel[hidden] {
+  display: none !important;
+}
+
 /* ==========================================================================
    Screen-reader-only utility
    ========================================================================== */
