@@ -8,12 +8,13 @@ function getImg() {
 }
 
 describe('TotjoBrandMark', () => {
-  it('renders an img with src containing apple-touch-icon.png', () => {
+  it('renders an img with a Vite-processed asset URL, not a raw root path', () => {
     render(<TotjoBrandMark />);
 
     const img = getImg();
     expect(img).not.toBeNull();
-    expect(img).toHaveAttribute('src', '/apple-touch-icon.png');
+    expect(img).toHaveAttribute('src');
+    expect(img!.getAttribute('src')).not.toBe('/apple-touch-icon.png');
   });
 
   it('uses alt="" and aria-hidden when decorative', () => {

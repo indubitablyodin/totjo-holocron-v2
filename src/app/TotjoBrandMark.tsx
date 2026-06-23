@@ -1,3 +1,5 @@
+import totjoIconUrl from '@/assets/apple-touch-icon.png';
+
 type TotjoBrandMarkProps = {
   variant?: 'compact' | 'full';
   decorative?: boolean;
@@ -6,7 +8,9 @@ type TotjoBrandMarkProps = {
 
 /**
  * Temple of the Jedi Order brand mark.
- * Uses the canonical app icon (apple-touch-icon.png) as the logo image.
+ * Uses the canonical app icon (apple-touch-icon.png) as the logo image,
+ * imported as a Vite asset so the production URL resolves correctly
+ * regardless of base path or deployment context.
  *
  * - `compact`: small 36px emblem for dashboard hero or nav.
  * - `full`: larger 48px emblem with label for Settings/About.
@@ -19,7 +23,7 @@ export function TotjoBrandMark({ variant = 'compact', decorative = true, classNa
   return (
     <span className={`totjo-brand totjo-brand--${variant}${className ? ` ${className}` : ''}`}>
       <img
-        src="/apple-touch-icon.png"
+        src={totjoIconUrl}
         alt={decorative ? '' : 'Temple of the Jedi Order logo'}
         width={size}
         height={size}
