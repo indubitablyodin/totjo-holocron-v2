@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { Link, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate, useNavigationType } from 'react-router-dom';
 
 import { AnnouncementModal } from '@/features/announcements/AnnouncementModal';
 import { BackToTopButton } from '@/app/BackToTopButton';
@@ -168,18 +168,12 @@ function useOnlineStatus() {
   return isOnline;
 }
 
-function getRoutePath(location: { hash: string; pathname: string; search: string }) {
-  return `${location.pathname}${location.search}${location.hash}`;
-}
-
 export function AppShell() {
   const isOnline = useOnlineStatus();
-  const location = useLocation();
   const navigate = useNavigate();
   const navigationType = useNavigationType();
   const pwaUpdate = useSyncExternalStore(subscribePwaUpdate, getPwaUpdateSnapshot, getPwaUpdateSnapshot);
   const inAppHistoryRef = useRef<string[]>([]);
-  const currentRoutePath = getRoutePath(location);
   const navGroups = useMemo(
     () => ({
       core: PRIMARY_PAGES.filter((page) => page.group === 'core'),
@@ -191,35 +185,37 @@ export function AppShell() {
 
   useEffect(() => {
     const historyStack = inAppHistoryRef.current;
+    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     const lastRoutePath = historyStack[historyStack.length - 1];
 
-    if (lastRoutePath === currentRoutePath) {
+    if (lastRoutePath === currentPath) {
       return;
     }
 
     if (navigationType === 'POP') {
-      const existingIndex = historyStack.lastIndexOf(currentRoutePath);
+      const existingIndex = historyStack.lastIndexOf(currentPath);
 
-      inAppHistoryRef.current = existingIndex >= 0 ? historyStack.slice(0, existingIndex + 1) : [currentRoutePath];
+      inAppHistoryRef.current = existingIndex >= 0 ? historyStack.slice(0, existingIndex + 1) : [currentPath];
       return;
     }
 
     if (navigationType === 'REPLACE') {
-      inAppHistoryRef.current = historyStack.length > 0 ? [...historyStack.slice(0, -1), currentRoutePath] : [currentRoutePath];
+      inAppHistoryRef.current = historyStack.length > 0 ? [...historyStack.slice(0, -1), currentPath] : [currentPath];
       return;
     }
 
-    inAppHistoryRef.current = [...historyStack, currentRoutePath].slice(-IN_APP_HISTORY_LIMIT);
-  }, [currentRoutePath, navigationType]);
+    inAppHistoryRef.current = [...historyStack, currentPath].slice(-IN_APP_HISTORY_LIMIT);
+  }, [navigationType]);
 
   useEffect(() => {
-    if (location.hash) {
-      const targetElement = document.querySelector(location.hash);
+    const hash = window.location.hash;
+    if (hash) {
+      const targetElement = document.querySelector(hash);
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
-  }, [location.hash]);
+  }, []);
 
   const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
   const bottomNavPages = useMemo(
@@ -229,9 +225,10 @@ export function AppShell() {
 
   const handleBottomNavBack = () => {
     const historyStack = inAppHistoryRef.current;
+    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     const previousRoutePath = historyStack.length > 1 ? historyStack[historyStack.length - 2] : null;
 
-    if (previousRoutePath && previousRoutePath !== currentRoutePath) {
+    if (previousRoutePath && previousRoutePath !== currentPath) {
       void navigate(-1);
       return;
     }
@@ -282,43 +279,34 @@ export function AppShell() {
       </div>
 
       <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav">
-        <button className="bottom-nav__link bottom-nav__button" data-testid="bottom-nav-back" onClick={handleBottomNavBack} type="button">
-          <span aria-hidden="true" className="bottom-nav__icon" data-icon={BOTTOM_NAV_BACK_ICON} />
+        <button className="bottom-nav__back" data-testid="bottom-nav-back" onClick={handleBottomNavBack} type="button">
+          <span aria-hidden="true" className="bottom-nav__back-icon" data-icon={BOTTOM_NAV_BACK_ICON} />
           <span>Back</span>
         </button>
-        {bottomNavPages.map((page) => {
-          const isActive = page.match(location.pathname, location.hash);
-
-          return (
-            <Link
-              className={`bottom-nav__link${isActive ? ' bottom-nav__link--active' : ''}`}
-              data-testid={`bottom-${page.navTestId}`}
-              key={page.id}
-              to={page.path}
-            >
-              <span aria-hidden="true" className="bottom-nav__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
-              <span>{page.title === 'Read' ? 'Library' : page.title}</span>
-            </Link>
-          );
-        })}
+        {bottomNavPages.map((page) => (
+          <NavLink
+            className={({ isActive }) => `bottom-nav__link${isActive ? ' bottom-nav__link--active' : ''}`}
+            data-testid={`bottom-${page.navTestId}`}
+            key={page.id}
+            to={page.path}
+          >
+            <span aria-hidden="true" className="bottom-nav__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
+            <span>{page.title === 'Read' ? 'Library' : page.title}</span>
+          </NavLink>
+        ))}
       </nav>
 
       <nav aria-label="App" className="app-nav" data-testid="app-nav">
-        {bottomNavPages.map((page) => {
-          const isActive = page.match(location.pathname, location.hash);
-
-          return (
-            <Link
-              aria-current={isActive ? 'page' : undefined}
-              className={`app-nav__link${isActive ? ' app-nav__link--active' : ''}`}
-              data-testid={`app-${page.navTestId}`}
-              key={page.id}
-              to={page.path}
-            >
-              {page.title === 'Read' ? 'Library' : page.title}
-            </Link>
-          );
-        })}
+        {bottomNavPages.map((page) => (
+          <NavLink
+            className={({ isActive }) => `app-nav__link${isActive ? ' app-nav__link--active' : ''}`}
+            data-testid={`app-${page.navTestId}`}
+            key={page.id}
+            to={page.path}
+          >
+            {page.title === 'Read' ? 'Library' : page.title}
+          </NavLink>
+        ))}
       </nav>
 
       <AnnouncementModal />

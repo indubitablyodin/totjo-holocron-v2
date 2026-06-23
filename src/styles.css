@@ -1517,7 +1517,7 @@ input {
   }
 }
 
-@media (max-width: 40rem) {
+@media (max-width: 55.99rem) {
   .app-shell {
     padding: var(--space-3) var(--space-3) calc(var(--shell-bottom-nav-height) + var(--space-5));
   }
@@ -1533,21 +1533,6 @@ input {
   .primary-button,
   .secondary-button {
     width: 100%;
-  }
-
-  .bottom-nav {
-    margin-inline: auto;
-  }
-
-  .bottom-nav__link {
-    min-width: 0;
-    flex: 1 1 0;
-    padding-inline: var(--space-2);
-    font-size: 1rem;
-  }
-
-  .bottom-nav__icon {
-    display: none;
   }
 
   .code-grid {
@@ -1698,6 +1683,115 @@ input {
    Desktop app navigation
    ========================================================================== */
 
+/* ==========================================================================
+   Mobile dock (bottom-nav)
+   ========================================================================== */
+
+.bottom-nav {
+  position: fixed;
+  z-index: 50;
+  bottom: max(var(--space-3), env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  width: min(calc(100% - var(--space-3) * 2), max-content);
+  max-width: calc(100% - var(--space-3) * 2);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.bottom-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.bottom-nav__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color var(--transition-base),
+    background-color var(--transition-base);
+}
+
+.bottom-nav__back:hover,
+.bottom-nav__back:focus-visible {
+  color: var(--color-text);
+  background: var(--color-surface-soft);
+}
+
+.bottom-nav__back + .bottom-nav__link {
+  margin-left: var(--space-1);
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-border);
+}
+
+.bottom-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 1rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color var(--transition-base),
+    background-color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.bottom-nav__link:hover,
+.bottom-nav__link:focus-visible {
+  color: var(--color-text);
+  background: var(--color-surface-soft);
+}
+
+.bottom-nav__link--active {
+  color: var(--color-text);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.bottom-nav__link--active:hover,
+.bottom-nav__link--active:focus-visible {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.bottom-nav__icon {
+  flex-shrink: 0;
+}
+
+.bottom-nav__icon::before {
+  content: attr(data-icon);
+  line-height: 1;
+}
+
+/* ==========================================================================
+   Desktop app nav
+   ========================================================================== */
+
 .app-nav {
   display: none;
 }
@@ -1729,13 +1823,13 @@ input {
 }
 
 .app-nav__link--active {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-border-strong);
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border-color: var(--color-accent);
 }
 
-/* Mobile only: bottom-nav visible, desktop shows app-nav */
-@media (min-width: 40rem) {
+/* Mobile dock at narrow viewports, desktop nav at wider viewports */
+@media (min-width: 56rem) {
   .bottom-nav {
     display: none;
   }

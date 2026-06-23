@@ -16,7 +16,9 @@ function resetReadingDocumentState() {
 }
 
 function getBottomNavLabels() {
-  return Array.from(screen.getByTestId('bottom-nav').querySelectorAll('.bottom-nav__link')).map((navItem) => navItem.textContent?.trim());
+  const nav = screen.getByTestId('bottom-nav');
+  const links = Array.from(nav.querySelectorAll('.bottom-nav__back, .bottom-nav__link'));
+  return links.map((link) => link.textContent?.trim());
 }
 
 describe('app-shell routes', () => {
