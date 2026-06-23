@@ -13,8 +13,30 @@ type FetchJsonOptions = {
   forceNetwork?: boolean;
 };
 
-export function createSermonImportAssetPath(assetName: string, basePath = import.meta.env.BASE_URL): string {
-  const safeBasePath = basePath || '/';
+export function getEffectiveBasePath(basePath?: string): string {
+  if (basePath) {
+    return basePath;
+  }
+
+  const envBase = import.meta.env.BASE_URL;
+
+  if (envBase && envBase !== '/') {
+    return envBase;
+  }
+
+  if (typeof window !== 'undefined') {
+    const firstSegment = window.location.pathname.split('/').filter(Boolean).at(0);
+
+    if (firstSegment) {
+      return `/${firstSegment}/`;
+    }
+  }
+
+  return '/';
+}
+
+export function createSermonImportAssetPath(assetName: string, basePath?: string): string {
+  const safeBasePath = getEffectiveBasePath(basePath) || '/';
   const normalizedBasePath = safeBasePath.endsWith('/') ? safeBasePath : `${safeBasePath}/`;
   const normalizedAssetName = assetName.replace(/^\/+/, '');
 

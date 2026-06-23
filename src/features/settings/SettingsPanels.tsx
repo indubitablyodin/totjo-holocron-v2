@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { SaveToast, useSaveToast } from '@/features/settings/SaveToast';
+
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { usePersonalization } from '@/features/personalization/PersonalizationContext';
 import { PRONOUN_MODE_OPTIONS } from '@/features/personalization/personalizationRules';
@@ -19,6 +21,7 @@ import {
 } from '@/features/practice/dailyQuickAccess';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
+import { getAppAssetPath } from '@/lib/appAssets';
 import { getBundledAudioRightsAssets, SOUND_PROFILES, type AudioRightsAsset } from '@/features/timer/audioProfiles';
 import { appDb, ensureStorageReady } from '@/lib/db';
 import {
@@ -89,6 +92,7 @@ function SettingsBackLink() {
 export function ReadingDisplaySettingsPage() {
   const { settings, updateContrast, updateFontScale, updateTheme, resetSettings } = useReadingSettings();
   const { pronounMode, updatePronounMode } = usePersonalization();
+  const { showToast, trigger } = useSaveToast();
 
     return (
       <PageLayout
@@ -97,11 +101,12 @@ export function ReadingDisplaySettingsPage() {
       headerBadge={<SettingsBackLink />}
       title="Reading & Display"
     >
+      <SaveToast visible={showToast} />
       <PageSection
         description="These settings stay in place until you update them."
         title="Reading defaults"
       >
-        <form className="settings-form">
+        <form className="settings-form" onChange={trigger}>
           <label className="field-card" htmlFor="setting-font-scale">
             <span className="field-label">Type size</span>
             <span className="field-help">Set the text size reading pages should open with.</span>
@@ -231,6 +236,8 @@ export function FocusPracticeSettingsPage() {
     };
   }, []);
 
+  const { showToast, trigger } = useSaveToast();
+
   return (
     <PageLayout
       description="Set the local clock Focus uses when this device clock is wrong."
@@ -238,8 +245,9 @@ export function FocusPracticeSettingsPage() {
       headerBadge={<SettingsBackLink />}
       title="Focus & Practice"
     >
-      <PageSection description="Daily Focus remains a shared UTC focus; this setting corrects the app’s understanding of now." title="Manual local time">
-        <form className="settings-form">
+      <SaveToast visible={showToast} />
+      <PageSection description="Daily Focus remains a shared UTC focus; this setting corrects the app's understanding of now." title="Manual local time">
+        <form className="settings-form" onChange={trigger}>
           <label className="field-card field-card--toggle" htmlFor="setting-daily-clock-override-toggle">
             <span className="field-label">Manual local time</span>
             <span className="field-help">Use this only when this device clock is wrong.</span>
@@ -323,7 +331,7 @@ export function FocusPracticeSettingsPage() {
       </PageSection>
 
       <PageSection description="Choose the middle button on Daily Focus, or clear it back to the settings shortcut." title="Daily Focus quick access">
-        <form className="settings-form">
+        <form className="settings-form" onChange={trigger}>
           <label className="field-card" htmlFor="setting-daily-quick-access-middle-slot">
             <span className="field-label">Middle slot</span>
             <span className="field-help">This changes only the center Quick access button on this device.</span>
@@ -366,6 +374,7 @@ export function FocusPracticeSettingsPage() {
 
 export function TimerDefaultsSettingsPage() {
   const [timerPreferences, setTimerPreferences] = useState<TimerPreferences>(() => loadTimerPreferences());
+  const { showToast, trigger } = useSaveToast();
 
   const updateTimerPreferences = (updates: Partial<TimerPreferences>) => {
     const nextPreferences = {
@@ -384,11 +393,12 @@ export function TimerDefaultsSettingsPage() {
       headerBadge={<SettingsBackLink />}
       title="Timer Defaults"
     >
+      <SaveToast visible={showToast} />
       <PageSection
         description="Every new timer opens with these defaults."
         title="Session defaults"
       >
-        <form className="settings-form">
+        <form className="settings-form" onChange={trigger}>
           <label className="field-card" htmlFor="setting-timer-duration-seconds">
             <span className="field-label">Default duration</span>
             <span className="field-help">Set the length each new timer should open with on this device.</span>
@@ -520,6 +530,34 @@ export function TimerDefaultsSettingsPage() {
 
 export function AboutLegalSettingsPage() {
   const bundledAudioRightsAssets = getBundledAudioRightsAssets();
+  const [isRepairing, setIsRepairing] = useState(false);
+
+  const handleRepairOfflineCache = async () => {
+    if (isRepairing) {
+      return;
+    }
+
+    setIsRepairing(true);
+
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+
+      await Promise.all(registrations.map(async (registration) => {
+        await registration.unregister();
+      }));
+
+      const cacheKeys = await caches.keys();
+      const workboxCaches = cacheKeys.filter((key) => key.startsWith('workbox-'));
+
+      await Promise.all(workboxCaches.map(async (key) => {
+        await caches.delete(key);
+      }));
+
+      window.location.href = import.meta.env.BASE_URL || '/';
+    } catch {
+      setIsRepairing(false);
+    }
+  };
 
     return (
       <PageLayout
@@ -540,6 +578,21 @@ export function AboutLegalSettingsPage() {
           <div className="detail-card">
             <h3>Install on this device</h3>
             <p>The install action stays in the shell header whenever your browser makes it available.</p>
+          </div>
+          <div className="detail-card">
+            <h3>Refresh installed app</h3>
+            <p>If the app behaves unexpectedly — such as repeated errors after an update — this clears the cached offline layer and reloads with a fresh copy.</p>
+            <button
+              className="secondary-button"
+              data-testid="repair-offline-cache"
+              disabled={isRepairing}
+              onClick={() => {
+                void handleRepairOfflineCache();
+              }}
+              type="button"
+            >
+              {isRepairing ? 'Refreshing…' : 'Repair offline cache'}
+            </button>
           </div>
           <div className="detail-card">
             <h3>Creator and support links</h3>
@@ -580,7 +633,7 @@ export function AboutLegalSettingsPage() {
                 <ul className="source-list">
                   {asset.files.map((file) => (
                     <li key={file.path}>
-                      {toSentenceCase(file.cue)} cue · <a href={file.path}>{file.path}</a>
+                      {toSentenceCase(file.cue)} cue · <a href={getAppAssetPath(file.path)}>{file.path}</a>
                     </li>
                   ))}
                 </ul>

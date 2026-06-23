@@ -46,7 +46,6 @@ describe('doctrine-reader', () => {
       expect(screen.getByTestId('page-title')).toHaveTextContent('Jedi Believe');
     });
 
-    await user.click(screen.getByTestId('reader-controls-toggle'));
     await user.click(screen.getByTestId('reader-control-font-scale'));
     await user.click(screen.getByRole('button', { name: 'Large' }));
     expect(document.body).toHaveClass('large-reading');
@@ -73,7 +72,6 @@ describe('doctrine-reader', () => {
     expect(screen.getByText('Emotion, yet Peace.')).toBeVisible();
     expect(screen.getByText('There is no Emotion, there is Peace.')).toBeVisible();
 
-    await user.click(screen.getByTestId('reader-controls-toggle'));
     await user.click(screen.getByTestId('reader-control-code-view'));
     await user.selectOptions(screen.getByTestId('code-view-mode'), 'single-column');
 
@@ -92,7 +90,6 @@ describe('doctrine-reader', () => {
       expect(screen.getByTestId('page-title')).toHaveTextContent('Jedi Believe');
     });
 
-    await user.click(screen.getByTestId('reader-controls-toggle'));
     await user.click(screen.getByTestId('reader-control-bookmark'));
 
     await waitFor(() => {

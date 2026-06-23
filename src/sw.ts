@@ -18,8 +18,18 @@ clientsClaim();
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
+const staticAssetDenylist = [
+  /^\/api\//,
+  new RegExp(`^${import.meta.env.BASE_URL}imports/`),
+  new RegExp(`^${import.meta.env.BASE_URL}assets/`),
+  new RegExp(`^${import.meta.env.BASE_URL}icons/`),
+  new RegExp(`^${import.meta.env.BASE_URL}manifest\\.webmanifest$`),
+  new RegExp(`^${import.meta.env.BASE_URL}favicon`),
+  new RegExp(`^${import.meta.env.BASE_URL}apple-touch-icon`),
+];
+
 registerRoute(
   new NavigationRoute(createHandlerBoundToURL(`${import.meta.env.BASE_URL}index.html`), {
-    denylist: [/^\/api\//],
+    denylist: staticAssetDenylist,
   }),
 );

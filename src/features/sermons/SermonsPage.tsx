@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
@@ -6,6 +6,8 @@ import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { getSermonCacheState, getSermonDocuments, getSermonDownloadRecord, syncSermonArchive } from './sermonSync';
 import type { SermonCacheState, SermonDocumentRecord } from './types';
 import { useOnlineStatus } from './useOnlineStatus';
+
+const SERMON_AUTO_SYNC_SESSION_KEY = 'totjo:sermons:auto-sync-attempted';
 
 type SermonCardProps = {
   sermon: SermonDocumentRecord;
@@ -28,6 +30,22 @@ function formatPublishedAt(publishedAt: string | null) {
     month: 'long',
     day: 'numeric',
   }).format(new Date(publishedAt));
+}
+
+function hasAttemptedAutoSyncThisSession() {
+  try {
+    return window.sessionStorage.getItem(SERMON_AUTO_SYNC_SESSION_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function markAutoSyncAttemptedThisSession() {
+  try {
+    window.sessionStorage.setItem(SERMON_AUTO_SYNC_SESSION_KEY, 'true');
+  } catch {
+    // Ignore session storage failures and keep the manual refresh button available.
+  }
 }
 
 function SermonCard({ sermon, cacheState }: SermonCardProps) {
@@ -66,7 +84,6 @@ export function SermonsPage() {
     message: 'Connect to load the latest public sermon list on this device.',
   });
   const isOnline = useOnlineStatus();
-  const autoSyncAttemptedRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -126,11 +143,11 @@ export function SermonsPage() {
   }, []);
 
   useEffect(() => {
-    if (!isOnline || autoSyncAttemptedRef.current || syncStatus.kind === 'syncing') {
+    if (!isOnline || syncStatus.kind === 'syncing' || hasAttemptedAutoSyncThisSession()) {
       return;
     }
 
-    autoSyncAttemptedRef.current = true;
+    markAutoSyncAttemptedThisSession();
 
     const syncTimer = window.setTimeout(() => {
       void handleSync();

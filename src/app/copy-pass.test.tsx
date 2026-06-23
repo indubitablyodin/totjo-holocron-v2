@@ -34,7 +34,7 @@ describe('copy pass', () => {
     });
 
     expect(screen.getByText('Start a session')).toBeVisible();
-    expect(screen.getByTestId('timer-settings-toggle')).toHaveTextContent('Session setup');
+    expect(screen.getByTestId('timer-advanced-toggle')).toBeVisible();
 
     timerView.unmount();
 
