@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { Link, NavLink, Outlet, useNavigate, useNavigationType } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 
 import { AnnouncementModal } from '@/features/announcements/AnnouncementModal';
 import { BackToTopButton } from '@/app/BackToTopButton';
@@ -170,6 +170,7 @@ function useOnlineStatus() {
 
 export function AppShell() {
   const isOnline = useOnlineStatus();
+  const location = useLocation();
   const navigate = useNavigate();
   const navigationType = useNavigationType();
   const pwaUpdate = useSyncExternalStore(subscribePwaUpdate, getPwaUpdateSnapshot, getPwaUpdateSnapshot);
@@ -208,14 +209,13 @@ export function AppShell() {
   }, [navigationType]);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash) {
-      const targetElement = document.querySelector(hash);
+    if (location.hash) {
+      const targetElement = document.querySelector(location.hash);
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
-  }, []);
+  }, [location.hash]);
 
   const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
   const bottomNavPages = useMemo(
