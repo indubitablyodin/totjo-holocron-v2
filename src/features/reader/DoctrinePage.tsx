@@ -364,7 +364,6 @@ export function DoctrinePage() {
     <CompactReaderShell
       badges={<HeaderBadges />}
       controls={controls}
-      headerActions={<Link aria-label="Open reading display settings" className="icon-button" to="/settings/reading-display" title="Reading & Display" aria-details="settings">⚙</Link>}
       navigation={<DoctrineReaderNavigation currentSlug={document.slug} />}
       title={document.title}
     >

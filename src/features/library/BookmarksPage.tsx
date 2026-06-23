@@ -127,7 +127,7 @@ export function BookmarksPage() {
   return (
     <PageLayout
       description="Open your saved sermons, bookmarks, and notes."
-      eyebrow="Reading library"
+      
       title="Bookmarks"
     >
       <PageSection description="Saved sermons show up here." title="Saved sermons">
