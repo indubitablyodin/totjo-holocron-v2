@@ -119,7 +119,7 @@ describe('settings information architecture', () => {
     await user.click(screen.getByTestId('setting-daily-quick-access-clear'));
     await user.click(screen.getByTestId('bottom-nav-daily'));
 
-    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Default slot');
+    expect(await screen.findByTestId('daily-quick-access-middle-slot')).toHaveTextContent('Set a shortcut');
     expect(screen.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');
   });
 

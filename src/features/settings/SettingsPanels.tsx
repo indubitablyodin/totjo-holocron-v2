@@ -344,7 +344,7 @@ export function FocusPracticeSettingsPage() {
               }}
               value={middleSlotChoiceId}
             >
-              <option value="">Default slot</option>
+              <option value="">None (go to Settings)</option>
               {quickAccessChoices.map((choice) => (
                 <option key={choice.id} value={choice.id}>
                   {choice.title}

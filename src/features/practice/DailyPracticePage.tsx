@@ -399,7 +399,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
               to={middleQuickAccessSlot?.href ?? '/settings/focus-practice'}
             >
               <span className="lane-card__icon">&#9733;</span>
-              <p className="lane-card__title">{middleQuickAccessSlot?.title ?? 'Default slot'}</p>
+              <p className="lane-card__title">{middleQuickAccessSlot?.title ?? 'Set a shortcut'}</p>
               <p className="lane-card__summary">Continue where you left off.</p>
             </Link>
 

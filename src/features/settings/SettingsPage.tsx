@@ -62,7 +62,7 @@ export function SettingsPage() {
   const focusQuickAccessSlotId = loadDailyQuickAccessMiddleSlotId();
   const readingSummary = `${FONT_SCALE_LABELS[settings.fontScale]} type · ${THEME_LABELS[settings.theme]} theme · ${PRONOUN_MODE_SUMMARY[pronounMode]}`;
   const timerSummary = `${timerPreferences.defaultDurationSeconds}s default · ${TIMER_CUE_MODE_SUMMARY[timerPreferences.defaultCueMode]}${timerPreferences.defaultCueMode === 'custom' ? ` · every ${timerPreferences.defaultIntervalSeconds}s` : ''} · ${getSoundProfileById(timerPreferences.defaultSoundProfileId).label}`;
-  const focusSummary = `${focusClockOverride.enabled ? `Manual clock · ${focusClockOverride.timeZone || 'device time zone'}` : 'Device clock'} · ${focusQuickAccessSlotId ? 'Custom slot' : 'Default slot'}`;
+  const focusSummary = `${focusClockOverride.enabled ? `Manual clock · ${focusClockOverride.timeZone || 'device time zone'}` : 'Device clock'} · ${focusQuickAccessSlotId ? 'Custom shortcut' : 'No shortcut'}`;
 
   return (
     <PageLayout
