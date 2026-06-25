@@ -165,6 +165,18 @@ The restore preview should show:
 - Future schema versions are rejected unless explicitly supported.
 - An import report is generated after restore showing what was added, updated, skipped.
 
+### Browser independence
+
+The backup and restore system must not depend on Chromium-only APIs.
+
+| Operation | Cross-browser baseline | Progressive enhancement |
+|---|---|---|
+| Markdown export | Blob download via `<a>` element | `showSaveFilePicker` (Chromium) |
+| JSON backup | Blob download via `<a>` element | `showSaveFilePicker` (Chromium) |
+| JSON restore | `<input type="file" accept=".json">` | `showOpenFilePicker` (Chromium) |
+
+See `docs/architecture/browser-support.md` for the full browser-support policy.
+
 ### File picker
 
 - Uses `<input type="file" accept=".json">`.
