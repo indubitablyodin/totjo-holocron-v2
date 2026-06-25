@@ -19,7 +19,7 @@ The actual feed URL is resolved at runtime in this order:
 
 The current runtime config points to:
 ```
-https://indubitablyodin.github.io/totjo-holocron-announcements/announcements.json
+https://syndicatedpillbug.github.io/totjo-holocron-announcements/announcements.json
 ```
 
 On startup:
@@ -39,7 +39,7 @@ without rebuilding or redeploying the app.
 
 The feed repository is at:
 ```
-https://github.com/indubitablyodin/totjo-holocron-announcements
+https://github.com/SyndicatedPillbug/totjo-holocron-announcements
 ```
 
 ### Publishing workflow
