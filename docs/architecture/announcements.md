@@ -10,16 +10,59 @@ They are always available and do not require network access.
 
 The app can fetch announcements from a remote JSON feed.
 By default, the feed URL is `/announcements.json` (same-origin).
-You can override this with the `VITE_ANNOUNCEMENTS_FEED_URL` environment variable.
+
+The actual feed URL is resolved at runtime in this order:
+
+1. `public/runtime-config.json` — if present and valid, its `announcementsFeedUrl` is used.
+2. `VITE_ANNOUNCEMENTS_FEED_URL` environment variable — fallback if runtime config is absent.
+3. `/announcements.json` — final fallback if neither runtime config nor env var are available.
+
+The current runtime config points to:
+```
+https://indubitablyodin.github.io/totjo-holocron-announcements/announcements.json
+```
 
 On startup:
 1. Bundled announcements are loaded immediately.
 2. Cached remote announcements from previous fetches are loaded from `localStorage`.
-3. All announcements are merged (remote higher version wins).
-4. A background fetch for `/announcements.json` starts.
-5. If the fetch succeeds and validates, the new announcements replace the cached ones.
-6. If the fetch fails (offline, missing file, network error), the app continues with
+3. `public/runtime-config.json` is fetched to resolve the feed URL.
+4. All announcements are merged (remote higher version wins).
+5. A background fetch for the resolved feed URL starts.
+6. If the fetch succeeds and validates, the new announcements replace the cached ones.
+7. If the fetch fails (offline, missing file, network error), the app continues with
    bundled + previously cached announcements. No error is shown.
+
+## Publishing without redeploying the app
+
+The announcement feed is hosted at a separate static URL so new announcements can be published
+without rebuilding or redeploying the app.
+
+The feed repository is at:
+```
+https://github.com/indubitablyodin/totjo-holocron-announcements
+```
+
+### Publishing workflow
+
+1. Clone or open the `totjo-holocron-announcements` repository.
+2. Edit `announcements.json`.
+3. Use a new `id` for new announcements.
+4. Bump `version` to re-show a dismissed announcement.
+5. Validate the feed:
+   ```sh
+   git clone https://github.com/indubitablyodin/totjo-holocron-v2
+   pnpm install
+   pnpm check:announcements path/to/announcements.json
+   ```
+   Or use the standalone validator:
+   ```sh
+   node scripts/check-announcements-feed.mjs path/to/announcements.json
+   ```
+6. Commit and push the feed repository.
+7. The static host serves the updated JSON.
+8. Installed apps fetch the feed the next time they open.
+
+No app rebuild or redeploy is required after the feed URL is configured in `runtime-config.json`.
 
 ## How to publish a new announcement
 

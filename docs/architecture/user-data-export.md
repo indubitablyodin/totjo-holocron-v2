@@ -102,7 +102,30 @@ See `src/features/settings/backupUserData.ts` for the full type definition.
 
 ## JSON Restore Design
 
-Restore is not yet implemented. This section documents the design for future implementation.
+Restore is preview-only in this version.  
+The preview functions are implemented; the apply/merge step is not yet exposed in the UI.
+
+### Preview implementation
+
+Restore preview lives in `src/features/settings/restoreUserData.ts`.
+
+Functions:
+- `parseUserDataBackupJson(text)` — parses and returns a `BackupDataV1` object or null
+- `validateUserDataBackup(value)` — validates schema version, exportedAt, data object
+- `classifyRestoreRecords(backup, current)` — classifies each backup record as add, update, or skip
+- `createUserDataRestorePreview(backup, current)` — returns a `RestorePreviewV1` with counts and warnings
+
+### Preview behavior
+
+- Parses the uploaded JSON file
+- Validates schemaVersion (must be 1), exportedAt (must be valid date), data object (must exist)
+- Classifies each record by comparing against current database state:
+  - Records with matching ids → update or skip
+  - Records with new ids → add
+  - Records without ids → skipped with warning
+- Returns counts: notesToAdd, notesToUpdate, bookmarksToAdd, practiceHistoryToAdd, downloadsToAdd, settingsAvailable, skipped
+- Returns warnings for skipped records
+- Does not mutate current data
 
 ### Principles
 
@@ -114,7 +137,7 @@ Restore is not yet implemented. This section documents the design for future imp
 - Existing notes are never overwritten without confirmation.
 - Destructive "replace all" mode is not included in the first version.
 
-### Preview screen
+### Preview screen (future UI)
 
 The restore preview should show:
 
