@@ -102,8 +102,8 @@ See `src/features/settings/backupUserData.ts` for the full type definition.
 
 ## JSON Restore Design
 
-Restore is preview-only in this version.  
-The preview functions are implemented; the apply/merge step is not yet exposed in the UI.
+Restore preview is now implemented in the Settings UI.  
+The preview functions and file input are connected. The apply/merge step is not yet implemented.
 
 ### Preview implementation
 

@@ -16,7 +16,13 @@ import {
   getBackupFreshnessStatus,
   type FreshnessStatus,
 } from '@/features/settings/backupFreshness';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  parseUserDataBackupJson,
+  validateUserDataBackup,
+  createUserDataRestorePreview,
+  type RestorePreviewV1,
+} from '@/features/settings/restoreUserData';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { appDb } from '@/lib/db';
 
 const FONT_SCALE_LABELS = {
@@ -74,6 +80,9 @@ export function SettingsPage() {
   const [storageRequested, setStorageRequested] = useState(false);
   const [freshnessStatus, setFreshnessStatus] = useState<FreshnessStatus>('none-needed');
   const [lastExportDate, setLastExportDate] = useState<string | null>(null);
+  const [restorePreview, setRestorePreview] = useState<RestorePreviewV1 | null>(null);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateFreshness = useCallback(async () => {
     const lastExport = loadLastUserDataExport();
@@ -133,6 +142,48 @@ export function SettingsPage() {
       setBackupStatus('Backup failed. Try again.');
     }
   };
+
+  const handleRestorePreview = useCallback(async (file: File) => {
+    setRestorePreview(null);
+    setRestoreError(null);
+
+    try {
+      const text = await file.text();
+      const parsed = parseUserDataBackupJson(text);
+
+      if (!parsed) {
+        setRestoreError('This backup could not be previewed. Make sure it is a TOTJO Holocron JSON backup.');
+        return;
+      }
+
+      const validated = validateUserDataBackup(parsed);
+
+      if (!validated) {
+        setRestoreError('This backup could not be previewed. Make sure it is a TOTJO Holocron JSON backup.');
+        return;
+      }
+
+      const [notes, bookmarks, practiceHistory, downloads] = await Promise.all([
+        appDb.notes.toArray(),
+        appDb.bookmarks.toArray(),
+        appDb.practiceHistory.toArray(),
+        appDb.downloads.toArray(),
+      ]);
+
+      const preview = createUserDataRestorePreview(validated, { notes, bookmarks, practiceHistory, downloads });
+      setRestorePreview(preview);
+    } catch {
+      setRestoreError('This backup could not be previewed. Make sure it is a TOTJO Holocron JSON backup.');
+    }
+  }, []);
+
+  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      void handleRestorePreview(file);
+    }
+  }, [handleRestorePreview]);
 
   const handleProtectStorage = useCallback(async () => {
     setStorageRequested(true);
@@ -253,6 +304,78 @@ export function SettingsPage() {
           <p className="support-copy" data-testid="freshness-unknown">
             Backup status unavailable. Export a fresh backup to update this status.
           </p>
+        ) : null}
+
+        <h3 className="dashboard-region__title">Restore</h3>
+        <p className="support-copy">
+          Preview a JSON backup before restoring. No data will be changed.
+        </p>
+
+        <label className="secondary-button button-inline" data-testid="restore-preview-label" style={{ cursor: 'pointer', display: 'inline-flex' }}>
+          Preview JSON Restore
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            data-testid="restore-file-input"
+            style={{ display: 'none' }}
+            onChange={handleFileSelect}
+          />
+        </label>
+
+        {restoreError ? (
+          <p className="surface-error" role="alert" data-testid="restore-preview-error">
+            {restoreError}
+          </p>
+        ) : null}
+
+        {restorePreview ? (
+          <div className="restore-preview" data-testid="restore-preview" aria-live="polite">
+            <p className="support-copy">
+              Backup exported: {new Date(restorePreview.backupExportedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </p>
+            <p className="support-copy">This is a preview only. No data has been changed.</p>
+            <dl className="detail-list">
+              <div>
+                <dt>Notes to add</dt>
+                <dd>{restorePreview.counts.notesToAdd}</dd>
+              </div>
+              <div>
+                <dt>Notes to update</dt>
+                <dd>{restorePreview.counts.notesToUpdate}</dd>
+              </div>
+              <div>
+                <dt>Bookmarks to add</dt>
+                <dd>{restorePreview.counts.bookmarksToAdd}</dd>
+              </div>
+              <div>
+                <dt>Practice records to add</dt>
+                <dd>{restorePreview.counts.practiceHistoryToAdd}</dd>
+              </div>
+              <div>
+                <dt>Sermon downloads</dt>
+                <dd>{restorePreview.counts.downloadsToAdd}</dd>
+              </div>
+              <div>
+                <dt>Settings available</dt>
+                <dd>{restorePreview.counts.settingsAvailable}</dd>
+              </div>
+              <div>
+                <dt>Skipped records</dt>
+                <dd>{restorePreview.counts.skipped}</dd>
+              </div>
+            </dl>
+            {restorePreview.warnings.length > 0 ? (
+              <div>
+                <p className="field-label">Warnings</p>
+                <ul>
+                  {restorePreview.warnings.map((w, i) => (
+                    <li key={i} className="support-copy">{w}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
         ) : null}
 
         <h3 className="dashboard-region__title">Storage</h3>
