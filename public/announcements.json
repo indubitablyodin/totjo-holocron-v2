@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-06-24T00:00:00.000Z",
+  "announcements": [
+    {
+      "id": "totjo-holocron-rc2",
+      "version": 1,
+      "kind": "app",
+      "priority": "normal",
+      "placement": "badge",
+      "title": "TOTJO Holocron release candidate updated",
+      "body": "This update adds clearer sermon offline labels, a TOTJO brand mark, Markdown export, and a remote announcement feed.",
+      "action": {
+        "label": "Open Settings",
+        "href": "/settings"
+      },
+      "publishedAt": "2026-06-24T00:00:00.000Z",
+      "dismissible": true
+    }
+  ]
+}

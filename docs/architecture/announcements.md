@@ -69,6 +69,31 @@ Create or edit `public/announcements.json` in the repo root.
 | `startsAt` | no | ISO 8601 | Show only after this date. |
 | `dismissible` | no | boolean | Default `true`. `false` means user cannot dismiss. |
 
+## Authoring workflow
+
+1. Edit `public/announcements.json`.
+2. Use a new `id` for new announcements.
+3. Bump `version` to re-show a previously dismissed announcement.
+4. Keep `body` as plain text — no HTML.
+5. Use internal paths (starting with `/`) or `https://` URLs for action links.
+6. Run validation:
+   ```sh
+   pnpm check:announcements
+   ```
+7. Commit and deploy.
+8. Installed apps fetch the feed the next time they open.
+
+## Validation
+
+```sh
+pnpm check:announcements
+```
+
+This reads `public/announcements.json` and validates every entry against the same rules
+the app parser uses. It reports accepted and rejected entries with reasons for each rejection.
+
+The script exits with code 0 for a valid feed and code 1 for a fatal schema error.
+
 ## Priority guidance
 
 | Priority | When to use | UI behavior |
