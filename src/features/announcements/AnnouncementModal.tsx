@@ -9,6 +9,8 @@ import {
 } from './announcementTypes';
 import { loadDismissedAnnouncements, dismissAnnouncement } from './announcementDismissal';
 import { setAnnouncementAppBadge, clearAnnouncementAppBadge } from './appBadge';
+import { parseRemoteAnnouncementFeed, mergeAnnouncements } from './remoteAnnouncements';
+import { loadCachedRemoteAnnouncements, cacheRemoteAnnouncements } from './remoteAnnouncementCache';
 
 const KIND_LABELS: Record<string, string> = {
   totjo: 'TOTJO',
@@ -19,16 +21,31 @@ const KIND_LABELS: Record<string, string> = {
   practice: 'Practice',
 };
 
+function getFeedUrl(): string | null {
+  try {
+    const envUrl = import.meta.env.VITE_ANNOUNCEMENTS_FEED_URL as string | undefined;
+    return envUrl || '/announcements.json';
+  } catch {
+    return '/announcements.json';
+  }
+}
+
 export function AnnouncementModal() {
   const [modalAnnouncement, setModalAnnouncement] = useState<Announcement | null>(null);
+  const [remoteAnnouncements, setRemoteAnnouncements] = useState<Announcement[]>(() => loadCachedRemoteAnnouncements());
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const dismissedMap = useMemo(() => loadDismissedAnnouncements(), []);
   const now = useMemo(() => new Date(), []);
 
+  const allAnnouncements = useMemo(
+    () => mergeAnnouncements(BUNDLED_ANNOUNCEMENTS, remoteAnnouncements),
+    [remoteAnnouncements],
+  );
+
   const visible = useMemo(
-    () => getVisibleAnnouncements(BUNDLED_ANNOUNCEMENTS, dismissedMap, now),
-    [dismissedMap, now],
+    () => getVisibleAnnouncements(allAnnouncements, dismissedMap, now),
+    [allAnnouncements, dismissedMap, now],
   );
 
   const primary = useMemo(() => selectPrimaryAnnouncement(visible), [visible]);
@@ -40,6 +57,39 @@ export function AnnouncementModal() {
       clearAnnouncementAppBadge();
     }
   }, [visible]);
+
+  // Fetch remote announcements in background
+  useEffect(() => {
+    const feedUrl = getFeedUrl();
+
+    const doFetch = async () => {
+      if (!feedUrl) {
+        return;
+      }
+
+      try {
+        const response = await fetch(feedUrl, { cache: 'no-store' });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        const parsed = parseRemoteAnnouncementFeed(data);
+
+        if (!parsed) {
+          return;
+        }
+
+        cacheRemoteAnnouncements(parsed.updatedAt, parsed.announcements);
+        setRemoteAnnouncements(parsed.announcements);
+      } catch {
+        // Fetch failure is silent — keep bundled + cached announcements.
+      }
+    };
+
+    void doFetch();
+  }, []);
 
   const handleDismiss = useCallback((announcement: Announcement) => {
     dismissAnnouncement(announcement.id, announcement.version);
@@ -76,10 +126,10 @@ export function AnnouncementModal() {
 
   // Show modal for high/urgent announcements automatically
   useEffect(() => {
-    if (primary && (primary.priority === 'high' || primary.priority === 'urgent')) {
+    if (primary && (primary.priority === 'high' || primary.priority === 'urgent') && !modalAnnouncement) {
       setModalAnnouncement(primary);
     }
-  }, [primary]);
+  }, [primary, modalAnnouncement]);
 
   if (modalAnnouncement) {
     const a = modalAnnouncement;
