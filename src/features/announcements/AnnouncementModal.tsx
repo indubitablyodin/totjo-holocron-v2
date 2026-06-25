@@ -11,6 +11,7 @@ import { loadDismissedAnnouncements, dismissAnnouncement } from './announcementD
 import { setAnnouncementAppBadge, clearAnnouncementAppBadge } from './appBadge';
 import { parseRemoteAnnouncementFeed, mergeAnnouncements } from './remoteAnnouncements';
 import { loadCachedRemoteAnnouncements, cacheRemoteAnnouncements } from './remoteAnnouncementCache';
+import { fetchRuntimeConfig, resolveAnnouncementsFeedUrl } from '@/config/runtimeConfig';
 
 const KIND_LABELS: Record<string, string> = {
   totjo: 'TOTJO',
@@ -20,15 +21,6 @@ const KIND_LABELS: Record<string, string> = {
   app: 'App update',
   practice: 'Practice',
 };
-
-function getFeedUrl(): string | null {
-  try {
-    const envUrl = import.meta.env.VITE_ANNOUNCEMENTS_FEED_URL as string | undefined;
-    return envUrl || '/announcements.json';
-  } catch {
-    return '/announcements.json';
-  }
-}
 
 export function AnnouncementModal() {
   const [modalAnnouncement, setModalAnnouncement] = useState<Announcement | null>(null);
@@ -60,15 +52,12 @@ export function AnnouncementModal() {
 
   // Fetch remote announcements in background
   useEffect(() => {
-    const feedUrl = getFeedUrl();
-
     const doFetch = async () => {
-      if (!feedUrl) {
-        return;
-      }
-
       try {
-        const response = await fetch(feedUrl, { cache: 'no-store' });
+        const runtimeConfig = await fetchRuntimeConfig();
+        const resolved = resolveAnnouncementsFeedUrl(runtimeConfig);
+
+        const response = await fetch(resolved.url, { cache: 'no-store' });
 
         if (!response.ok) {
           return;

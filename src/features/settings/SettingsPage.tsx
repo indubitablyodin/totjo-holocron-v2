@@ -8,7 +8,9 @@ import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { getSoundProfileById } from '@/features/timer/audioProfiles';
 import { loadTimerPreferences, type TimerCueMode } from '@/features/timer/timerPreferences';
 import { collectUserDataExport, formatUserDataMarkdown, createExportFilename, triggerDownload } from '@/features/settings/exportUserData';
-import { useState } from 'react';
+import { collectUserDataBackup, triggerJsonBackupDownload } from '@/features/settings/backupUserData';
+import { isStorageManagerSupported, estimateStorage, isPersistentStorageGranted, requestPersistentStorage } from '@/features/settings/storageHealth';
+import { useCallback, useEffect, useState } from 'react';
 import { appDb } from '@/lib/db';
 
 const FONT_SCALE_LABELS = {
@@ -60,6 +62,21 @@ function SettingsIndexLink({ actionLabel, description, summary, testId, title, t
 export function SettingsPage() {
   const { settings } = useReadingSettings();
   const [exportStatus, setExportStatus] = useState<string | null>(null);
+  const [backupStatus, setBackupStatus] = useState<string | null>(null);
+  const [storagePersisted, setStoragePersisted] = useState<boolean | null>(null);
+  const [storageEstimate, setStorageEstimate] = useState<string | null>(null);
+  const [storageRequested, setStorageRequested] = useState(false);
+
+  useEffect(() => {
+    void isPersistentStorageGranted().then(setStoragePersisted);
+    void estimateStorage().then((est) => {
+      if (est) {
+        setStorageEstimate(`${est.usageFormatted} / ${est.quotaFormatted} (${est.percentUsed}%)`);
+      } else {
+        setStorageEstimate(null);
+      }
+    });
+  }, []);
 
   const handleExport = async () => {
     setExportStatus('Preparing export…');
@@ -73,6 +90,29 @@ export function SettingsPage() {
       setExportStatus('Export failed. Try again.');
     }
   };
+
+  const handleBackup = async () => {
+    setBackupStatus('Preparing backup…');
+    try {
+      const backup = await collectUserDataBackup(appDb);
+      triggerJsonBackupDownload(backup);
+      setBackupStatus('Backup downloaded.');
+    } catch {
+      setBackupStatus('Backup failed. Try again.');
+    }
+  };
+
+  const handleProtectStorage = useCallback(async () => {
+    setStorageRequested(true);
+    const result = await requestPersistentStorage();
+
+    if (result === true) {
+      setStoragePersisted(true);
+    } else if (result === false) {
+      setStoragePersisted(false);
+    }
+  }, []);
+
   const { pronounMode } = usePersonalization();
   const timerPreferences = loadTimerPreferences();
   const focusClockOverride = loadDailyPracticeClockOverride();
@@ -127,7 +167,10 @@ export function SettingsPage() {
       <PageSection title="User Data">
         <p className="support-copy">
           Your notes, bookmarks, practice history, and settings are stored on this device.
+          Browser storage is usually reliable, but it is not a substitute for backups.
+          Use Export Markdown or JSON Backup to keep your own copy.
         </p>
+
         <div className="document-actions">
           <button
             className="primary-button"
@@ -140,8 +183,49 @@ export function SettingsPage() {
           >
             {exportStatus === 'Preparing export…' ? 'Preparing…' : 'Export Markdown'}
           </button>
+          <button
+            className="secondary-button"
+            data-testid="export-json-backup-button"
+            disabled={backupStatus === 'Preparing backup…'}
+            onClick={() => {
+              void handleBackup();
+            }}
+            type="button"
+          >
+            {backupStatus === 'Preparing backup…' ? 'Preparing…' : 'Export JSON Backup'}
+          </button>
         </div>
+
         {exportStatus ? <p className="support-copy">{exportStatus}</p> : null}
+        {backupStatus ? <p className="support-copy">{backupStatus}</p> : null}
+
+        <h3 className="dashboard-region__title">Storage</h3>
+        {storagePersisted === true ? (
+          <p className="support-copy">Persistent storage granted.</p>
+        ) : storagePersisted === false ? (
+          <p className="support-copy">Persistent storage not granted. Browser may clear data under storage pressure.</p>
+        ) : null}
+
+        {storageEstimate ? (
+          <p className="support-copy">App data: {storageEstimate}</p>
+        ) : null}
+
+        {storagePersisted === false && !storageRequested ? (
+          <button
+            className="secondary-button"
+            data-testid="protect-storage-button"
+            onClick={() => {
+              void handleProtectStorage();
+            }}
+            type="button"
+          >
+            Protect data on this device
+          </button>
+        ) : null}
+
+        {storageRequested && storagePersisted === false ? (
+          <p className="support-copy">Persistent storage was not granted by this browser.</p>
+        ) : null}
       </PageSection>
     </PageLayout>
   );
