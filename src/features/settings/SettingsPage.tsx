@@ -10,6 +10,12 @@ import { loadTimerPreferences, type TimerCueMode } from '@/features/timer/timerP
 import { collectUserDataExport, formatUserDataMarkdown, createExportFilename, triggerDownload } from '@/features/settings/exportUserData';
 import { collectUserDataBackup, triggerJsonBackupDownload } from '@/features/settings/backupUserData';
 import { isStorageManagerSupported, estimateStorage, isPersistentStorageGranted, requestPersistentStorage } from '@/features/settings/storageHealth';
+import {
+  loadLastUserDataExport,
+  saveLastUserDataExport,
+  getBackupFreshnessStatus,
+  type FreshnessStatus,
+} from '@/features/settings/backupFreshness';
 import { useCallback, useEffect, useState } from 'react';
 import { appDb } from '@/lib/db';
 
@@ -66,6 +72,27 @@ export function SettingsPage() {
   const [storagePersisted, setStoragePersisted] = useState<boolean | null>(null);
   const [storageEstimate, setStorageEstimate] = useState<string | null>(null);
   const [storageRequested, setStorageRequested] = useState(false);
+  const [freshnessStatus, setFreshnessStatus] = useState<FreshnessStatus>('none-needed');
+  const [lastExportDate, setLastExportDate] = useState<string | null>(null);
+
+  const updateFreshness = useCallback(async () => {
+    const lastExport = loadLastUserDataExport();
+    const [notes, bookmarks, practiceHistory] = await Promise.all([
+      appDb.notes.count(),
+      appDb.bookmarks.count(),
+      appDb.practiceHistory.count(),
+    ]);
+    const hasData = notes > 0 || bookmarks > 0 || practiceHistory > 0;
+
+    setFreshnessStatus(getBackupFreshnessStatus(lastExport, new Date(), hasData));
+
+    if (lastExport) {
+      const d = new Date(lastExport.lastExportedAt);
+      setLastExportDate(d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }));
+    } else {
+      setLastExportDate(null);
+    }
+  }, []);
 
   useEffect(() => {
     void isPersistentStorageGranted().then(setStoragePersisted);
@@ -76,7 +103,8 @@ export function SettingsPage() {
         setStorageEstimate(null);
       }
     });
-  }, []);
+    void updateFreshness();
+  }, [updateFreshness]);
 
   const handleExport = async () => {
     setExportStatus('Preparing export…');
@@ -85,7 +113,9 @@ export function SettingsPage() {
       const markdown = formatUserDataMarkdown(data);
       const filename = createExportFilename();
       triggerDownload(markdown, filename);
+      saveLastUserDataExport('markdown', new Date());
       setExportStatus('Export downloaded.');
+      void updateFreshness();
     } catch {
       setExportStatus('Export failed. Try again.');
     }
@@ -96,7 +126,9 @@ export function SettingsPage() {
     try {
       const backup = await collectUserDataBackup(appDb);
       triggerJsonBackupDownload(backup);
+      saveLastUserDataExport('json', new Date());
       setBackupStatus('Backup downloaded.');
+      void updateFreshness();
     } catch {
       setBackupStatus('Backup failed. Try again.');
     }
@@ -198,6 +230,30 @@ export function SettingsPage() {
 
         {exportStatus ? <p className="support-copy">{exportStatus}</p> : null}
         {backupStatus ? <p className="support-copy">{backupStatus}</p> : null}
+
+        {freshnessStatus === 'never-backed-up' ? (
+          <p className="support-copy" data-testid="freshness-never-backed-up">
+            No backup recorded on this device yet. Export Markdown or JSON Backup to keep your own copy.
+          </p>
+        ) : null}
+
+        {freshnessStatus === 'fresh' && lastExportDate ? (
+          <p className="support-copy" data-testid="freshness-fresh">
+            Last backup: {lastExportDate}. Keep exporting periodically if you add important notes.
+          </p>
+        ) : null}
+
+        {freshnessStatus === 'stale' && lastExportDate ? (
+          <p className="support-copy" data-testid="freshness-stale">
+            Last backup: {lastExportDate}. Consider exporting a fresh backup.
+          </p>
+        ) : null}
+
+        {freshnessStatus === 'unknown' ? (
+          <p className="support-copy" data-testid="freshness-unknown">
+            Backup status unavailable. Export a fresh backup to update this status.
+          </p>
+        ) : null}
 
         <h3 className="dashboard-region__title">Storage</h3>
         {storagePersisted === true ? (

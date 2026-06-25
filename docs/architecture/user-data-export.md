@@ -91,11 +91,74 @@ Note body markdown content preserved here.
 - Contrast: standard
 ```
 
-## Future restore/import design
+## JSON Backup format
 
-- JSON export should be canonical for import
-- Markdown export should be human-readable and Obsidian-friendly
-- Import is not required for v0.1.0
+JSON backup is available from Settings > User Data > Export JSON Backup.  
+The file uses schemaVersion 1 and includes notes, bookmarks, practice history, downloads, timer preferences, reader settings, dismissed announcements, and cached remote announcement metadata.
+
+Filename: `totjo-holocron-backup-YYYY-MM-DD.json`
+
+See `src/features/settings/backupUserData.ts` for the full type definition.
+
+## JSON Restore Design
+
+Restore is not yet implemented. This section documents the design for future implementation.
+
+### Principles
+
+- Restore is user-initiated only. No automatic restore.
+- Restore begins with a browser file picker or drag-and-drop.
+- The app validates `schemaVersion` before reading records.
+- The app shows a preview before applying changes.
+- Default mode is **merge**, not replace.
+- Existing notes are never overwritten without confirmation.
+- Destructive "replace all" mode is not included in the first version.
+
+### Preview screen
+
+The restore preview should show:
+
+- Notes to add
+- Notes to update (matched by id or documentId + body)
+- Bookmarks to add
+- Practice records to add
+- Settings to import
+- Records skipped (duplicates, invalid, or unsupported schema)
+- "Export a safety backup before restoring" prompt
+
+### Merge rules
+
+- Duplicate detection uses stable record ids where available.
+- For notes without matching id, fallback comparison uses `documentId` + `bodyMarkdown` + timestamps.
+- Newer `updatedAt` wins when content conflicts.
+- Bookmarks are linked by `documentId`; if the referenced document is no longer in the local database, the bookmark is imported as a reference-only entry.
+- Practice history records are appended; existing records are never modified.
+- Settings (timer defaults, reader settings) are imported as new defaults; the previous settings are saved to a backup key before overwriting.
+
+### Safety
+
+- Restore exports a safety backup before applying changes.
+- Restore must never import remote code, arbitrary HTML, or executable content.
+- Future schema versions are rejected unless explicitly supported.
+- An import report is generated after restore showing what was added, updated, skipped.
+
+### File picker
+
+- Uses `<input type="file" accept=".json">`.
+- Only JSON files with `schemaVersion: 1` are accepted.
+- If `window.showOpenFilePicker` is available, it may be used as a progressive enhancement.
+
+## Backup freshness
+
+The app tracks the last successful export or backup in localStorage.
+
+- After a Markdown export or JSON backup succeeds, the current timestamp and format are saved.
+- Settings > User Data shows a hint based on how recent the backup is:
+  - "No backup recorded on this device yet."
+  - "Last backup: June 24, 2026. Keep exporting periodically."
+  - "Last backup: May 1, 2026. Consider exporting a fresh backup."
+- No popup or modal is shown. The hint only appears in Settings.
+- The status is updated after each successful export or backup.
 
 ## Implementation
 
