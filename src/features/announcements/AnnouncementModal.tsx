@@ -1,57 +1,59 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-export type AnnouncementKind =
-  | 'first-run'
-  | 'community-update'
-  | 'fundraiser'
-  | 'release-note'
-  | 'urgent';
+import { BUNDLED_ANNOUNCEMENTS } from './announcementRegistry';
+import {
+  getVisibleAnnouncements,
+  selectPrimaryAnnouncement,
+  type Announcement,
+} from './announcementTypes';
+import { loadDismissedAnnouncements, dismissAnnouncement } from './announcementDismissal';
+import { setAnnouncementAppBadge, clearAnnouncementAppBadge } from './appBadge';
 
-export type AnnouncementPresentation =
-  | 'none'
-  | 'inline-banner'
-  | 'dashboard-card'
-  | 'modal';
-
-type Announcement = {
-  id: string;
-  kind: AnnouncementKind;
-  presentation: AnnouncementPresentation;
-  title: string;
-  body: string;
-  ctaText: string;
-  ctaLink: string;
+const KIND_LABELS: Record<string, string> = {
+  totjo: 'TOTJO',
+  sermon: 'Sermon',
+  doctrine: 'Doctrine',
+  event: 'Event',
+  app: 'App update',
+  practice: 'Practice',
 };
-
-const CURRENT_ANNOUNCEMENT: Announcement = {
-  id: 'release-dashboard-2026-2',
-  kind: 'release-note',
-  presentation: 'inline-banner',
-  title: 'Updated dashboard',
-  body: 'The daily dashboard now includes an in-place meditation timer, a month calendar for your streak, and quick-lane cards for doctrine, sermons, and bookmarks.',
-  ctaText: 'Open Library',
-  ctaLink: '/library',
-};
-
-const STORAGE_KEY = 'holocron_dismissed_announcement';
 
 export function AnnouncementModal() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [showBadge, setShowBadge] = useState(false);
+  const [modalAnnouncement, setModalAnnouncement] = useState<Announcement | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const storage = window.localStorage as Partial<Storage> | undefined;
-  const dismissedId = storage?.getItem?.(STORAGE_KEY);
-  const isDismissed = dismissedId === CURRENT_ANNOUNCEMENT.id;
+
+  const dismissedMap = useMemo(() => loadDismissedAnnouncements(), []);
+  const now = useMemo(() => new Date(), []);
+
+  const visible = useMemo(
+    () => getVisibleAnnouncements(BUNDLED_ANNOUNCEMENTS, dismissedMap, now),
+    [dismissedMap, now],
+  );
+
+  const primary = useMemo(() => selectPrimaryAnnouncement(visible), [visible]);
 
   useEffect(() => {
-    if (!isDismissed) {
-      setShowBadge(true);
+    if (visible.length > 0) {
+      setAnnouncementAppBadge(visible.length);
+    } else {
+      clearAnnouncementAppBadge();
     }
-  }, [isDismissed]);
+  }, [visible]);
+
+  const handleDismiss = useCallback((announcement: Announcement) => {
+    dismissAnnouncement(announcement.id, announcement.version);
+    setModalAnnouncement(null);
+  }, []);
+
+  const handleBadgeClick = useCallback(() => {
+    if (primary) {
+      setModalAnnouncement(primary);
+    }
+  }, [primary]);
 
   useEffect(() => {
-    if (!isVisible) {
+    if (!modalAnnouncement) {
       return;
     }
 
@@ -59,7 +61,7 @@ export function AnnouncementModal() {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        handleDismiss();
+        handleDismiss(modalAnnouncement);
       }
     };
 
@@ -72,24 +74,27 @@ export function AnnouncementModal() {
     };
   });
 
-  const handleDismiss = useCallback(() => {
-    storage?.setItem?.(STORAGE_KEY, CURRENT_ANNOUNCEMENT.id);
-    setIsVisible(false);
-    setShowBadge(false);
-  }, [storage]);
+  // Show modal for high/urgent announcements automatically
+  useEffect(() => {
+    if (primary && (primary.priority === 'high' || primary.priority === 'urgent')) {
+      setModalAnnouncement(primary);
+    }
+  }, [primary]);
 
-  const handleBadgeClick = useCallback(() => {
-    setIsVisible(true);
-  }, []);
+  if (modalAnnouncement) {
+    const a = modalAnnouncement;
 
-  if (isVisible) {
     return (
       <div
         className="announcement-overlay"
         role="dialog"
         aria-modal="true"
         aria-labelledby="announcement-title"
-        onClick={handleDismiss}
+        onClick={() => {
+          if (a.dismissible) {
+            handleDismiss(a);
+          }
+        }}
       >
         <div
           className="announcement-card"
@@ -100,7 +105,9 @@ export function AnnouncementModal() {
           <button
             className="announcement-close"
             aria-label="Close announcement"
-            onClick={handleDismiss}
+            onClick={() => {
+              handleDismiss(a);
+            }}
             ref={closeRef}
             type="button"
           >
@@ -108,37 +115,77 @@ export function AnnouncementModal() {
           </button>
 
           <div className="announcement-content">
-            <span className="announcement-kind">{CURRENT_ANNOUNCEMENT.kind.replace('-', ' ')}</span>
-            <h2 id="announcement-title">{CURRENT_ANNOUNCEMENT.title}</h2>
-            <p>{CURRENT_ANNOUNCEMENT.body}</p>
+            <span className="announcement-kind">{KIND_LABELS[a.kind] ?? a.kind}</span>
+            <h2 id="announcement-title">{a.title}</h2>
+            <p>{a.body}</p>
 
-            <div className="announcement-actions">
-              <Link
-                className="primary-button button-inline"
-                onClick={handleDismiss}
-                to={CURRENT_ANNOUNCEMENT.ctaLink}
-              >
-                {CURRENT_ANNOUNCEMENT.ctaText}
-              </Link>
-              <button
-                className="secondary-button button-inline"
-                onClick={handleDismiss}
-                type="button"
-              >
-                Dismiss
-              </button>
-            </div>
+            {a.action ? (
+              <div className="announcement-actions">
+                {a.action.external ? (
+                  <a
+                    className="primary-button button-inline"
+                    href={a.action.href}
+                    onClick={() => {
+                      if (a.dismissible) {
+                        handleDismiss(a);
+                      }
+                    }}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {a.action.label}
+                  </a>
+                ) : (
+                  <Link
+                    className="primary-button button-inline"
+                    onClick={() => {
+                      if (a.dismissible) {
+                        handleDismiss(a);
+                      }
+                    }}
+                    to={a.action.href}
+                  >
+                    {a.action.label}
+                  </Link>
+                )}
+                {a.dismissible ? (
+                  <button
+                    className="secondary-button button-inline"
+                    onClick={() => {
+                      handleDismiss(a);
+                    }}
+                    type="button"
+                  >
+                    Dismiss
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
+
+            {!a.action && a.dismissible ? (
+              <div className="announcement-actions">
+                <button
+                  className="primary-button button-inline"
+                  onClick={() => {
+                    handleDismiss(a);
+                  }}
+                  type="button"
+                >
+                  Dismiss
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
     );
   }
 
-  if (showBadge) {
+  if (visible.length > 0) {
     return (
       <button
         className="announcement-badge"
-        aria-label="Show announcement"
+        aria-label={`${visible.length} announcement${visible.length === 1 ? '' : 's'}`}
         data-testid="announcement-badge"
         onClick={handleBadgeClick}
         type="button"
