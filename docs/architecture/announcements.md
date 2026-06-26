@@ -49,14 +49,17 @@ https://github.com/SyndicatedPillbug/totjo-holocron-announcements
 3. Use a new `id` for new announcements.
 4. Bump `version` to re-show a dismissed announcement.
 5. Validate the feed:
+   The feed repo includes its own validator:
    ```sh
-   git clone https://github.com/indubitablyodin/totjo-holocron-v2
-   pnpm install
-   pnpm check:announcements path/to/announcements.json
+   node scripts/validate.mjs
    ```
-   Or use the standalone validator:
+   Or use the app repo's standalone checker:
    ```sh
    node scripts/check-announcements-feed.mjs path/to/announcements.json
+   ```
+   From the app repo:
+   ```sh
+   pnpm check:announcements path/to/announcements.json
    ```
 6. Commit and push the feed repository.
 7. The static host serves the updated JSON.
