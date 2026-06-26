@@ -67,6 +67,28 @@ https://github.com/SyndicatedPillbug/totjo-holocron-announcements
 
 No app rebuild or redeploy is required after the feed URL is configured in `runtime-config.json`.
 
+### Feed repo validation workflow
+
+The feed repo has a local validation script (`scripts/validate.mjs`) and a staged GitHub Actions workflow (`.github/workflows/validate-announcements.yml`).
+
+The workflow file is not yet pushed to the feed repo because the current git token lacks the required `workflow` scope. To enable automated CI validation:
+
+1. Create a [classic personal access token](https://github.com/settings/tokens) with the `workflow` scope.
+2. Clone the feed repo or navigate to it:
+   ```sh
+   gh repo clone SyndicatedPillbug/totjo-holocron-announcements
+   cd totjo-holocron-announcements
+   ```
+3. Restore and push the workflow file:
+   ```sh
+   git show 73a3aae:.github/workflows/validate-announcements.yml > .github/workflows/validate-announcements.yml
+   git add .github/workflows/validate-announcements.yml
+   git commit -m "ci: validate announcements feed on push"
+   git remote set-url origin https://<YOUR_PAT>@github.com/SyndicatedPillbug/totjo-holocron-announcements.git
+   git push origin main
+   ```
+4. After push, the workflow runs on every subsequent push that changes `announcements.json`.
+
 ### Operator runbook
 
 **To publish a new announcement:**
