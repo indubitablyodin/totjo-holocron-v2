@@ -64,6 +64,38 @@ https://github.com/SyndicatedPillbug/totjo-holocron-announcements
 
 No app rebuild or redeploy is required after the feed URL is configured in `runtime-config.json`.
 
+### Operator runbook
+
+**To publish a new announcement:**
+
+1. Open the feed repository: `SyndicatedPillbug/totjo-holocron-announcements`
+2. Edit `announcements.json`.
+3. Add or update a block in the `announcements` array.
+4. Validate with the main app's checker:
+   ```sh
+   pnpm check:announcements path/to/announcements.json
+   ```
+   Or download and check the remote URL:
+   ```sh
+   curl -sSf https://syndicatedpillbug.github.io/totjo-holocron-announcements/announcements.json -o /tmp/check.json
+   pnpm check:announcements /tmp/check.json
+   ```
+5. Commit and push.
+6. Wait for GitHub Pages to deploy (usually 1–2 minutes).
+7. Open the app and verify the new announcement appears.
+
+### Failure modes
+
+| Condition | Behavior |
+|---|---|
+| Feed URL unreachable | Silent — bundled + cached announcements are used |
+| Feed serves invalid JSON | Parsed/validated; invalid entries skipped; feed-level schema error drops the whole feed |
+| Feed is empty array | No announcements from that source; bundled announcements still present |
+| Feed has expired/stale entries | `expiresAt` hides them; `updatedAt` is informational |
+| Network offline at startup | Cached remote announcements from previous fetch are used |
+| Dismissed announcement version unchanged | Stays hidden |
+| Dismissed announcement version bumped | Reappears |
+
 ## How to publish a new announcement
 
 Create or edit `public/announcements.json` in the repo root.
