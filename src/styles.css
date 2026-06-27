@@ -34,49 +34,10 @@
   --color-surface-soft: rgba(22, 35, 49, 0.8);
   --color-border: rgba(153, 183, 208, 0.22);
   --color-border-strong: rgba(188, 212, 229, 0.5);
-  --color-text: #edf3f8;
-  --color-text-muted: #c0d0dd;
-  --color-text-soft: #9fb3c4;
-  --color-accent: #91cbf0;
-  --color-accent-ink: #0b2234;
-  --color-authority-canonical-surface: rgba(145, 203, 240, 0.18);
-  --color-authority-canonical-border: rgba(145, 203, 240, 0.42);
-  --color-authority-canonical-text: #b9ddf4;
-  --color-authority-supplemental-surface: rgba(117, 84, 10, 0.24);
-  --color-authority-supplemental-border: rgba(243, 220, 160, 0.34);
-  --color-authority-supplemental-text: #f3dca0;
-  --color-authority-sermon-surface: rgba(76, 123, 96, 0.2);
-  --color-authority-sermon-border: rgba(153, 214, 177, 0.32);
-  --color-authority-sermon-text: #c7efd5;
-  --color-personalization-surface: rgba(214, 188, 122, 0.18);
-  --color-personalization-border: rgba(234, 212, 160, 0.4);
-  --color-personalization-text: #f3dfaf;
-  --color-warning-surface: rgba(117, 84, 10, 0.24);
-  --color-warning-text: #f3dca0;
-  --color-update-surface: rgba(214, 188, 122, 0.16);
-  --color-update-border: rgba(234, 212, 160, 0.42);
-  --color-update-text: #f3dfaf;
-  --color-update-glow: rgba(243, 223, 175, 0.28);
-  --color-danger-text: #f6b1b1;
-
-  /* Hardware skeuomorphic tokens (dark) */
-  --hw-shadow-recessed: inset 0 2px 8px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(0,0,0,0.4);
-  --hw-shadow-raised: inset 0 1px 0 rgba(90,210,230,0.15), inset 0 -2px 0 rgba(0,0,0,0.5);
-  --hw-shadow-button-pressed: inset 0 2px 4px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(90,210,230,0.1);
-  --hw-shadow-tab-active: inset 0 1px 3px rgba(0,0,0,0.4);
-  --hw-screw: rgba(90,210,230,0.15);
-  --hw-screw-shadow: inset 0 0 0 1px rgba(90,210,230,0.08), 0 1px 3px rgba(0,0,0,0.6);
-  --hw-seam: rgba(0,0,0,0.35);
-  --hw-led-cyan: #8aecf5;
-  --hw-led-glow: 0 0 5px rgba(90,210,230,0.6);
-  --hw-data-rail: rgba(90,210,230,0.25);
-  --hw-status-line-bg: rgba(0,0,0,0.5);
-  --hw-timer-well-bg: rgba(2,4,8,0.9);
-  --hw-timer-well-border: rgba(0,0,0,0.6);
-  --hw-display-glass: linear-gradient(90deg, transparent, rgba(90,210,230,0.1), transparent);
-  --hw-panel-border-recessed: inset 0 0 0 1px rgba(0,0,0,0.4);
-  --hw-panel-border-raised: 1px solid rgba(90,210,230,0.2);
-  --hw-glow-cyan: 0 0 12px rgba(90,210,230,0.12);
+    --color-text: #edf3f8;
+    --color-text-strong: #f5faff;
+    --color-text-muted: #c0d0dd;
+    --color-text-soft: #9fb3c4;
 }
 
 :root[data-theme='light'] {
@@ -88,6 +49,7 @@
   --color-border: rgba(160, 142, 118, 0.22);
   --color-border-strong: rgba(130, 112, 88, 0.38);
   --color-text: #2c2420;
+  --color-text-strong: #14100d;
   --color-text-muted: #5a5048;
   --color-text-soft: #7a7068;
   --color-accent: #3a7a8c;
@@ -155,6 +117,7 @@
   --color-border: rgba(153, 183, 208, 0.18);
   --color-border-strong: rgba(188, 212, 229, 0.42);
   --color-text: #edf3f8;
+  --color-text-strong: #f5faff;
   --color-text-muted: #c0d0dd;
   --color-text-soft: #9fb3c4;
   --color-accent: #5daee0;
@@ -211,9 +174,10 @@
     --color-surface-soft: rgba(30, 40, 50, 0.84);
     --color-border: rgba(153, 183, 208, 0.18);
     --color-border-strong: rgba(188, 212, 229, 0.42);
-    --color-text: #edf3f8;
-    --color-text-muted: #c0d0dd;
-    --color-text-soft: #9fb3c4;
+  --color-text: #edf3f8;
+  --color-text-strong: #f5faff;
+  --color-text-muted: #c0d0dd;
+  --color-text-soft: #9fb3c4;
   }
 }
 
@@ -1763,8 +1727,8 @@ input {
   display: flex;
   gap: var(--space-1);
   overflow-x: auto;
-  width: min(calc(100% - var(--space-3) * 2), max-content);
-  max-width: calc(100% - var(--space-3) * 2);
+  width: min(calc(100% - var(--space-3) * 2 - env(safe-area-inset-right, 0px)), max-content);
+  max-width: calc(100% - var(--space-3) * 2 - env(safe-area-inset-right, 0px));
   padding: var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
@@ -2654,6 +2618,20 @@ input {
     border-top: 1px solid var(--color-border);
     padding: var(--space-3) 0 0;
     background: transparent;
+  }
+
+  .bottom-nav {
+    gap: 2px;
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .bottom-nav__link {
+    font-size: 0.65rem;
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .bottom-nav__icon {
+    font-size: 0.9rem;
   }
 }
 
@@ -3667,6 +3645,9 @@ body::after {
 
 /* ==========================================================================
    Light-mode overrides for hardcoded dark surfaces
+   NOTE: No meaningful text on pale surfaces should be white.
+   White/light text is only used on dark recessed plates or dark buttons.
+   Pale panels use dark text at all times.
    ========================================================================== */
 
 :root[data-theme='light'] body {
@@ -3738,13 +3719,22 @@ body::after {
   background: linear-gradient(90deg, transparent, rgba(58,122,140,0.3), transparent);
 }
 
+:root[data-theme='light'] .daily-practice-hero__brand {
+  color: var(--color-text-strong);
+}
+
+:root[data-theme='light'] .daily-practice-hero .support-copy,
+:root[data-theme='light'] .daily-practice-hero .daily-focus-card__preface {
+  color: var(--color-text-muted);
+}
+
 :root[data-theme='light'] .daily-practice-hero h1 {
   color: var(--color-accent);
-  text-shadow: var(--hw-glow-cyan);
+  text-shadow: 0 1px 0 rgba(255,255,240,0.4);
 }
 
 :root[data-theme='light'] .daily-practice-hero .practice-summary {
-  color: var(--color-text);
+  color: var(--color-text-strong);
 }
 
 :root[data-theme='light'] .daily-practice-hero .primary-button {
@@ -3773,9 +3763,9 @@ body::after {
 }
 
 :root[data-theme='light'] .bottom-nav__link--active {
-  background: rgba(58,122,140,0.12);
-  color: var(--color-accent-ink);
-  border-color: rgba(58,122,140,0.3);
+  background: rgba(58,122,140,0.18);
+  color: #124956;
+  border-color: rgba(58,122,140,0.35);
   box-shadow:
     var(--hw-shadow-tab-active),
     0 0 10px rgba(58,122,140,0.12);
@@ -3783,8 +3773,8 @@ body::after {
 
 :root[data-theme='light'] .bottom-nav__link--active:hover,
 :root[data-theme='light'] .bottom-nav__link--active:focus-visible {
-  background: rgba(58,122,140,0.18);
-  color: #1d5a6b;
+  background: rgba(58,122,140,0.25);
+  color: #0d3842;
 }
 
 :root[data-theme='light'] .app-nav {
