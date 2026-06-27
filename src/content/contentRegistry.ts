@@ -1,4 +1,3 @@
-import type { DocumentRecord } from '@/lib/content/types';
 import { normalizeDocumentRecord, nonEmptyArray } from './contentTypes';
 
 /** Pick the first non-empty array from a series of fallback candidates. */

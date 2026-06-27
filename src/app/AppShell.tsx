@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { Link, NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 
 import { AnnouncementModal } from '@/features/announcements/AnnouncementModal';
 import { TotjoBrandMark } from '@/app/TotjoBrandMark';

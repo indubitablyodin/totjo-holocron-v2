@@ -22,10 +22,6 @@ function fail(message) {
   exitCode = 1;
 }
 
-function warn(message) {
-  console.warn(`  WARN: ${message}`);
-}
-
 function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
