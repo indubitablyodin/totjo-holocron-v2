@@ -3,7 +3,7 @@ import { markLocalUserSettingsUpdated, saveLocalUserSettingsSyncUpdatedAt } from
 export const READING_SETTINGS_STORAGE_KEY = 'totjo-holocron:reading-settings';
 
 export const FONT_SCALE_OPTIONS = ['compact', 'standard', 'large'] as const;
-export const THEME_OPTIONS = ['dark', 'light'] as const;
+export const THEME_OPTIONS = ['dark', 'light', 'system'] as const;
 export const CONTRAST_OPTIONS = ['standard', 'high'] as const;
 
 export type FontScale = (typeof FONT_SCALE_OPTIONS)[number];
@@ -124,6 +124,20 @@ export function clearReadingSettingsStorage() {
   getStorage().removeItem(READING_SETTINGS_STORAGE_KEY);
 }
 
+export function resolveThemePreference(preference: ThemeMode, systemDark: boolean): 'dark' | 'light' {
+  if (preference === 'system') {
+    return systemDark ? 'dark' : 'light';
+  }
+  return preference;
+}
+
+export function getSystemDarkPreference(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false;
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 export function applyReadingSettings(settings: ReadingSettings, target?: Document) {
   if (!target) {
     return;
@@ -132,9 +146,11 @@ export function applyReadingSettings(settings: ReadingSettings, target?: Documen
   const root = target.documentElement;
   const { body } = target;
 
-  root.dataset.theme = settings.theme;
+  const resolvedTheme = resolveThemePreference(settings.theme, getSystemDarkPreference());
+  root.dataset.theme = resolvedTheme;
+  root.dataset.themePreference = settings.theme;
   root.dataset.contrast = settings.contrast;
-  root.style.colorScheme = settings.theme;
+  root.style.colorScheme = resolvedTheme;
 
   body.dataset.fontScale = settings.fontScale;
   body.classList.remove('compact-reading', 'standard-reading', 'large-reading');

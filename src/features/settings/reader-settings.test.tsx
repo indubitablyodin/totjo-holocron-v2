@@ -8,6 +8,7 @@ import { resetPersonalizationRules } from '@/features/personalization/personaliz
 import {
   clearReadingSettingsStorage,
   loadReadingSettings,
+  resolveThemePreference,
   saveReadingSettings,
   type ReadingSettings,
 } from './readingSettings';
@@ -62,5 +63,45 @@ describe('reader-settings persistence', () => {
     expect(screen.getByTestId('setting-font-scale')).toHaveValue('large');
     expect(screen.getByTestId('setting-theme')).toHaveValue('dark');
     expect(screen.getByTestId('setting-contrast')).toHaveValue('high');
+  });
+
+  it('allows selecting system theme preference', async () => {
+    window.matchMedia = window.matchMedia ?? (() => ({ matches: false, addEventListener() {}, removeEventListener() {} })) as typeof window.matchMedia;
+    const user = userEvent.setup();
+    render(<AppTestRouter initialEntries={['/settings/reading-display']} />);
+
+    await user.selectOptions(screen.getByTestId('setting-theme'), 'system');
+
+    expect(loadReadingSettings().theme).toBe('system');
+  });
+
+  it('sets data-theme-preference attribute to system', async () => {
+    window.matchMedia = window.matchMedia ?? (() => ({ matches: false, addEventListener() {}, removeEventListener() {} })) as typeof window.matchMedia;
+    const user = userEvent.setup();
+    render(<AppTestRouter initialEntries={['/settings/reading-display']} />);
+
+    await user.selectOptions(screen.getByTestId('setting-theme'), 'system');
+
+    expect(document.documentElement).toHaveAttribute('data-theme-preference', 'system');
+  });
+});
+
+describe('resolveThemePreference', () => {
+  it('returns dark for system preference when system is dark', () => {
+    expect(resolveThemePreference('system', true)).toBe('dark');
+  });
+
+  it('returns light for system preference when system is light', () => {
+    expect(resolveThemePreference('system', false)).toBe('light');
+  });
+
+  it('returns dark when dark is explicitly chosen', () => {
+    expect(resolveThemePreference('dark', true)).toBe('dark');
+    expect(resolveThemePreference('dark', false)).toBe('dark');
+  });
+
+  it('returns light when light is explicitly chosen', () => {
+    expect(resolveThemePreference('light', true)).toBe('light');
+    expect(resolveThemePreference('light', false)).toBe('light');
   });
 });

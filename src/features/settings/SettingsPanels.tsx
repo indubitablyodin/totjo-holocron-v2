@@ -53,6 +53,7 @@ const FONT_SCALE_LABELS = {
 const THEME_LABELS = {
   dark: 'Dark',
   light: 'Light',
+  system: 'System',
 } as const;
 
 const CONTRAST_LABELS = {
@@ -130,7 +131,7 @@ export function ReadingDisplaySettingsPage() {
 
           <label className="field-card" htmlFor="setting-theme">
             <span className="field-label">Theme</span>
-            <span className="field-help">Switch between the darker study theme and a brighter daytime view.</span>
+            <span className="field-help">System follows your browser or device appearance setting.</span>
             <select
               className="field-select"
               data-testid="setting-theme"

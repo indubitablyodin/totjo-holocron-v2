@@ -3,7 +3,9 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, type R
 import {
   DEFAULT_READING_SETTINGS,
   applyReadingSettings,
+  getSystemDarkPreference,
   loadReadingSettings,
+  resolveThemePreference,
   saveReadingSettings,
   type ContrastMode,
   type FontScale,
@@ -25,6 +27,10 @@ type ReadingSettingsContextValue = {
 };
 
 const ReadingSettingsContext = createContext<ReadingSettingsContextValue | null>(null);
+
+function reapplyCurrentTheme(settings: ReadingSettings) {
+  applyReadingSettings(settings, document);
+}
 
 export function ReadingSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<ReadingSettings>(() => loadReadingSettings());
@@ -56,6 +62,23 @@ export function ReadingSettingsProvider({ children }: { children: ReactNode }) {
       window.removeEventListener(USER_SETTINGS_SYNC_EVENT, syncFromStorage);
     };
   }, []);
+
+  useEffect(() => {
+    if (settings.theme !== 'system' || typeof window.matchMedia !== 'function') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const handleChange = () => {
+      applyReadingSettings(settings, document);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, [settings]);
 
   const value = useMemo<ReadingSettingsContextValue>(
     () => ({

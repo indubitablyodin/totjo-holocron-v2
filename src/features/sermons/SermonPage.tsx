@@ -27,6 +27,7 @@ const FONT_SCALE_LABELS = {
 const THEME_LABELS = {
   dark: 'Dark',
   light: 'Light',
+  system: 'System',
 } as const;
 
 const CONTRAST_LABELS = {
