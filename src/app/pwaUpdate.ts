@@ -88,6 +88,12 @@ export async function applyPwaUpdate() {
   }
 }
 
+export async function checkForUpdateFromStore(): Promise<boolean> {
+  const { checkForAppUpdate } = await import('@/app/registerAppServiceWorker');
+  const hasUpdate = await checkForAppUpdate();
+  return hasUpdate;
+}
+
 export function resetPwaUpdateStateForTests() {
   updater = null;
   publish(DEFAULT_PWA_UPDATE_SNAPSHOT);

@@ -22,6 +22,8 @@ import {
 } from '@/features/practice/dailyQuickAccess';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
+import { APP_BUILD } from '@/app/buildInfo';
+import { checkForUpdateFromStore } from '@/app/pwaUpdate';
 import { getAppAssetPath } from '@/lib/appAssets';
 import { getBundledAudioRightsAssets, SOUND_PROFILES, type AudioRightsAsset } from '@/features/timer/audioProfiles';
 import { appDb, ensureStorageReady } from '@/lib/db';
@@ -533,6 +535,23 @@ export function TimerDefaultsSettingsPage() {
 export function AboutLegalSettingsPage() {
   const bundledAudioRightsAssets = getBundledAudioRightsAssets();
   const [isRepairing, setIsRepairing] = useState(false);
+  const [updateCheckStatus, setUpdateCheckStatus] = useState<string | null>(null);
+
+  const handleCheckForUpdate = async () => {
+    setUpdateCheckStatus('Checking for update…');
+
+    try {
+      const hasUpdate = await checkForUpdateFromStore();
+
+      if (hasUpdate) {
+        setUpdateCheckStatus('An app update is ready. Go to the home screen and tap Update now.');
+      } else {
+        setUpdateCheckStatus('You are running the latest loaded version.');
+      }
+    } catch {
+      setUpdateCheckStatus('Could not check for update. Try again.');
+    }
+  };
 
   const handleRepairOfflineCache = async () => {
     if (isRepairing) {
@@ -588,6 +607,26 @@ export function AboutLegalSettingsPage() {
           <div className="detail-card">
             <h3>Install on this device</h3>
             <p>The install action stays in the shell header whenever your browser makes it available.</p>
+          </div>
+          <div className="detail-card">
+            <h3>Build</h3>
+            <p className="support-copy">
+              Version <code>{APP_BUILD.version}</code> &middot; Build <code>{APP_BUILD.buildLabel}</code>
+            </p>
+            <p>
+              <button
+                className="secondary-button"
+                data-testid="check-for-update"
+                disabled={updateCheckStatus === 'Checking for update…' || !('serviceWorker' in navigator)}
+                onClick={() => { void handleCheckForUpdate(); }}
+                type="button"
+              >
+                {updateCheckStatus === 'Checking for update…' ? 'Checking…' : 'Check for app update'}
+              </button>
+            </p>
+            {updateCheckStatus ? (
+              <p className="support-copy" data-testid="update-status">{updateCheckStatus}</p>
+            ) : null}
           </div>
           <div className="detail-card">
             <h3>Refresh installed app</h3>

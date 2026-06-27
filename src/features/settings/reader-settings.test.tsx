@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { APP_BUILD } from '@/app/buildInfo';
 import { AppTestRouter } from '@/App';
 import { resetPersonalizationRules } from '@/features/personalization/personalizationRules';
 
@@ -103,5 +104,14 @@ describe('resolveThemePreference', () => {
   it('returns light when light is explicitly chosen', () => {
     expect(resolveThemePreference('light', true)).toBe('light');
     expect(resolveThemePreference('light', false)).toBe('light');
+  });
+});
+
+describe('build info', () => {
+  it('exports version and build label', () => {
+    expect(APP_BUILD).toHaveProperty('version');
+    expect(APP_BUILD).toHaveProperty('buildLabel');
+    expect(typeof APP_BUILD.version).toBe('string');
+    expect(typeof APP_BUILD.buildLabel).toBe('string');
   });
 });

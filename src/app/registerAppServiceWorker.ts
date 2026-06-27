@@ -90,8 +90,6 @@ export function registerAppServiceWorker() {
 
   const swPath = getServiceWorkerPath();
 
-  // Manually register the service worker for injectManifest strategy.
-  // Register immediately so browsers can detect installability as soon as possible.
   void (async () => {
     try {
       const registration = await navigator.serviceWorker.register(swPath);
@@ -100,18 +98,15 @@ export function registerAppServiceWorker() {
       setPwaUpdater(createUpdater(registration));
       notifyWaitingUpdate(registration);
 
-      const checkForUpdates = () => {
+      const doUpdateCheck = () => {
         if (!registration) {
           return;
         }
 
-        void registration.update().catch(() => {
-          // Ignore update errors.
-        });
+        void registration.update().catch(() => {});
       };
 
-      // Check for updates every 4 hours without forcing a page reload.
-      const updateInterval = window.setInterval(checkForUpdates, 4 * 60 * 60 * 1000);
+      const updateInterval = window.setInterval(doUpdateCheck, 60 * 60 * 1000);
 
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
@@ -122,10 +117,15 @@ export function registerAppServiceWorker() {
 
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed') {
-            // Do not show an update prompt for the app's first service worker install.
             notifyWaitingUpdate(registration);
           }
         });
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          doUpdateCheck();
+        }
       });
 
       window.addEventListener('pagehide', () => {
@@ -139,4 +139,23 @@ export function registerAppServiceWorker() {
 
 export function getServiceWorkerRegistration() {
   return serviceWorkerRegistration;
+}
+
+export async function checkForAppUpdate(): Promise<boolean> {
+  if (!('serviceWorker' in navigator)) {
+    return false;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.getRegistration();
+
+    if (!registration) {
+      return false;
+    }
+
+    await registration.update();
+    return !!registration.waiting;
+  } catch {
+    return false;
+  }
 }
