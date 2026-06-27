@@ -167,6 +167,14 @@ Manual smoke matrix:
 
 ---
 
+## Theme system
+
+The app supports three theme modes (dark, light, system) persisted to localStorage key `totjo-holocron:reading-settings`. System mode listens to `prefers-color-scheme` via `matchMedia`. An inline script in `index.html` sets `data-theme` before React mounts to prevent flash of unstyled content.
+
+- `localStorage` — required for persistence (all modern browsers)
+- `window.matchMedia` — required for system mode (IE11 not supported)
+- `CSS custom properties` — `--hw-*` tokens adapt bevels/screws/shadows per theme
+
 ## Decision record
 
 | Decision | Rationale |
