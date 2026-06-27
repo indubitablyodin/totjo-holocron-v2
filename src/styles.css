@@ -2639,6 +2639,17 @@ input {
   --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
   --panel-bg: linear-gradient(180deg, rgba(14, 22, 36, 0.96), rgba(7, 12, 20, 0.98));
   --panel-inset: inset 0 0 0 1px rgba(255, 196, 87, 0.08), inset 0 1px 0 rgba(90, 210, 230, 0.06);
+
+  /* Skeuomorphic hardware tokens */
+  --material-metal-dark: linear-gradient(180deg, rgba(10, 16, 28, 0.98), rgba(5, 8, 14, 0.99));
+  --material-metal-top: linear-gradient(180deg, rgba(24, 38, 54, 0.96), rgba(12, 20, 32, 0.98));
+  --material-panel-raised: linear-gradient(180deg, rgba(18, 30, 46, 0.96), rgba(8, 14, 22, 0.98));
+  --material-panel-recessed: linear-gradient(180deg, rgba(4, 7, 12, 0.95), rgba(8, 12, 20, 0.95));
+  --material-edge-light: rgba(90, 210, 230, 0.08);
+  --material-edge-dark: rgba(0, 0, 0, 0.6);
+  --shadow-raised: inset 0 1px 0 rgba(90, 210, 230, 0.15), inset 0 -2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-recessed: inset 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(0, 0, 0, 0.3);
+  --shadow-control-pressed: inset 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(90, 210, 230, 0.08);
 }
 
 /* --- Global starfield/grid background --- */
@@ -3235,6 +3246,381 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(90, 210, 230, 0.35);
+}
+
+/* ==========================================================================
+   Skeuomorphic hardware binding — attached to existing app selectors
+   ========================================================================== */
+
+/* --- Main dashboard wrapper --- */
+.home-dashboard {
+  position: relative;
+}
+
+/* --- Daily practice hero — bolted hardware panel --- */
+.daily-practice-hero {
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(90,210,230,0.08);
+}
+
+.daily-practice-hero::after {
+  content: '';
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, rgba(90,210,230,0.25), rgba(0,0,0,0.7) 70%);
+  box-shadow: inset 0 0 0 1px rgba(90,210,230,0.1), 0 1px 2px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+/* --- Status strip — recessed engraved data plate feel --- */
+.holocron-status-line {
+  background: rgba(0,0,0,0.45);
+  border-bottom: 1px solid rgba(0,0,0,0.3);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+  position: relative;
+  padding-left: var(--space-4);
+}
+
+.holocron-status-line::before {
+  content: '';
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #8aecf5;
+  box-shadow: 0 0 4px rgba(90,210,230,0.5);
+  pointer-events: none;
+}
+
+/* --- Primary action panel (meditation) — instrument bay --- */
+.primary-action-panel {
+  position: relative;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(90,210,230,0.08),
+    0 8px 32px rgba(0,0,0,0.5);
+}
+
+.primary-action-panel::before {
+  content: '';
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, rgba(90,210,230,0.2), rgba(0,0,0,0.6) 70%);
+  box-shadow: inset 0 0 0 1px rgba(90,210,230,0.1), 0 1px 2px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+.primary-action-panel::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-4);
+  right: var(--space-4);
+  height: 1px;
+  background: rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+
+/* --- Primary CTA button — physically raised control --- */
+.primary-button {
+  position: relative;
+  box-shadow:
+    0 1px 0 rgba(90,210,230,0.15),
+    inset 0 1px 0 rgba(90,210,230,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
+}
+
+.primary-button:hover,
+.primary-button:focus-visible {
+  box-shadow:
+    0 1px 0 rgba(90,210,230,0.2),
+    inset 0 1px 0 rgba(90,210,230,0.15),
+    0 0 10px rgba(90,210,230,0.12);
+}
+
+.primary-button:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(90,210,230,0.08);
+}
+
+/* --- Secondary button — panel-mount control --- */
+.secondary-button {
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgba(90,210,230,0.05),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+
+.secondary-button:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* --- Quick lane cards — tactile raised controls --- */
+.lane-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.lane-card:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(255,196,87,0.04),
+    0 2px 6px rgba(0,0,0,0.4);
+}
+
+/* --- Timer display — recessed instrument well --- */
+.timer-display--hero {
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 4px;
+  background: rgba(4,7,12,0.8);
+  box-shadow:
+    inset 0 2px 6px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(90,210,230,0.06);
+  overflow: hidden;
+}
+
+.timer-display--hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(90,210,230,0.1), transparent);
+  pointer-events: none;
+}
+
+.timer-display--hero::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, rgba(90,210,230,0.12) 0px, rgba(90,210,230,0.12) 2px, transparent 2px, transparent 12px);
+  pointer-events: none;
+}
+
+/* --- Timer clock display — recessed screen --- */
+.timer-clock--editable {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.timer-clock--editable:focus {
+  box-shadow:
+    inset 0 1px 3px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(90,210,230,0.3);
+}
+
+/* --- Timer preset buttons — raised --- */
+.timer-preset-btn {
+  box-shadow:
+    0 1px 0 rgba(90,210,230,0.1),
+    inset 0 1px 0 rgba(90,210,230,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+
+.timer-preset-btn:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(90,210,230,0.08);
+}
+
+/* --- Active nav tab — latched/pressed feel --- */
+.bottom-nav__link--active {
+  box-shadow:
+    inset 0 1px 3px rgba(0,0,0,0.3),
+    0 0 12px rgba(90,210,230,0.25);
+}
+
+.app-nav__link--active {
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* --- Library search — data plate console --- */
+.library-search {
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.3),
+    var(--panel-inset),
+    0 0 0 1px rgba(90,210,230,0.12);
+  position: relative;
+}
+
+/* --- Library cards — archive card with data rail --- */
+.library-card {
+  position: relative;
+  padding-left: var(--space-5);
+}
+
+.library-card::before {
+  content: '';
+  position: absolute;
+  left: var(--space-2);
+  top: var(--space-4);
+  bottom: var(--space-4);
+  width: 2px;
+  background: rgba(90,210,230,0.15);
+  pointer-events: none;
+}
+
+/* --- Settings link cards — data plate vertical rule --- */
+.settings-link-card {
+  position: relative;
+  padding-left: var(--space-5);
+  transition: background 0.12s ease;
+}
+
+.settings-link-card::before {
+  content: '';
+  position: absolute;
+  left: var(--space-2);
+  top: var(--space-4);
+  bottom: var(--space-4);
+  width: 2px;
+  background: rgba(90,210,230,0.15);
+  pointer-events: none;
+}
+
+.settings-link-card:hover {
+  background: rgba(90,210,230,0.03);
+}
+
+/* --- Reader shell header — bolted plate --- */
+.reader-shell__header {
+  position: relative;
+  border-bottom: 1px solid rgba(0,0,0,0.3);
+  box-shadow: inset 0 1px 0 rgba(90,210,230,0.05);
+}
+
+.reader-shell__header::before {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  top: var(--space-2);
+  left: var(--space-2);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, rgba(90,210,230,0.2), rgba(0,0,0,0.6) 70%);
+  box-shadow: inset 0 0 0 1px rgba(90,210,230,0.1), 0 1px 2px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+.reader-shell__header::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  top: var(--space-2);
+  right: var(--space-2);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, rgba(90,210,230,0.2), rgba(0,0,0,0.6) 70%);
+  box-shadow: inset 0 0 0 1px rgba(90,210,230,0.1), 0 1px 2px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+
+/* --- Navigation press states --- */
+.bottom-nav__link:active {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.5),
+    inset 0 0 0 1px rgba(90,210,230,0.08);
+}
+
+.app-nav__link:active {
+  transform: translateY(1px);
+}
+
+/* --- Search input — recessed terminal --- */
+.search-input {
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* --- Reader option buttons (timer presets) — raised controls --- */
+.reader-option-button {
+  box-shadow:
+    0 1px 0 rgba(90,210,230,0.08),
+    inset 0 1px 0 rgba(90,210,230,0.05),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+
+.reader-option-button:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* --- Primary action panel stat strip --- */
+.stat-strip {
+  position: relative;
+}
+
+.stat-card {
+  position: relative;
+  padding-left: var(--space-2);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(90,210,230,0.3);
+  pointer-events: none;
+}
+
+/* --- Dashboard timer readout (compact) --- */
+.dashboard-timer__readout {
+  position: relative;
+  display: inline-block;
+}
+
+.dashboard-timer__readout::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(90,210,230,0.06), transparent);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Hardened body background — age/grime
+   ========================================================================== */
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, transparent 0px, rgba(0, 0, 0, 0.01) 1px, transparent 2px, transparent 40px),
+    repeating-linear-gradient(-45deg, transparent 0px, rgba(0, 0, 0, 0.005) 1px, transparent 2px, transparent 40px);
+  pointer-events: none;
+  z-index: 9999;
 }
 
 /* ==========================================================================
