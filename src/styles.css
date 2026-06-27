@@ -2624,40 +2624,73 @@ input {
 }
 
 /* ==========================================================================
-   Retro Holocron Theme — Ghost in the Shell / 90s sci-fi terminal aesthetic
-   Added on top of existing tokens. Overrides only visual properties.
+   Holocron Retro Sci-Fi Visual Skin
+   1990s terminal / early-web portal / Jedi archive console
    ========================================================================== */
 
+/* --- Theme tokens --- */
 :root {
-  --glow-accent: 0 0 12px rgba(145, 203, 240, 0.15);
-  --glow-amber: 0 0 8px rgba(243, 220, 160, 0.12);
-  --glow-green: 0 0 8px rgba(153, 214, 177, 0.12);
-  --border-double: 3px double rgba(145, 203, 240, 0.18);
+  --glow-accent: 0 0 14px rgba(90, 210, 230, 0.2);
+  --glow-amber: 0 0 12px rgba(255, 196, 87, 0.15);
+  --glow-green: 0 0 10px rgba(100, 220, 140, 0.15);
+  --border-scan: 1px solid rgba(90, 210, 230, 0.35);
+  --border-scan-strong: 1px solid rgba(90, 210, 230, 0.55);
+  --border-double: 3px double rgba(90, 210, 230, 0.25);
   --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  --panel-bg: linear-gradient(180deg, rgba(14, 22, 36, 0.96), rgba(7, 12, 20, 0.98));
+  --panel-inset: inset 0 0 0 1px rgba(255, 196, 87, 0.08), inset 0 1px 0 rgba(90, 210, 230, 0.06);
 }
 
-/* Terminal-style section label */
-.holocron-label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-text-muted);
-  opacity: 0.7;
+/* --- Global starfield/grid background --- */
+html {
+  background: #05070d;
 }
 
-/* Subtle grid background for panels */
+body {
+  background-color: #05070d;
+  background-image:
+    radial-gradient(ellipse at 25% 5%, rgba(90, 210, 230, 0.18) 0%, transparent 40%),
+    radial-gradient(ellipse at 75% 10%, rgba(255, 196, 87, 0.10) 0%, transparent 35%),
+    radial-gradient(ellipse at 50% 95%, rgba(100, 220, 140, 0.06) 0%, transparent 30%),
+    repeating-linear-gradient(0deg, rgba(90, 210, 230, 0.03) 0px, transparent 1px, transparent 5px),
+    linear-gradient(135deg, rgba(90, 210, 230, 0.04) 25%, transparent 25%, transparent 75%, rgba(90, 210, 230, 0.04) 75%),
+    linear-gradient(180deg, rgba(5, 7, 13, 1) 0%, rgba(9, 14, 25, 1) 100%);
+  background-attachment: fixed;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px, 32px 32px, 100% 100%;
+}
+
+/* ==========================================================================
+   Strong panel material
+   ========================================================================== */
+
 .holocron-panel {
-  border: var(--border-width) solid var(--color-border);
+  position: relative;
+  border: var(--border-scan);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
+  background: var(--panel-bg);
+  background-image:
+    linear-gradient(180deg, rgba(90, 210, 230, 0.03) 0%, transparent 8%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, transparent 1px, transparent 8px);
+  box-shadow:
+    var(--panel-inset),
+    0 8px 32px rgba(0,0,0,0.5);
 }
 
-.holocron-panel--inset {
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+.holocron-panel::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(90, 210, 230, 0.4), transparent);
+  pointer-events: none;
 }
 
-/* Corner bracket decoration for important surfaces */
+/* ==========================================================================
+   Corner brackets
+   ========================================================================== */
+
 .holocron-frame {
   position: relative;
 }
@@ -2666,12 +2699,11 @@ input {
 .holocron-frame::after {
   content: '';
   position: absolute;
-  width: 12px;
-  height: 12px;
-  border-color: var(--color-border-strong);
+  width: 14px;
+  height: 14px;
+  border-color: rgba(90, 210, 230, 0.35);
   border-style: solid;
   pointer-events: none;
-  opacity: 0.5;
 }
 
 .holocron-frame::before {
@@ -2686,60 +2718,529 @@ input {
   border-width: 0 2px 2px 0;
 }
 
-/* Status chip */
+/* ==========================================================================
+   Terminal chips and labels
+   ========================================================================== */
+
 .holocron-chip {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
   padding: 0.2em 0.6em;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.65rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-soft);
-  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  border-radius: 2px;
+  border: 1px solid rgba(90, 210, 230, 0.3);
+  background: rgba(5, 7, 13, 0.7);
+  color: rgba(90, 210, 230, 0.8);
+}
+
+.holocron-chip--amber {
+  border-color: rgba(255, 196, 87, 0.4);
+  color: rgba(255, 196, 87, 0.85);
+}
+
+.holocron-chip--green {
+  border-color: rgba(100, 220, 140, 0.4);
+  color: rgba(100, 220, 140, 0.85);
 }
 
 .holocron-chip--accent {
   border-color: var(--color-accent);
   color: var(--color-accent);
-}
-
-/* Thin amber/cyan divider */
-.holocron-divider {
-  height: 1px;
-  border: none;
-  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
-  opacity: 0.3;
-  margin: var(--space-4) 0;
-}
-
-/* Grid background for body/panels */
-.holocron-grid {
-  background-image:
-    linear-gradient(rgba(145, 203, 240, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(145, 203, 240, 0.03) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-/* Active nav chip — used by bottom nav active state */
-.holocron-nav-chip {
-  background: var(--color-accent);
-  color: var(--color-accent-ink);
   box-shadow: var(--glow-accent);
 }
 
-/* Panel title row uses mono for the label */
-.panel-title-row h2 {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  letter-spacing: 0.04em;
+/* Amber/cyan divider */
+.holocron-divider {
+  height: 1px;
+  border: none;
+  background: linear-gradient(90deg, transparent, rgba(90, 210, 230, 0.4), transparent);
+  margin: var(--space-4) 0;
 }
 
-/* Reduced motion */
+.holocron-divider--amber {
+  background: linear-gradient(90deg, transparent, rgba(255, 196, 87, 0.3), transparent);
+}
+
+/* Status strip (used in panels) */
+.holocron-status-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(90, 210, 230, 0.5);
+  border-bottom: 1px solid rgba(90, 210, 230, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Section label */
+.holocron-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(90, 210, 230, 0.6);
+}
+
+/* ==========================================================================
+   Bottom nav — sci-fi segmented tab bar
+   ========================================================================== */
+
+.bottom-nav {
+  background:
+    linear-gradient(180deg, rgba(12, 20, 34, 0.98), rgba(7, 12, 20, 0.98)),
+    repeating-linear-gradient(90deg, rgba(90, 210, 230, 0.03) 0px, transparent 1px, transparent 12px);
+  box-shadow:
+    0 -1px 0 rgba(90, 210, 230, 0.15),
+    0 -8px 24px rgba(0,0,0,0.5);
+  border-color: rgba(90, 210, 230, 0.2);
+  border-radius: var(--radius-pill);
+}
+
+.bottom-nav__back {
+  border-right: 1px solid rgba(90, 210, 230, 0.12);
+}
+
+.bottom-nav__link {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bottom-nav__link--active {
+  color: var(--color-accent-ink);
+  background: rgba(90, 210, 230, 0.85);
+  border-color: rgba(90, 210, 230, 0.6);
+  box-shadow:
+    0 0 12px rgba(90, 210, 230, 0.25),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.bottom-nav__link--active:hover,
+.bottom-nav__link--active:focus-visible {
+  background: rgba(90, 210, 230, 0.9);
+  color: #05070d;
+  box-shadow:
+    0 0 16px rgba(90, 210, 230, 0.35),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* ==========================================================================
+   Desktop app nav
+   ========================================================================== */
+
+.app-nav {
+  border-bottom: 1px solid rgba(90, 210, 230, 0.15);
+  padding-bottom: var(--space-3);
+}
+
+.app-nav__link {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+.app-nav__link--active {
+  background: rgba(90, 210, 230, 0.12);
+  color: #8aecf5;
+  border-color: rgba(90, 210, 230, 0.35);
+  box-shadow: var(--glow-accent);
+}
+
+.app-nav__brand {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+/* ==========================================================================
+   Dashboard — system console hero
+   ========================================================================== */
+
+.daily-practice-hero {
+  background:
+    linear-gradient(135deg, rgba(18, 38, 58, 0.95) 0%, rgba(5, 10, 20, 0.98) 100%);
+  border: var(--border-double);
+  box-shadow:
+    var(--panel-inset),
+    0 8px 32px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.daily-practice-hero::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(90, 210, 230, 0.5), transparent);
+  pointer-events: none;
+}
+
+.daily-practice-hero h1 {
+  color: #8aecf5;
+  text-shadow: 0 0 20px rgba(90, 210, 230, 0.2);
+}
+
+.daily-practice-hero .practice-summary {
+  color: #d0e8f0;
+}
+
+.daily-practice-hero .primary-button {
+  background: rgba(90, 210, 230, 0.12);
+  color: #8aecf5;
+  border: 1px solid rgba(90, 210, 230, 0.45);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.daily-practice-hero .primary-button:hover,
+.daily-practice-hero .primary-button:focus-visible {
+  background: rgba(90, 210, 230, 0.25);
+  color: #e0f4ff;
+  border-color: rgba(90, 210, 230, 0.7);
+}
+
+/* ==========================================================================
+   Meditation panel — instrument console
+   ========================================================================== */
+
+.primary-action-panel {
+  border: var(--border-double);
+  background: var(--panel-bg);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(90, 210, 230, 0.03) 0px, transparent 1px, transparent 10px);
+  box-shadow:
+    var(--panel-inset),
+    0 8px 32px rgba(0,0,0,0.5);
+}
+
+.panel-title-row h2 {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #8aecf5;
+}
+
+/* Timer presets — chunky console buttons */
+.timer-preset-btn {
+  border: 1px solid rgba(90, 210, 230, 0.3);
+  background: rgba(5, 7, 13, 0.85);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(90, 210, 230, 0.08),
+    0 2px 4px rgba(0,0,0,0.4);
+}
+
+.timer-preset-btn:hover,
+.timer-preset-btn:focus-visible {
+  border-color: rgba(90, 210, 230, 0.6);
+  background: rgba(10, 18, 32, 0.95);
+  box-shadow:
+    0 0 10px rgba(90, 210, 230, 0.15),
+    inset 0 1px 0 rgba(90, 210, 230, 0.1);
+}
+
+.timer-preset-num {
+  font-family: var(--font-mono);
+  color: #8aecf5;
+}
+
+/* Timer readout */
+.dashboard-timer__readout {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 20px rgba(90, 210, 230, 0.15);
+}
+
+/* ==========================================================================
+   Quick lane cards — chunky early-web portal buttons
+   ========================================================================== */
+
+.lane-card {
+  border: var(--border-scan);
+  border-radius: 2px;
+  background: var(--panel-bg);
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, transparent 1px, transparent 8px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 196, 87, 0.06),
+    inset 0 1px 0 rgba(90, 210, 230, 0.05),
+    0 4px 12px rgba(0,0,0,0.4);
+  transition: all 0.12s ease;
+}
+
+.lane-card:hover,
+.lane-card:focus-visible {
+  border-color: rgba(90, 210, 230, 0.55);
+  background: linear-gradient(180deg, rgba(16, 26, 44, 0.96), rgba(8, 14, 24, 0.98));
+  box-shadow:
+    0 0 12px rgba(90, 210, 230, 0.1),
+    inset 0 0 0 1px rgba(90, 210, 230, 0.1);
+  transform: translateY(-2px);
+}
+
+.lane-card__title {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.lane-card__actions .secondary-button {
+  background: rgba(5, 7, 13, 0.7);
+  border: 1px solid rgba(90, 210, 230, 0.3);
+  color: rgba(90, 210, 230, 0.8);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.lane-card__actions .secondary-button:hover {
+  background: rgba(90, 210, 230, 0.12);
+  border-color: rgba(90, 210, 230, 0.55);
+}
+
+/* Lane color accents */
+.lane-card--focus {
+  border-left: 3px solid rgba(90, 210, 230, 0.5);
+}
+
+.lane-card--sermon {
+  border-left: 3px solid rgba(100, 220, 140, 0.5);
+}
+
+.lane-card--study {
+  border-left: 3px solid rgba(90, 210, 230, 0.5);
+}
+
+.lane-card--bookmark {
+  border-left: 3px solid rgba(255, 196, 87, 0.5);
+}
+
+/* Lane badge */
+.lane-card__badge {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+/* ==========================================================================
+   Search — command console
+   ========================================================================== */
+
+.library-search {
+  border: var(--border-scan);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--panel-bg);
+  box-shadow:
+    var(--panel-inset);
+}
+
+.search-input {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(90, 210, 230, 0.3);
+  color: #8aecf5;
+  font-family: var(--font-mono);
+}
+
+.search-input:focus {
+  border-color: rgba(90, 210, 230, 0.6);
+  box-shadow: 0 0 10px rgba(90, 210, 230, 0.12);
+}
+
+.filter-toggle {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.filter-toggle input {
+  accent-color: rgba(90, 210, 230, 0.8);
+}
+
+/* ==========================================================================
+   Library cards — archive index
+   ========================================================================== */
+
+.library-card {
+  border-top: 1px solid rgba(90, 210, 230, 0.12);
+  border-radius: 2px;
+  padding: var(--space-4);
+}
+
+.library-card__title a {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.library-card__meta {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: rgba(90, 210, 230, 0.5);
+}
+
+.authority-badge {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   Timer page — meditation instrument
+   ========================================================================== */
+
+.timer-clock,
+.timer-clock--editable {
+  font-family: var(--font-mono);
+  text-shadow: 0 0 20px rgba(90, 210, 230, 0.15);
+}
+
+.timer-clock--editable {
+  border: 1px solid rgba(90, 210, 230, 0.3);
+  border-radius: 2px;
+}
+
+.timer-clock--editable:hover {
+  border-color: rgba(90, 210, 230, 0.6);
+}
+
+.reader-option-button {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  border-radius: 2px;
+  border: 1px solid rgba(90, 210, 230, 0.2);
+  background: rgba(5, 7, 13, 0.7);
+  color: var(--color-text-muted);
+}
+
+.reader-option-button--active {
+  background: rgba(90, 210, 230, 0.15);
+  border-color: rgba(90, 210, 230, 0.4);
+  color: #8aecf5;
+}
+
+/* ==========================================================================
+   Reader page — calm archive surface
+   ========================================================================== */
+
+.reader-shell {
+  max-width: min(100%, calc(var(--page-line-width) + 10rem));
+}
+
+.reader-shell__header {
+  border-bottom: 1px solid rgba(90, 210, 230, 0.15);
+}
+
+.reader-shell__title {
+  font-family: var(--font-mono);
+}
+
+.reader-copy {
+  font-family: var(--font-body);
+  line-height: 1.7;
+}
+
+/* Settings panels */
+.settings-link-card {
+  border-top: 1px solid rgba(90, 210, 230, 0.12);
+  padding: var(--space-4) 0;
+}
+
+.settings-link-card__content h3 {
+  font-family: var(--font-mono);
+}
+
+.settings-link-card__action {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+.field-label {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+/* Monospace for timer settings panel titles */
+.timer-settings-panel .field-label,
+.reader-settings-panel .field-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+/* Primary / secondary buttons */
+.primary-button,
+.secondary-button {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+.primary-button {
+  background: rgba(90, 210, 230, 0.12);
+  color: #8aecf5;
+  border: 1px solid rgba(90, 210, 230, 0.4);
+}
+
+.primary-button:hover,
+.primary-button:focus-visible {
+  background: rgba(90, 210, 230, 0.2);
+  border-color: rgba(90, 210, 230, 0.6);
+  box-shadow: 0 0 10px rgba(90, 210, 230, 0.12);
+}
+
+.secondary-button {
+  background: rgba(5, 7, 13, 0.7);
+  border: 1px solid rgba(90, 210, 230, 0.2);
+  color: rgba(90, 210, 230, 0.7);
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  border-color: rgba(90, 210, 230, 0.45);
+  color: #8aecf5;
+}
+
+/* ==========================================================================
+   Scrollbar — subtle terminal style
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(5, 7, 13, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(90, 210, 230, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(90, 210, 230, 0.35);
+}
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -2751,11 +3252,20 @@ input {
   }
 }
 
-/* Forced colors mode */
+/* ==========================================================================
+   Forced colors mode
+   ========================================================================== */
+
 @media (forced-colors: active) {
   .holocron-frame::before,
   .holocron-frame::after,
-  .holocron-divider {
+  .holocron-divider,
+  .holocron-divider--amber {
+    display: none;
+  }
+
+  .daily-practice-hero::before,
+  .holocron-panel::before {
     display: none;
   }
 

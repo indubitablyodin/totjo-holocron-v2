@@ -308,6 +308,11 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
             <TotjoBrandMark variant="compact" />
             <span>Temple of the Jedi Order</span>
           </div>
+          <div className="holocron-status-line">
+            <span>HOLOCRONS</span>
+            <span>DAILY PRACTICE</span>
+            <span>LOCAL ARCHIVE</span>
+          </div>
           <h1 id="practice-heading">Today&rsquo;s Practice</h1>
           {dailyFocus.preface ? <p className="daily-focus-card__preface">{dailyFocus.preface}</p> : null}
           <p className="practice-summary" data-testid="daily-practice-text">
@@ -326,6 +331,11 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
         </section>
 
         <section className="dashboard-region primary-action-panel" aria-labelledby="meditation-heading">
+          <div className="holocron-status-line">
+            <span>PRACTICE NODE</span>
+            <span>BREATH CYCLE</span>
+            <span>LOCAL-FIRST</span>
+          </div>
           <div className="panel-title-row">
             <h2 id="meditation-heading">Meditation</h2>
             <TimerSettingsButton
@@ -400,7 +410,14 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
           </section>
         ) : null}
 
+        <hr className="holocron-divider" />
+
         <section className="dashboard-region" aria-labelledby="lanes-heading">
+          <div className="holocron-status-line">
+            <span>TEMPLE ARCHIVE</span>
+            <span>QUICK ACCESS</span>
+            <span>OFFLINE READY</span>
+          </div>
           <h2 className="dashboard-region__title" id="lanes-heading">
             Quick lanes
           </h2>
