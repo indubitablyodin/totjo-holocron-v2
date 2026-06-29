@@ -1,5 +1,3 @@
-import { readFileSync } from 'fs';
-
 function hexToRgb(hex) {
   const clean = hex.replace('#', '');
   return {
@@ -59,11 +57,10 @@ const THEMES = {
     link: '#8aecf5',
     navActiveBg: 'rgba(90,210,230,0.85)',
     navActiveText: '#0b2234',
-    primaryBtnBg: '#1a3048',
-    primaryBtnText: '#f7fbff',
+    primaryBtnBg: '#10202d',
+    primaryBtnText: '#8aecf5',
     dataPlateText: 'rgba(90,210,230,0.5)',
     dataPlateBg: 'rgba(0,0,0,0.5)',
-    accentInk: '#f7fbff',
   },
 };
 
@@ -80,7 +77,6 @@ const PAIRS = [
   ['navActiveText', 'navActiveBg', null, 'active nav label on nav background', 4.5],
   ['primaryBtnText', 'primaryBtnBg', 'background', 'primary button text on button bg', 3.0],
   ['dataPlateText', 'dataPlateBg', 'panel', 'data plate text on data plate bg', 3.0],
-  ['accentInk', 'primaryBtnBg', 'background', 'primary btn ink on button bg', 3.0],
 ];
 
 function getResolvedToken(tokenName, themeName) {
@@ -123,10 +119,10 @@ function resolveColor(tokenName, theme, parentBg) {
 
 let allPass = true;
 
-for (const [themeName, theme] of Object.entries(THEMES)) {
+for (const [themeName] of Object.entries(THEMES)) {
   console.log(`\n=== ${themeName.toUpperCase()} MODE ===`);
   
-  for (const [fgToken, bgToken, parentBgToken, label, threshold] of PAIRS) {
+  for (const [fgToken, bgToken, , label, threshold] of PAIRS) {
     const fg = getResolvedToken(fgToken, themeName);
     const bg = getResolvedToken(bgToken, themeName);
     
