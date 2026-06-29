@@ -129,6 +129,26 @@ export function useTimerSession({
     };
   }, [handleComplete, onCue, session.phase]);
 
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || typeof navigator.wakeLock === 'undefined') {
+      return;
+    }
+
+    let sentinel: WakeLockSentinel | null = null;
+
+    if (session.phase === 'running') {
+      navigator.wakeLock.request('screen').then((lock) => {
+        sentinel = lock;
+      }).catch(() => {});
+    }
+
+    return () => {
+      if (sentinel) {
+        sentinel.release().catch(() => {});
+      }
+    };
+  }, [session.phase]);
+
   const handleStart = useCallback(
     (minutes: number) => {
       const seconds = minutes * 60;
