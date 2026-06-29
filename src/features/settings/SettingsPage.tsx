@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
+import { createGitHubBugReportUrl, GITHUB_RELEASE_URL, getFeedbackContext } from '@/features/settings/feedbackLinks';
 import { usePersonalization } from '@/features/personalization/PersonalizationContext';
 import { loadDailyPracticeClockOverride } from '@/features/practice/dailyPracticeClock';
 import { loadDailyQuickAccessMiddleSlotId } from '@/features/practice/dailyQuickAccess';
@@ -406,6 +407,33 @@ export function SettingsPage() {
         {storageRequested && storagePersisted === false ? (
           <p className="support-copy">Persistent storage was not granted by this browser.</p>
         ) : null}
+      </PageSection>
+
+      <PageSection title="Help &amp; Feedback">
+        <p className="support-copy">
+          Found a bug or rough edge? You can open a prefilled GitHub issue with basic app and browser details.
+          Please do not include private notes or sensitive information.
+        </p>
+        <div className="document-actions">
+          <a
+            className="primary-button"
+            data-testid="report-bug-link"
+            href={createGitHubBugReportUrl(getFeedbackContext())}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            Report a bug on GitHub
+          </a>
+          <a
+            className="secondary-button"
+            data-testid="release-notes-link"
+            href={GITHUB_RELEASE_URL}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            View release notes
+          </a>
+        </div>
       </PageSection>
     </PageLayout>
   );
