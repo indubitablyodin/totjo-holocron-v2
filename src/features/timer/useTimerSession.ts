@@ -129,25 +129,74 @@ export function useTimerSession({
     };
   }, [handleComplete, onCue, session.phase]);
 
-  useEffect(() => {
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+
+  const acquireWakeLock = useCallback(async () => {
     if (typeof navigator === 'undefined' || typeof navigator.wakeLock === 'undefined') {
       return;
     }
 
-    let sentinel: WakeLockSentinel | null = null;
-
-    if (session.phase === 'running') {
-      navigator.wakeLock.request('screen').then((lock) => {
-        sentinel = lock;
-      }).catch(() => {});
+    if (wakeLockRef.current) {
+      return;
     }
 
-    return () => {
-      if (sentinel) {
-        sentinel.release().catch(() => {});
+    try {
+      const lock = await navigator.wakeLock.request('screen');
+      wakeLockRef.current = lock;
+
+      lock.addEventListener('release', () => {
+        wakeLockRef.current = null;
+      });
+    } catch {
+      // Wake Lock not supported or denied — timer works without it.
+    }
+  }, []);
+
+  const releaseWakeLock = useCallback(async () => {
+    if (!wakeLockRef.current) {
+      return;
+    }
+
+    try {
+      await wakeLockRef.current.release();
+    } catch {
+      // Ignore release errors.
+    }
+
+    wakeLockRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    if (session.phase === 'running') {
+      void acquireWakeLock();
+    } else {
+      void releaseWakeLock();
+    }
+  }, [acquireWakeLock, releaseWakeLock, session.phase]);
+
+  useEffect(() => {
+    if (session.phase !== 'running') {
+      return;
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && sessionRef.current.phase === 'running') {
+        void acquireWakeLock();
       }
     };
-  }, [session.phase]);
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [acquireWakeLock, session.phase]);
+
+  useEffect(() => {
+    return () => {
+      void releaseWakeLock();
+    };
+  }, [releaseWakeLock]);
 
   const handleStart = useCallback(
     (minutes: number) => {
