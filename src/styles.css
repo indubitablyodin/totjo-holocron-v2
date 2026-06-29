@@ -3780,14 +3780,16 @@ body::after {
 }
 
 :root[data-theme='light'] .daily-practice-hero .primary-button {
-  border-color: rgba(28,88,102,0.35);
-  color: var(--color-link);
+  background: #1c5866;
+  border-color: #155766;
+  color: var(--color-accent-ink);
 }
 
 :root[data-theme='light'] .daily-practice-hero .primary-button:hover,
 :root[data-theme='light'] .daily-practice-hero .primary-button:focus-visible {
-  border-color: rgba(28,88,102,0.5);
-  color: var(--color-link-hover);
+  background: #155766;
+  border-color: #0d3842;
+  color: var(--color-accent-ink);
 }
 
 :root[data-theme='light'] .bottom-nav {
