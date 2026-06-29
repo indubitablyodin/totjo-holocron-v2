@@ -19,7 +19,7 @@ const MOCK_CONTEXT: FeedbackContext = {
 
 describe('feedbackLinks', () => {
   it('exports app version', () => {
-    expect(APP_VERSION).toBe('v0.1.3');
+    expect(APP_VERSION).toBe('v0.1.4');
   });
 
   it('exports GitHub bug report URL', () => {
@@ -31,7 +31,7 @@ describe('feedbackLinks', () => {
 
   it('exports GitHub release URL', () => {
     expect(GITHUB_RELEASE_URL).toContain('github.com');
-    expect(GITHUB_RELEASE_URL).toContain('releases/tag/v0.1.3');
+    expect(GITHUB_RELEASE_URL).toContain('releases/tag/v0.1.4');
   });
 
   it('createGitHubBugReportUrl starts with GitHub issues/new', () => {
