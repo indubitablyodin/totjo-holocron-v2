@@ -1,7 +1,7 @@
-export const APP_VERSION = 'v0.1.1';
+export const APP_VERSION = 'v0.1.3';
 export const GITHUB_REPO = 'indubitablyodin/totjo-holocron-v2';
 export const GITHUB_BUG_REPORT_URL = `https://github.com/${GITHUB_REPO}/issues/new?template=bug_report.md&title=Bug%3A%20&labels=bug`;
-export const GITHUB_RELEASE_URL = `https://github.com/${GITHUB_REPO}/releases/tag/v0.1.1`;
+export const GITHUB_RELEASE_URL = `https://github.com/${GITHUB_REPO}/releases/tag/v0.1.3`;
 
 export type FeedbackContext = {
   version: string;
