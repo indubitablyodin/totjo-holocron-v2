@@ -1,0 +1,38 @@
+- generic [ref=e3]:
+  - navigation "App" [ref=e4]:
+    - link "Focus" [ref=e5] [cursor=pointer]:
+      - /url: "#/daily"
+    - link "Library" [ref=e6] [cursor=pointer]:
+      - /url: "#/library"
+    - link "Timer" [ref=e7] [cursor=pointer]:
+      - /url: "#/timer"
+    - link "Settings" [ref=e8] [cursor=pointer]:
+      - /url: "#/settings"
+  - main [ref=e10]:
+    - article [ref=e286]:
+      - generic [ref=e287]:
+        - paragraph [ref=e288]: Meditation timer
+        - heading "Timer" [level=1] [ref=e289]
+        - paragraph
+      - region "Start a session" [ref=e291]:
+        - heading "Start a session" [level=2] [ref=e293]
+        - generic [ref=e296]:
+          - generic [ref=e297]:
+            - paragraph [ref=e298]: Remaining
+            - paragraph [ref=e299]: 05:00
+            - paragraph [ref=e300]: Idle
+          - group "Quick duration" [ref=e301]:
+            - generic [ref=e302]: Quick duration
+            - generic [ref=e303]:
+              - button "1 minute" [ref=e304] [cursor=pointer]
+              - button "5 minutes" [pressed] [ref=e305] [cursor=pointer]
+              - button "30 minutes" [ref=e306] [cursor=pointer]
+          - generic [ref=e307]:
+            - button "Start timer" [ref=e308] [cursor=pointer]
+            - button "Reset session" [ref=e309] [cursor=pointer]
+            - button "Cancel" [ref=e310] [cursor=pointer]
+          - generic [ref=e312]:
+            - button "Session setup" [ref=e313] [cursor=pointer]
+            - link "Timer defaults in Settings" [ref=e314] [cursor=pointer]:
+              - /url: "#/settings/timer-defaults"
+          - button "History and details" [ref=e316] [cursor=pointer]

@@ -1,0 +1,56 @@
+- generic [ref=e3]:
+  - navigation "App" [ref=e4]:
+    - link "Focus" [ref=e5] [cursor=pointer]:
+      - /url: "#/daily"
+    - link "Library" [ref=e6] [cursor=pointer]:
+      - /url: "#/library"
+    - link "Timer" [ref=e7] [cursor=pointer]:
+      - /url: "#/timer"
+    - link "Settings" [ref=e8] [cursor=pointer]:
+      - /url: "#/settings"
+  - main [ref=e10]:
+    - article [ref=e667]:
+      - generic [ref=e668]:
+        - paragraph [ref=e669]: Settings
+        - heading "Focus & Practice" [level=1] [ref=e670]
+        - link "Back to settings" [ref=e672] [cursor=pointer]:
+          - /url: "#/settings"
+        - paragraph [ref=e673]: Set the local clock Focus uses when this device clock is wrong.
+      - generic [ref=e674]:
+        - region "Manual local time" [ref=e675]:
+          - generic [ref=e676]:
+            - heading "Manual local time" [level=2] [ref=e677]
+            - paragraph [ref=e678]: Daily Focus remains a shared UTC focus; this setting corrects the app’s understanding of now.
+          - generic [ref=e679]:
+            - generic [ref=e680]:
+              - generic [ref=e681]:
+                - text: Manual local timeUse this only when this device clock is wrong.
+                - generic [ref=e682]:
+                  - checkbox "Manual local timeUse this only when this device clock is wrong. Use a manual clock for Focus" [ref=e683]
+                  - text: Use a manual clock for Focus
+              - generic [ref=e684]:
+                - text: Time zoneSet the time zone for the manual clock.
+                - textbox "Time zoneSet the time zone for the manual clock." [disabled] [ref=e685]:
+                  - /placeholder: America/Chicago
+              - generic [ref=e686]:
+                - text: Local timeSet the date and time Focus should follow.
+                - textbox "Local timeSet the date and time Focus should follow." [disabled] [ref=e687]
+            - button "Use device time" [disabled] [ref=e689] [cursor=pointer]
+        - region "Daily Focus quick access" [ref=e690]:
+          - generic [ref=e691]:
+            - heading "Daily Focus quick access" [level=2] [ref=e692]
+            - paragraph [ref=e693]: Choose the middle button on Daily Focus, or clear it back to the settings shortcut.
+          - generic [ref=e694]:
+            - generic [ref=e696]:
+              - text: Middle slotThis changes only the center Quick access button on this device.
+              - combobox "Middle slotThis changes only the center Quick access button on this device." [ref=e697]:
+                - option "Default slot" [selected]
+                - option "A Good Turn"
+                - option "A Meditation for Jedi"
+                - option "Jedi Believe"
+                - option "Knight's Code"
+                - option "The 16 Teachings"
+                - option "The 21 Maxims"
+                - option "The Code"
+                - option "The Three Tenets"
+            - button "Clear middle slot" [disabled] [ref=e699] [cursor=pointer]

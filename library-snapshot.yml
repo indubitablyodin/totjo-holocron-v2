@@ -1,0 +1,318 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - paragraph [ref=e6]: Temple of the Jedi Order
+      - paragraph [ref=e7]: TOTJO Holocron
+      - paragraph [ref=e8]: Practice daily, serve willingly, and let the Force guide you.
+    - generic [ref=e9]:
+      - generic "Creator links" [ref=e10]:
+        - link "Open creator homepage at odinhalvorson.com" [ref=e11] [cursor=pointer]:
+          - /url: https://odinhalvorson.com
+          - generic [ref=e12]: Creator home
+          - generic [ref=e13]: odinhalvorson.com
+        - link "Support the creator on Ko-fi" [ref=e14] [cursor=pointer]:
+          - /url: https://ko-fi.com/indubitablyodin
+          - generic [ref=e15]: Support
+          - generic [ref=e16]: Ko-fi
+      - button "Install on this device" [ref=e17] [cursor=pointer]
+  - status [ref=e19]:
+    - generic [ref=e20]:
+      - paragraph [ref=e21]: New version ready
+      - paragraph [ref=e22]: A fresh Holocron is waiting. Apply it when you are ready; your local reading stays here.
+    - generic [ref=e23]:
+      - button "Update now" [ref=e24] [cursor=pointer]
+      - button "Later" [ref=e25] [cursor=pointer]
+  - navigation "Quick destinations" [ref=e26]:
+    - button "Back" [ref=e27] [cursor=pointer]:
+      - generic [ref=e28]: ←
+      - generic [ref=e29]: Back
+    - link "Focus" [ref=e30] [cursor=pointer]:
+      - /url: /totjo-holocron-v2/daily
+      - generic [ref=e31]: ☼
+      - generic [ref=e32]: Focus
+    - link "Library" [ref=e33] [cursor=pointer]:
+      - /url: /totjo-holocron-v2/library
+      - generic [ref=e34]: ✦
+      - generic [ref=e35]: Library
+    - link "Settings" [ref=e36] [cursor=pointer]:
+      - /url: /totjo-holocron-v2/settings
+      - generic [ref=e37]: ⚙
+      - generic [ref=e38]: Settings
+  - generic [ref=e39]:
+    - navigation "Primary" [ref=e40]:
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - paragraph [ref=e43]: Core
+          - generic [ref=e44]:
+            - link "Focus" [ref=e45] [cursor=pointer]:
+              - /url: /totjo-holocron-v2/daily
+              - generic [ref=e46]: ☼
+              - generic [ref=e47]: Focus
+            - link "Read" [ref=e48] [cursor=pointer]:
+              - /url: /totjo-holocron-v2/library
+              - generic [ref=e49]: ✦
+              - generic [ref=e50]: Read
+            - link "Timer" [ref=e51] [cursor=pointer]:
+              - /url: /totjo-holocron-v2/timer
+              - generic [ref=e52]: ◴
+              - generic [ref=e53]: Timer
+            - link "Settings" [ref=e54] [cursor=pointer]:
+              - /url: /totjo-holocron-v2/settings
+              - generic [ref=e55]: ⚙
+              - generic [ref=e56]: Settings
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - paragraph [ref=e61]: Library
+              - generic [ref=e62]:
+                - link [ref=e63] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library#read-doctrine
+                  - generic [ref=e64]: ✧
+                  - generic [ref=e65]: Doctrine
+                - link [ref=e66] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library#read-supplemental
+                  - generic [ref=e67]: ◈
+                  - generic [ref=e68]: Supplemental
+                - link [ref=e69] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/sermons
+                  - generic [ref=e70]: ☰
+                  - generic [ref=e71]: Sermons
+                - link [ref=e72] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/bookmarks
+                  - generic [ref=e73]: ❋
+                  - generic [ref=e74]: Bookmarks
+            - generic [ref=e75]:
+              - paragraph [ref=e76]: Settings
+              - generic [ref=e77]:
+                - link [ref=e78] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/reading-display
+                  - generic [ref=e79]: ◫
+                  - generic [ref=e80]: Reading & Display
+                - link [ref=e81] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/focus-practice
+                  - generic [ref=e82]: ☼
+                  - generic [ref=e83]: Focus & Practice
+                - link [ref=e84] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/timer-defaults
+                  - generic [ref=e85]: ⏳
+                  - generic [ref=e86]: Timer Defaults
+                - link [ref=e87] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/about-legal
+                  - generic [ref=e88]: ◎
+                  - generic [ref=e89]: About & Legal
+          - generic [ref=e90]:
+            - generic [ref=e91]:
+              - paragraph [ref=e92]: Library
+              - generic [ref=e93]:
+                - link "Doctrine" [ref=e94] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library#read-doctrine
+                  - generic [ref=e95]: ✧
+                  - generic [ref=e96]: Doctrine
+                - link "Supplemental" [ref=e97] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library#read-supplemental
+                  - generic [ref=e98]: ◈
+                  - generic [ref=e99]: Supplemental
+                - link "Sermons" [ref=e100] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/sermons
+                  - generic [ref=e101]: ☰
+                  - generic [ref=e102]: Sermons
+                - link "Bookmarks" [ref=e103] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/bookmarks
+                  - generic [ref=e104]: ❋
+                  - generic [ref=e105]: Bookmarks
+            - generic [ref=e106]:
+              - paragraph [ref=e107]: Settings
+              - generic [ref=e108]:
+                - link "Reading & Display" [ref=e109] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/reading-display
+                  - generic [ref=e110]: ◫
+                  - generic [ref=e111]: Reading & Display
+                - link "Focus & Practice" [ref=e112] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/focus-practice
+                  - generic [ref=e113]: ☼
+                  - generic [ref=e114]: Focus & Practice
+                - link "Timer Defaults" [ref=e115] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/timer-defaults
+                  - generic [ref=e116]: ⏳
+                  - generic [ref=e117]: Timer Defaults
+                - link "About & Legal" [ref=e118] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/about-legal
+                  - generic [ref=e119]: ◎
+                  - generic [ref=e120]: About & Legal
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - paragraph [ref=e123]: Library
+              - generic [ref=e124]:
+                - link [ref=e125] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library#read-doctrine
+                  - generic [ref=e126]: ✧
+                  - generic [ref=e127]: Doctrine
+                - link [ref=e128] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library#read-supplemental
+                  - generic [ref=e129]: ◈
+                  - generic [ref=e130]: Supplemental
+                - link [ref=e131] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/sermons
+                  - generic [ref=e132]: ☰
+                  - generic [ref=e133]: Sermons
+                - link [ref=e134] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/bookmarks
+                  - generic [ref=e135]: ❋
+                  - generic [ref=e136]: Bookmarks
+            - generic [ref=e137]:
+              - paragraph [ref=e138]: Settings
+              - generic [ref=e139]:
+                - link [ref=e140] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/reading-display
+                  - generic [ref=e141]: ◫
+                  - generic [ref=e142]: Reading & Display
+                - link [ref=e143] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/focus-practice
+                  - generic [ref=e144]: ☼
+                  - generic [ref=e145]: Focus & Practice
+                - link [ref=e146] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/timer-defaults
+                  - generic [ref=e147]: ⏳
+                  - generic [ref=e148]: Timer Defaults
+                - link [ref=e149] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/settings/about-legal
+                  - generic [ref=e150]: ◎
+                  - generic [ref=e151]: About & Legal
+    - main [ref=e152]:
+      - article [ref=e153]:
+        - generic [ref=e154]:
+          - paragraph [ref=e155]: Reading library
+          - heading "Read" [level=1] [ref=e156]
+          - paragraph [ref=e157]: Open doctrine, study texts, sermons, bookmarks, and notes.
+        - generic [ref=e158]:
+          - region "What you can read" [ref=e159]:
+            - generic [ref=e160]:
+              - heading "What you can read" [level=2] [ref=e161]
+              - paragraph [ref=e162]: Jump straight to doctrine, study texts, or sermons.
+            - generic [ref=e163]:
+              - list [ref=e164]:
+                - listitem [ref=e165] [cursor=pointer]:
+                  - generic [ref=e166]: Doctrine
+                  - strong [ref=e167]: "6"
+                  - paragraph [ref=e168]: TOTJO doctrine
+                - listitem [ref=e169] [cursor=pointer]:
+                  - generic [ref=e170]: Supplemental
+                  - strong [ref=e171]: "1"
+                  - paragraph [ref=e172]: Clearly labeled study extras
+                - listitem [ref=e173] [cursor=pointer]:
+                  - generic [ref=e174]: Sermons
+                  - strong [ref=e175]: "0"
+                  - paragraph [ref=e176]: Public archive entries
+              - link "Open bookmarks" [ref=e178] [cursor=pointer]:
+                - /url: /totjo-holocron-v2/library/bookmarks
+              - paragraph [ref=e179]: Bookmarks and notes are saved together. 0 bookmarks · 0 notes
+          - region "Find a reading" [ref=e180]:
+            - generic [ref=e181]:
+              - heading "Find a reading" [level=2] [ref=e182]
+              - paragraph [ref=e183]: Search titles, summaries, full text, bookmarks, and notes. Choose what to include.
+            - generic [ref=e185]:
+              - generic [ref=e186]:
+                - generic [ref=e187]: Search
+                - generic [ref=e188]: Search within the text and decide which sections to search.
+                - searchbox "Search Search within the text and decide which sections to search." [ref=e189]
+              - generic [ref=e190]:
+                - generic [ref=e191]: Search in
+                - generic [ref=e192]:
+                  - generic [ref=e193]:
+                    - checkbox "Doctrine" [checked] [ref=e194]
+                    - text: Doctrine
+                  - generic [ref=e195]:
+                    - checkbox "Supplemental" [checked] [ref=e196]
+                    - text: Supplemental
+                  - generic [ref=e197]:
+                    - checkbox "Sermons" [checked] [ref=e198]
+                    - text: Sermons
+                  - generic [ref=e199]:
+                    - checkbox "Bookmarks" [checked] [ref=e200]
+                    - text: Bookmarks
+                  - generic [ref=e201]:
+                    - checkbox "Notes" [checked] [ref=e202]
+                    - text: Notes
+          - region "Doctrine" [ref=e204]:
+            - generic [ref=e205]:
+              - heading "Doctrine" [level=2] [ref=e206]
+              - paragraph [ref=e207]: Read the public doctrine of the Order here.
+            - list [ref=e209]:
+              - listitem [ref=e210]:
+                - generic [ref=e211]: Doctrine Text
+                - heading "Jedi Believe" [level=3] [ref=e212]:
+                  - link "Jedi Believe" [ref=e213] [cursor=pointer]:
+                    - /url: /totjo-holocron-v2/library/doctrine/jedi-believe
+                - paragraph [ref=e214]: The TOTJO statement of belief as published in the public doctrine.
+                - paragraph [ref=e215]: TOTJO doctrine
+                - link "Read doctrine" [ref=e217] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/doctrine/jedi-believe
+              - listitem [ref=e218]:
+                - generic [ref=e219]: Doctrine Text
+                - heading "The Three Tenets" [level=3] [ref=e220]:
+                  - link "The Three Tenets" [ref=e221] [cursor=pointer]:
+                    - /url: /totjo-holocron-v2/library/doctrine/three-tenets
+                - paragraph [ref=e222]: The three tenets and their public explanations.
+                - paragraph [ref=e223]: TOTJO doctrine
+                - link "Read doctrine" [ref=e225] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/doctrine/three-tenets
+              - listitem [ref=e226]:
+                - generic [ref=e227]: Doctrine Text
+                - heading "The Code" [level=3] [ref=e228]:
+                  - link "The Code" [ref=e229] [cursor=pointer]:
+                    - /url: /totjo-holocron-v2/library/doctrine/code
+                - paragraph [ref=e230]: The Jedi Code in both public formulations, rendered side by side or stacked.
+                - paragraph [ref=e231]: TOTJO doctrine
+                - link "Read doctrine" [ref=e233] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/doctrine/code
+              - listitem [ref=e234]:
+                - generic [ref=e235]: Doctrine Text
+                - heading "A Meditation for Jedi" [level=3] [ref=e236]:
+                  - link "A Meditation for Jedi" [ref=e237] [cursor=pointer]:
+                    - /url: /totjo-holocron-v2/library/doctrine/a-meditation-for-jedi
+                - paragraph [ref=e238]: A public meditation text for Jedi practice.
+                - paragraph [ref=e239]: TOTJO doctrine
+                - link "Read doctrine" [ref=e241] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/doctrine/a-meditation-for-jedi
+              - listitem [ref=e242]:
+                - generic [ref=e243]: Doctrine Text
+                - heading "The 16 Teachings" [level=3] [ref=e244]:
+                  - link "The 16 Teachings" [ref=e245] [cursor=pointer]:
+                    - /url: /totjo-holocron-v2/library/doctrine/16-teachings
+                - paragraph [ref=e246]: The sixteen public teachings of Jediism in their published order.
+                - paragraph [ref=e247]: TOTJO doctrine
+                - link "Read doctrine" [ref=e249] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/doctrine/16-teachings
+              - listitem [ref=e250]:
+                - generic [ref=e251]: Doctrine Text
+                - heading "The 21 Maxims" [level=3] [ref=e252]:
+                  - link "The 21 Maxims" [ref=e253] [cursor=pointer]:
+                    - /url: /totjo-holocron-v2/library/doctrine/21-maxims
+                - paragraph [ref=e254]: The twenty-one public maxims with their published notes.
+                - paragraph [ref=e255]: TOTJO doctrine
+                - link "Read doctrine" [ref=e257] [cursor=pointer]:
+                  - /url: /totjo-holocron-v2/library/doctrine/21-maxims
+          - region "Supplemental" [ref=e259]:
+            - generic [ref=e260]:
+              - heading "Supplemental" [level=2] [ref=e261]
+              - paragraph [ref=e262]: Read the supporting study texts here.
+            - generic [ref=e263]:
+              - paragraph [ref=e264]: These texts sit beside doctrine as study material.
+              - list [ref=e265]:
+                - listitem [ref=e266]:
+                  - generic [ref=e267]: Study Text
+                  - heading "Knight's Code" [level=3] [ref=e268]:
+                    - link "Knight's Code" [ref=e269] [cursor=pointer]:
+                      - /url: /totjo-holocron-v2/library/supplemental/knights-code
+                  - paragraph [ref=e270]: Public TOTJO text included here for reflection and study.
+                  - paragraph [ref=e271]: Supplemental reading
+                  - link "Read text" [ref=e273] [cursor=pointer]:
+                    - /url: /totjo-holocron-v2/library/supplemental/knights-code
+          - region "Sermons" [ref=e275]:
+            - generic [ref=e276]:
+              - heading "Sermons" [level=2] [ref=e277]
+              - paragraph [ref=e278]: Browse the public sermon archive and include it in library search.
+            - generic [ref=e279]:
+              - paragraph [ref=e280]: Read sermons online or save individual sermons for offline reading.
+              - link "Open sermons" [ref=e282] [cursor=pointer]:
+                - /url: /totjo-holocron-v2/library/sermons

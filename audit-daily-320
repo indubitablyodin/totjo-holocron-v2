@@ -1,0 +1,153 @@
+- generic [ref=e3]:
+  - navigation "Quick destinations" [ref=e279]:
+    - button "Back" [ref=e280] [cursor=pointer]:
+      - generic [ref=e281]: Back
+    - link "Focus" [ref=e282] [cursor=pointer]:
+      - /url: "#/daily"
+      - generic [ref=e283]: ☼
+      - generic [ref=e284]: Focus
+    - link "Library" [ref=e285] [cursor=pointer]:
+      - /url: "#/library"
+      - generic [ref=e286]: ✦
+      - generic [ref=e287]: Library
+    - link "Sermons" [ref=e288] [cursor=pointer]:
+      - /url: "#/library/sermons"
+      - generic [ref=e289]: ☰
+      - generic [ref=e290]: Sermons
+    - link "Timer" [ref=e291] [cursor=pointer]:
+      - /url: "#/timer"
+      - generic [ref=e292]: ◴
+      - generic [ref=e293]: Timer
+    - link "Settings" [ref=e294] [cursor=pointer]:
+      - /url: "#/settings"
+      - generic [ref=e295]: ⚙
+      - generic [ref=e296]: Settings
+  - button "Show announcement" [ref=e10] [cursor=pointer]:
+    - generic [ref=e11]: ⓘ
+  - generic [ref=e12]:
+    - main [ref=e13]:
+      - article [ref=e297]:
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=1]
+        - generic [ref=e299]:
+          - region "Today’s Practice" [ref=e300]:
+            - heading "Today’s Practice" [level=1] [ref=e301]
+            - paragraph [ref=e302]: Wisdom is the sound application of accrued knowledge and experience through patient, good judgment.
+            - paragraph [ref=e303]: "The Three Tenets #3"
+            - link "Read full The Three Tenets" [ref=e304] [cursor=pointer]:
+              - /url: "#/library/doctrine/three-tenets"
+          - region "Meditation" [ref=e305]:
+            - generic [ref=e306]:
+              - heading "Meditation" [level=2] [ref=e307]
+              - button "Timer settings" [ref=e308] [cursor=pointer]:
+                - generic [ref=e309]: ⚙
+            - generic [ref=e310]:
+              - generic [ref=e311]:
+                - button "5 min" [ref=e312]:
+                  - generic [ref=e313]: "5"
+                  - generic [ref=e314]: min
+                - button "10 min" [ref=e315]:
+                  - generic [ref=e316]: "10"
+                  - generic [ref=e317]: min
+                - button "15 min" [ref=e318]:
+                  - generic [ref=e319]: "15"
+                  - generic [ref=e320]: min
+              - button "Custom time" [ref=e321] [cursor=pointer]
+            - generic [ref=e322]:
+              - generic [ref=e323]:
+                - term [ref=e324]: Total meditation days
+                - definition [ref=e325]: 0 days
+              - generic [ref=e326]:
+                - term [ref=e327]: Current streak
+                - definition [ref=e328]: 0 days
+          - region "Your Streak" [ref=e329]:
+            - generic [ref=e330]:
+              - heading "Your Streak" [level=2] [ref=e331]
+              - generic [ref=e332]:
+                - generic [ref=e333]:
+                  - strong [ref=e334]: "0"
+                  - text: day streak
+                - generic [ref=e335]: 0 total days
+            - generic [ref=e336]:
+              - generic [ref=e337]:
+                - button "Previous month" [ref=e338] [cursor=pointer]: ←
+                - generic [ref=e339]: June 2026
+                - button "Next month" [ref=e340] [cursor=pointer]: →
+              - generic [ref=e341]:
+                - generic [ref=e342]: S
+                - generic [ref=e343]: M
+                - generic [ref=e344]: T
+                - generic [ref=e345]: W
+                - generic [ref=e346]: T
+                - generic [ref=e347]: F
+                - generic [ref=e348]: S
+              - generic [ref=e349]:
+                - 'generic "2026-05-31: Not completed" [ref=e350]': "31"
+                - 'generic "2026-06-01: Not completed" [ref=e351]': "1"
+                - 'generic "2026-06-02: Not completed" [ref=e352]': "2"
+                - 'generic "2026-06-03: Not completed" [ref=e353]': "3"
+                - 'generic "2026-06-04: Not completed" [ref=e354]': "4"
+                - 'generic "2026-06-05: Not completed" [ref=e355]': "5"
+                - 'generic "2026-06-06: Not completed" [ref=e356]': "6"
+                - 'generic "2026-06-07: Not completed" [ref=e357]': "7"
+                - 'generic "2026-06-08: Not completed" [ref=e358]': "8"
+                - 'generic "2026-06-09: Not completed" [ref=e359]': "9"
+                - 'generic "2026-06-10: Not completed" [ref=e360]': "10"
+                - 'generic "2026-06-11: Not completed" [ref=e361]': "11"
+                - 'generic "2026-06-12: Not completed" [ref=e362]': "12"
+                - 'generic "2026-06-13: Not completed" [ref=e363]': "13"
+                - 'generic "2026-06-14: Not completed" [ref=e364]': "14"
+                - 'generic "2026-06-15: Not completed" [ref=e365]': "15"
+                - 'generic "2026-06-16: Not completed" [ref=e366]': "16"
+                - 'generic "2026-06-17: Not completed" [ref=e367]': "17"
+                - 'generic "2026-06-18: Not completed" [ref=e368]': "18"
+                - 'generic "2026-06-19: Not completed" [ref=e369]': "19"
+                - 'generic "2026-06-20: Not completed" [ref=e370]': "20"
+                - 'generic "2026-06-21: Not completed" [ref=e371]': "21"
+                - 'generic "2026-06-22: Not completed" [ref=e372]': "22"
+                - 'generic "2026-06-23: Not completed" [ref=e373]': "23"
+                - 'generic "2026-06-24: Not completed" [ref=e374]': "24"
+                - 'generic "2026-06-25: Not completed" [ref=e375]': "25"
+                - 'generic "2026-06-26: Not completed" [ref=e376]': "26"
+                - 'generic "2026-06-27: Not completed" [ref=e377]': "27"
+                - 'generic "2026-06-28: Not completed" [ref=e378]': "28"
+                - 'generic "2026-06-29: Not completed" [ref=e379]': "29"
+                - 'generic "2026-06-30: Not completed" [ref=e380]': "30"
+                - 'generic "2026-07-01: Not completed" [ref=e381]': "1"
+                - 'generic "2026-07-02: Not completed" [ref=e382]': "2"
+                - 'generic "2026-07-03: Not completed" [ref=e383]': "3"
+                - 'generic "2026-07-04: Not completed" [ref=e384]': "4"
+                - 'generic "2026-07-05: Not completed" [ref=e385]': "5"
+                - 'generic "2026-07-06: Not completed" [ref=e386]': "6"
+                - 'generic "2026-07-07: Not completed" [ref=e387]': "7"
+                - 'generic "2026-07-08: Not completed" [ref=e388]': "8"
+                - 'generic "2026-07-09: Not completed" [ref=e389]': "9"
+                - 'generic "2026-07-10: Not completed" [ref=e390]': "10"
+                - 'generic "2026-07-11: Not completed" [ref=e391]': "11"
+          - region "Quick lanes" [ref=e392]:
+            - heading "Quick lanes" [level=2] [ref=e393]
+            - generic [ref=e394]:
+              - link "✍ Study Doctrine Read the Jedi Code and core teachings." [ref=e395] [cursor=pointer]:
+                - /url: "#/library/doctrine/code"
+                - generic [ref=e396]: ✍
+                - paragraph [ref=e397]: Study Doctrine
+                - paragraph [ref=e398]: Read the Jedi Code and core teachings.
+              - link "★ Set a shortcut Continue where you left off." [ref=e399] [cursor=pointer]:
+                - /url: "#/settings/focus-practice"
+                - generic [ref=e400]: ★
+                - paragraph [ref=e401]: Set a shortcut
+                - paragraph [ref=e402]: Continue where you left off.
+              - link "✦ My Bookmarks Pick up where you left off." [ref=e403] [cursor=pointer]:
+                - /url: "#/library/bookmarks"
+                - generic [ref=e404]: ✦
+                - paragraph [ref=e405]: My Bookmarks
+                - paragraph [ref=e406]: Pick up where you left off.
+              - link "◴ Meditation Timer Set a focus session." [ref=e407] [cursor=pointer]:
+                - /url: "#/timer"
+                - generic [ref=e408]: ◴
+                - paragraph [ref=e409]: Meditation Timer
+                - paragraph [ref=e410]: Set a focus session.
+    - button "Scroll to top" [ref=e411] [cursor=pointer]:
+      - generic [ref=e412]: Top

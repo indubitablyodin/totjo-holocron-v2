@@ -1,0 +1,126 @@
+- generic [ref=e3]:
+  - navigation "App" [ref=e4]:
+    - link "Focus" [ref=e5] [cursor=pointer]:
+      - /url: "#/daily"
+    - link "Library" [ref=e6] [cursor=pointer]:
+      - /url: "#/library"
+    - link "Timer" [ref=e7] [cursor=pointer]:
+      - /url: "#/timer"
+    - link "Settings" [ref=e8] [cursor=pointer]:
+      - /url: "#/settings"
+  - generic [ref=e9]:
+    - main [ref=e10]:
+      - article [ref=e64]:
+        - generic [ref=e65]:
+          - paragraph
+          - heading "Library" [level=1] [ref=e66]
+          - paragraph
+        - generic [ref=e67]:
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - text: Search
+              - searchbox "Search" [ref=e71]
+            - generic [ref=e72]:
+              - text: Search in
+              - generic [ref=e73]:
+                - generic [ref=e74]:
+                  - checkbox "Doctrine" [checked] [ref=e75]
+                  - text: Doctrine
+                - generic [ref=e76]:
+                  - checkbox "Supplemental" [checked] [ref=e77]
+                  - text: Supplemental
+                - generic [ref=e78]:
+                  - checkbox "Sermons" [checked] [ref=e79]
+                  - text: Sermons
+                - generic [ref=e80]:
+                  - checkbox "Bookmarks" [checked] [ref=e81]
+                  - text: Bookmarks
+                - generic [ref=e82]:
+                  - checkbox "Notes" [checked] [ref=e83]
+                  - text: Notes
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - link "Doctrine (6)" [ref=e87] [cursor=pointer]:
+                - /url: "#/library/doctrine/code"
+              - link "Supplemental (1)" [ref=e88] [cursor=pointer]:
+                - /url: "#/library/supplemental/knights-code"
+              - link "Sermons (0)" [ref=e89] [cursor=pointer]:
+                - /url: "#/library/sermons"
+              - link "Bookmarks (0)" [ref=e90] [cursor=pointer]:
+                - /url: "#/library/bookmarks"
+            - paragraph [ref=e91]: 0 bookmarks · 0 notes
+          - region "Doctrine" [ref=e92]:
+            - heading "Doctrine" [level=2] [ref=e94]
+            - list [ref=e96]:
+              - listitem [ref=e97]:
+                - generic [ref=e98]: Doctrine Text
+                - heading "Jedi Believe" [level=3] [ref=e99]:
+                  - link "Jedi Believe" [ref=e100] [cursor=pointer]:
+                    - /url: "#/library/doctrine/jedi-believe"
+                - paragraph [ref=e101]: The TOTJO statement of belief as published in the public doctrine.
+                - paragraph [ref=e102]: TOTJO doctrine
+                - link "Read doctrine" [ref=e104] [cursor=pointer]:
+                  - /url: "#/library/doctrine/jedi-believe"
+              - listitem [ref=e105]:
+                - generic [ref=e106]: Doctrine Text
+                - heading "The Three Tenets" [level=3] [ref=e107]:
+                  - link "The Three Tenets" [ref=e108] [cursor=pointer]:
+                    - /url: "#/library/doctrine/three-tenets"
+                - paragraph [ref=e109]: The three tenets and their public explanations.
+                - paragraph [ref=e110]: TOTJO doctrine
+                - link "Read doctrine" [ref=e112] [cursor=pointer]:
+                  - /url: "#/library/doctrine/three-tenets"
+              - listitem [ref=e113]:
+                - generic [ref=e114]: Doctrine Text
+                - heading "The Code" [level=3] [ref=e115]:
+                  - link "The Code" [ref=e116] [cursor=pointer]:
+                    - /url: "#/library/doctrine/code"
+                - paragraph [ref=e117]: The Jedi Code in both public formulations, rendered side by side or stacked.
+                - paragraph [ref=e118]: TOTJO doctrine
+                - link "Read doctrine" [ref=e120] [cursor=pointer]:
+                  - /url: "#/library/doctrine/code"
+              - listitem [ref=e121]:
+                - generic [ref=e122]: Doctrine Text
+                - heading "A Meditation for Jedi" [level=3] [ref=e123]:
+                  - link "A Meditation for Jedi" [ref=e124] [cursor=pointer]:
+                    - /url: "#/library/doctrine/a-meditation-for-jedi"
+                - paragraph [ref=e125]: A public meditation text for Jedi practice.
+                - paragraph [ref=e126]: TOTJO doctrine
+                - link "Read doctrine" [ref=e128] [cursor=pointer]:
+                  - /url: "#/library/doctrine/a-meditation-for-jedi"
+              - listitem [ref=e129]:
+                - generic [ref=e130]: Doctrine Text
+                - heading "The 16 Teachings" [level=3] [ref=e131]:
+                  - link "The 16 Teachings" [ref=e132] [cursor=pointer]:
+                    - /url: "#/library/doctrine/16-teachings"
+                - paragraph [ref=e133]: The sixteen public teachings of Jediism in their published order.
+                - paragraph [ref=e134]: TOTJO doctrine
+                - link "Read doctrine" [ref=e136] [cursor=pointer]:
+                  - /url: "#/library/doctrine/16-teachings"
+              - listitem [ref=e137]:
+                - generic [ref=e138]: Doctrine Text
+                - heading "The 21 Maxims" [level=3] [ref=e139]:
+                  - link "The 21 Maxims" [ref=e140] [cursor=pointer]:
+                    - /url: "#/library/doctrine/21-maxims"
+                - paragraph [ref=e141]: The twenty-one public maxims with their published notes.
+                - paragraph [ref=e142]: TOTJO doctrine
+                - link "Read doctrine" [ref=e144] [cursor=pointer]:
+                  - /url: "#/library/doctrine/21-maxims"
+          - region "Supplemental" [ref=e145]:
+            - heading "Supplemental" [level=2] [ref=e147]
+            - list [ref=e149]:
+              - listitem [ref=e150]:
+                - generic [ref=e151]: Study Text
+                - heading "Knight's Code" [level=3] [ref=e152]:
+                  - link "Knight's Code" [ref=e153] [cursor=pointer]:
+                    - /url: "#/library/supplemental/knights-code"
+                - paragraph [ref=e154]: Public TOTJO text included here for reflection and study.
+                - paragraph [ref=e155]: Supplemental reading
+                - link "Read text" [ref=e157] [cursor=pointer]:
+                  - /url: "#/library/supplemental/knights-code"
+          - region "Sermons" [ref=e158]:
+            - heading "Sermons" [level=2] [ref=e160]
+            - link "Open sermons" [ref=e163] [cursor=pointer]:
+              - /url: "#/library/sermons"
+    - button "Scroll to top" [ref=e164] [cursor=pointer]:
+      - generic [ref=e165]: Top
