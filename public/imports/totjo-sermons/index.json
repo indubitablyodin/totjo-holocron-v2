@@ -1,7 +1,40 @@
 {
-  "importedAt": "2026-07-24T09:32:55.000Z",
-  "checksum": "fnv1a-1a9d10c9",
+  "importedAt": "2026-07-25T09:11:31.000Z",
+  "checksum": "fnv1a-71de8e35",
   "documents": [
+    {
+      "id": "sermon-a-journey-of-becoming",
+      "slug": "a-journey-of-becoming",
+      "title": "A Journey of Becoming",
+      "summary": "There comes a moment in many of our lives when achievement no longer feels sufficient. I spent 15 years in the army, and those years were filled with accomplishments: 6 rank pro...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:master-zero",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/a-journey-of-becoming"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/a-journey-of-becoming",
+      "author": "Master Zero",
+      "sortOrder": 0,
+      "publishedAt": "2026-07-24T00:00:56.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
+      "checksum": "fnv1a-1b0cb2cf"
+    },
     {
       "id": "sermon-sermon-from-the-stove-bake-for-good",
       "slug": "sermon-from-the-stove-bake-for-good",
@@ -30,9 +63,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-bake-for-good",
       "author": "ChaotishRabe",
-      "sortOrder": 0,
+      "sortOrder": 1,
       "publishedAt": "2026-07-03T00:00:57.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
       "checksum": "fnv1a-87cfb27b"
     },
     {
@@ -63,9 +96,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/ignorance-yet-knowledge",
       "author": "Serenity Amyntas",
-      "sortOrder": 1,
+      "sortOrder": 2,
       "publishedAt": "2026-06-19T00:00:55.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
       "checksum": "fnv1a-07606218"
     },
     {
@@ -96,9 +129,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/persistence",
       "author": "Atticus",
-      "sortOrder": 2,
+      "sortOrder": 3,
       "publishedAt": "2026-06-12T00:00:28.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
       "checksum": "fnv1a-64742175"
     },
     {
@@ -129,9 +162,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/a-good-turn",
       "author": "Zanthan Storm",
-      "sortOrder": 3,
+      "sortOrder": 4,
       "publishedAt": "2026-06-05T12:12:39.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
       "checksum": "fnv1a-3f489637"
     },
     {
@@ -162,9 +195,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/how-can-i-be-of-service",
       "author": "Serenity Amyntas",
-      "sortOrder": 4,
+      "sortOrder": 5,
       "publishedAt": "2026-05-22T00:00:12.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
       "checksum": "fnv1a-868f0baa"
     },
     {
@@ -195,9 +228,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-potato",
       "author": "ChaotishRabe",
-      "sortOrder": 5,
+      "sortOrder": 6,
       "publishedAt": "2026-05-15T00:00:04.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
       "checksum": "fnv1a-1594c711"
     },
     {
@@ -228,9 +261,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-wrong-instructions",
       "author": "ChaotishRabe",
-      "sortOrder": 6,
+      "sortOrder": 7,
       "publishedAt": "2026-05-08T00:00:05.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
       "checksum": "fnv1a-9c3d5572"
     },
     {
@@ -261,9 +294,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-knifework",
       "author": "ChaotishRabe",
-      "sortOrder": 7,
+      "sortOrder": 8,
       "publishedAt": "2026-05-01T00:00:06.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
       "checksum": "fnv1a-58414e6f"
     },
     {
@@ -294,43 +327,10 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-boiling-water",
       "author": "ChaotishRabe",
-      "sortOrder": 8,
-      "publishedAt": "2026-04-24T03:30:55.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
-      "checksum": "fnv1a-475413d6"
-    },
-    {
-      "id": "sermon-the-force-works-all-things-out",
-      "slug": "the-force-works-all-things-out",
-      "title": "The Force Works All Things Out",
-      "summary": "Before I begin, I’d like us all to take a moment to meditate on two questions: What is one situation where we acted or didn’t act because we were afraid? What is one situation w...",
-      "authorityClass": "sermon",
-      "documentType": "sermon",
-      "sourceId": "totjo-sermons",
-      "bodyMarkdown": "",
-      "tags": [
-        "sermon",
-        "author:rosalyn-johnson",
-        "year:2026"
-      ],
-      "version": 1,
-      "origin": "synced",
-      "source": {
-        "sourceType": "public-totjo-page",
-        "sourceUrls": [
-          "https://templeofthejediorder.org/sermons",
-          "https://templeofthejediorder.org/sermons/the-force-works-all-things-out"
-        ],
-        "attribution": "Temple of the Jedi Order",
-        "approvalStatus": "review-required",
-        "provenanceStatus": "recorded"
-      },
-      "sourceUrl": "https://templeofthejediorder.org/sermons/the-force-works-all-things-out",
-      "author": "Rosalyn Johnson",
       "sortOrder": 9,
-      "publishedAt": "2026-04-09T18:34:19.000Z",
-      "updatedAt": "2026-07-24T09:32:55.000Z",
-      "checksum": "fnv1a-a5625dd0"
+      "publishedAt": "2026-04-24T03:30:55.000Z",
+      "updatedAt": "2026-07-25T09:11:31.000Z",
+      "checksum": "fnv1a-475413d6"
     }
   ]
 }
