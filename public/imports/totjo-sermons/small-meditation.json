@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-small-meditation",
+    "slug": "small-meditation",
+    "title": "A Small Meditation",
+    "summary": "We all have found ourselves in situations were we needed to quiet our minds so we can focus on a task at hand. Our brains can barely keep up with all the distractions that the i...",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "We all have found ourselves in situations were we needed to quiet our minds so we can focus on a task at hand. Our brains can barely keep up with all the distractions that the internet and a disorderly world brings us. As Jedi, we are taught that we need to be level headed and calm, that we are to be one with the Force and therefore more equipped to handle life's stress than others. And as much as I want to believe that -- and as much as that is something I strive for -- it's a lot of hard work. And it's not easy to calm your mind when the world around you is all but still.\n\nIn our education on the Force here at TotJO, we spend time on the concept of Meditation and the benefits it can bring us. There are thousands of different meditations on as many subjects to tackle our restless minds. The consensus overall is that Meditation acts as mental training for your attention. By focusing on a single anchor (such as your breath) and gently bringing back your wandering thoughts, you directly improve your ability to concentrate and learn to notice and let go of distractions more quickly. Jedi often meditate on our Jedi Meditations. the Maxims, and other teachings in the Doctrine. It's sometimes a journey to find which one fits you the best. And its all about the journey.\n\nWhat Meditation is not is a sedative, a distraction from your life or an excuse to not get involved. I never understood people who were against Meditation. But after years of meditating and studying the ins and outs, I do realise that Meditation is not for everyone. Although, there is a Meditation for everyone, if one is willing to try. And still there will always be people who meet their stillness in another way, and that is fine! Remember, you are not obliged to meditate. Its a tool, and every tool serves its purpose.\n\nWhat i would invite you to do is:\n\nWhen you feel overwhelmed and stressed and you find yourself in a place where your mind will not shut up, try this:\n\nAnd remember:\n\nA famous Zen proverb ones said \"You should sit in meditation for 20 minutes a day. Unless you're too busy, then you should sit for an hour.\" This wisdom flips normal thinking, showing that a busy mind needs calm the most.\n\nMay the Force be with you",
+    "tags": [
+      "sermon",
+      "author:serenity-amyntas",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/small-meditation"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/small-meditation",
+    "author": "Serenity Amyntas",
+    "sortOrder": 0,
+    "publishedAt": "2026-08-07T00:00:10.000Z",
+    "updatedAt": "2026-08-08T07:58:12.000Z",
+    "checksum": "fnv1a-18e4402d"
+  }
+}
