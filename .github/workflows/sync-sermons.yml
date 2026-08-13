@@ -1,0 +1,69 @@
+# Sync TOTJO sermons
+
+name: Sync TOTJO Sermons
+
+on:
+  schedule:
+    # Run every 6 hours to catch new sermons quickly
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-sermons:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install jsdom for DOM parsing
+        run: npm install jsdom
+
+      - name: Run sermon sync
+        id: sync
+        run: |
+          node scripts/import-totjo/import-sermons.mjs \
+            --archive-url https://templeofthejediorder.org/sermons \
+            --output-dir public/imports/totjo-sermons \
+            --imported-at "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" 2>&1 || echo "SYNC_STATUS=FAILED"
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ -f public/imports/totjo-sermons/index.json ]; then
+            local_import=$(node -e 'console.log(JSON.parse(require("fs").readFileSync("public/imports/totjo-sermons/index.json","utf8")).importedAt)' 2>/dev/null)
+            if [ -n "$local_import" ]; then
+              echo "last_imported=$local_import" >> $GITHUB_OUTPUT
+              echo "imported_at=$local_import" >> $GITHUB_OUTPUT
+            fi
+          fi
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit new sermons
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "sync-bot@totjo-holocron.app"
+          git config --local user.name "TotJO Sync Bot"
+          git add public/imports/totjo-sermons/
+          git commit -m "chore: sync TOTJO sermons [skip ci]" || echo "No changes to commit"
+
+      - name: Push changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git push origin HEAD:fix/sermon-sync-timing
