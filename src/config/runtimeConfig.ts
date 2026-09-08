@@ -52,7 +52,7 @@ export function validateRuntimeConfig(value: unknown): RuntimeConfig | null {
 }
 
 export function fetchRuntimeConfig(): Promise<RuntimeConfig | null> {
-  return fetch('/runtime-config.json', { cache: 'no-store' })
+  return fetch(`${import.meta.env.BASE_URL}runtime-config.json`, { cache: 'no-store' })
     .then((response) => {
       if (!response.ok) {
         return null;
@@ -80,5 +80,5 @@ export function resolveAnnouncementsFeedUrl(
     // import.meta.env not available in all environments.
   }
 
-  return { url: '/announcements.json', source: 'default' };
+  return { url: `${import.meta.env.BASE_URL}announcements.json`, source: 'default' };
 }

@@ -34,16 +34,7 @@ export const PRIMARY_PAGES: PageDefinition[] = [
     path: '/library',
     title: 'Read',
     navTestId: 'nav-library',
-    match: (pathname) => pathname.startsWith('/library') && !pathname.startsWith('/library/sermons'),
-  },
-  {
-    group: 'core',
-    icon: 'sermons',
-    id: 'sermons',
-    path: '/library/sermons',
-    title: 'Sermons',
-    navTestId: 'nav-sermons',
-    match: (pathname) => pathname.startsWith('/library/sermons'),
+    match: (pathname) => pathname.startsWith('/library'),
   },
   {
     group: 'core',
@@ -194,6 +185,7 @@ export function AppShell() {
   const navigationType = useNavigationType();
   const pwaUpdate = useSyncExternalStore(subscribePwaUpdate, getPwaUpdateSnapshot, getPwaUpdateSnapshot);
   const inAppHistoryRef = useRef<string[]>([]);
+  const bottomNavRef = useRef<HTMLElement | null>(null);
   const navGroups = useMemo(
     () => ({
       core: PRIMARY_PAGES.filter((page) => page.group === 'core'),
@@ -236,11 +228,44 @@ export function AppShell() {
     }
   }, [location.hash]);
 
+  useEffect(() => {
+    const nav = bottomNavRef.current;
+
+    if (!nav) {
+      return;
+    }
+
+    const updateFade = () => {
+      const canScrollLeft = nav.scrollLeft > 1;
+      const canScrollRight = nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 1;
+
+      nav.style.setProperty('--bottom-nav-fade-start', canScrollLeft ? '1.5rem' : '0px');
+      nav.style.setProperty('--bottom-nav-fade-end', canScrollRight ? '1.5rem' : '0px');
+    };
+
+    updateFade();
+    nav.addEventListener('scroll', updateFade, { passive: true });
+
+    const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateFade);
+    resizeObserver?.observe(nav);
+
+    return () => {
+      nav.removeEventListener('scroll', updateFade);
+      resizeObserver?.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    const nav = bottomNavRef.current;
+    const activeLink = nav?.querySelector('.bottom-nav__link--active');
+
+    if (typeof activeLink?.scrollIntoView === 'function') {
+      activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    }
+  }, [location.pathname]);
+
   const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
-  const bottomNavPages = useMemo(
-    () => navGroups.core.filter((page) => page.id === 'focus' || page.id === 'read' || page.id === 'sermons' || page.id === 'timer' || page.id === 'settings'),
-    [navGroups.core],
-  );
+  const bottomNavPages = navGroups.core;
 
   const handleBottomNavBack = () => {
     const historyStack = inAppHistoryRef.current;
@@ -297,7 +322,7 @@ export function AppShell() {
         ) : null}
       </div>
 
-      <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav">
+      <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav" ref={bottomNavRef}>
         <button className="bottom-nav__back" data-testid="bottom-nav-back" onClick={handleBottomNavBack} type="button">
           <span aria-hidden="true" className="bottom-nav__back-icon" data-icon={BOTTOM_NAV_BACK_ICON} />
           <span>Back</span>
@@ -310,7 +335,7 @@ export function AppShell() {
             to={page.path}
           >
             <span aria-hidden="true" className="bottom-nav__icon" data-icon={NAV_ICON_GLYPHS[page.icon]} />
-            <span>{page.title === 'Read' ? 'Library' : page.title}</span>
+            <span>{page.title}</span>
           </NavLink>
         ))}
       </nav>
@@ -327,7 +352,7 @@ export function AppShell() {
             key={page.id}
             to={page.path}
           >
-            {page.title === 'Read' ? 'Library' : page.title}
+            {page.title}
           </NavLink>
         ))}
       </nav>
