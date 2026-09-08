@@ -1,6 +1,6 @@
 import { expect, test, type Page, type TestInfo } from '@playwright/test';
 
-const EXPECTED_BOTTOM_NAV_LABELS = ['Back', 'Focus', 'Library', 'Settings'];
+const EXPECTED_BOTTOM_NAV_LABELS = ['Focus', 'Library', 'Sermons', 'Timer', 'Settings'];
 
 function requirePhoneProject(testInfo: TestInfo) {
   test.skip(!testInfo.project.name.startsWith('phone-'), 'Phone viewport matrix only runs in the phone project.');
@@ -31,11 +31,10 @@ test.describe('responsive QA matrix', () => {
     await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
     await expect(page.locator('[data-testid="bottom-nav"] .bottom-nav__link')).toHaveText(EXPECTED_BOTTOM_NAV_LABELS);
-    await expect(page.getByTestId('bottom-nav')).not.toContainText('Timer');
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
-    await expect(page.getByTestId('primary-nav')).toBeHidden();
+    await expect(page.getByTestId('app-nav')).toBeHidden();
 
     const navMetrics = await page.evaluate(() => {
       const main = document.querySelector('[data-testid="shell-main"]');
@@ -74,10 +73,10 @@ test.describe('responsive QA matrix', () => {
     await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
 
     const navMetrics = await page.evaluate(() => {
-      const nav = document.querySelector('[data-testid="primary-nav"]');
+      const nav = document.querySelector('[data-testid="app-nav"]');
       const main = document.querySelector('[data-testid="shell-main"]');
 
       if (!nav || !main) {
@@ -88,33 +87,32 @@ test.describe('responsive QA matrix', () => {
       const mainRect = main.getBoundingClientRect();
 
       return {
-        navRight: navRect.right,
-        mainLeft: mainRect.left,
+        navBottom: navRect.top + navRect.height,
+        mainTop: mainRect.top,
       };
     });
 
-    expect(navMetrics.navRight).toBeLessThan(navMetrics.mainLeft + 24);
-    await expect(page.getByTestId('nav-daily')).toBeVisible();
-    await expect(page.getByTestId('nav-library')).toBeVisible();
-    await expect(page.getByTestId('nav-timer')).toBeVisible();
-    await expect(page.getByTestId('nav-settings')).toBeVisible();
+    expect(navMetrics.navBottom).toBeLessThanOrEqual(navMetrics.mainTop + 8);
+    await expect(page.getByTestId('app-nav-daily')).toBeVisible();
+    await expect(page.getByTestId('app-nav-library')).toBeVisible();
+    await expect(page.getByTestId('app-nav-timer')).toBeVisible();
+    await expect(page.getByTestId('app-nav-settings')).toBeVisible();
     await expect(page.locator('[data-testid="bottom-nav"] .bottom-nav__link')).toHaveText(EXPECTED_BOTTOM_NAV_LABELS);
-    await expect(page.getByTestId('bottom-nav')).not.toContainText('Timer');
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
 
-    await page.getByTestId('nav-daily').click();
+    await page.getByTestId('app-nav-daily').click();
     await expect(page).toHaveURL(/\/daily$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
+    await expect(page.getByRole('heading', { name: "Today’s Practice" })).toBeVisible();
 
-    await page.getByTestId('nav-library').click();
+    await page.getByTestId('app-nav-library').click();
     await expect(page).toHaveURL(/\/library$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
 
-    await page.getByTestId('nav-timer').click();
+    await page.getByTestId('app-nav-timer').click();
     await expect(page).toHaveURL(/\/timer$/);
     await expect(page.getByTestId('page-title')).toHaveText('Timer');
 
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('app-nav-settings').click();
     await expect(page).toHaveURL(/\/settings$/);
     await expect(page.getByTestId('page-title')).toHaveText('Settings');
 
@@ -135,7 +133,7 @@ test.describe('responsive QA matrix', () => {
     await page.goto('/#/library/doctrine/jedi-believe');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('reader-control-strip')).toBeVisible();
+    await expect(page.getByTestId('reader-shell')).toBeVisible();
     await expect(page.getByTestId('reader-controls-toggle')).toBeVisible();
 
     await page.getByTestId('reader-controls-toggle').click();
@@ -158,7 +156,7 @@ test.describe('responsive QA matrix', () => {
 
     const keyboardMetrics = await page.evaluate(() => {
       const input = document.querySelector('[data-testid="reader-bookmark-label-input"]');
-      const nav = document.querySelector('[data-testid="primary-nav"]');
+      const nav = document.querySelector('[data-testid="app-nav"]');
 
       if (!input || !nav) {
         throw new Error('Expected bookmark input and mobile nav to exist.');

@@ -15,17 +15,20 @@ test.describe('sermon sync flows', () => {
     await waitForServiceWorker(page);
 
     await page.getByTestId('sermon-sync-button').click();
-    await expect(page.getByTestId('sermon-card-the-force-works-all-things-out')).toBeVisible();
+    const sermonCard = page.getByTestId('sermon-card-bruised-and-bleeding');
+    await expect(sermonCard).toBeVisible();
 
-    await page.getByRole('link', { name: 'The Force Works All Things Out' }).click();
+    await sermonCard.getByRole('link', { name: 'Read sermon' }).click();
+    await expect(page.getByTestId('reader-shell')).toBeVisible();
     await expect(page.getByTestId('sermon-save-offline')).toBeVisible();
     await page.getByTestId('sermon-save-offline').click();
-    await expect(page.getByText(/Before I begin, I’d like us all to take a moment/i).first()).toBeVisible();
+    await expect(page.getByText('Saved offline')).toBeVisible();
+    await expect(page.getByText(/Let me begin with a little story time/i).first()).toBeVisible();
 
     await context.setOffline(true);
     await page.reload();
 
-    await expect(page.getByText(/Before I begin, I’d like us all to take a moment/i).first()).toBeVisible();
+    await expect(page.getByText(/Let me begin with a little story time/i).first()).toBeVisible();
   });
 
   test('sermon-offline shows a clear message for uncached sermons', async ({ context, page }) => {
@@ -34,12 +37,13 @@ test.describe('sermon sync flows', () => {
     await waitForServiceWorker(page);
 
     await page.getByTestId('sermon-sync-button').click();
-    await expect(page.getByTestId('sermon-card-resilience-and-integration-of-practice')).toBeVisible();
+    const sermonCard = page.getByTestId('sermon-card-small-meditation');
+    await expect(sermonCard).toBeVisible();
 
     await context.setOffline(true);
-    await page.getByRole('link', { name: 'Resilience and integration of practice' }).click();
+    await sermonCard.getByRole('link', { name: 'Read sermon' }).click();
 
-    await expect(page.getByTestId('offline-sermon-message')).toHaveText('Connect to load this sermon');
+    await expect(page.getByTestId('offline-sermon-message')).toHaveText('Needs connection');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-9-sermon-offline.png' });
   });
 
@@ -50,10 +54,12 @@ test.describe('sermon sync flows', () => {
     await waitForServiceWorker(page);
 
     await page.getByTestId('sermon-sync-button').click();
-    await expect(page.getByTestId('sermon-card-the-force-works-all-things-out')).toBeVisible();
+    const sermonCard = page.getByTestId('sermon-card-bruised-and-bleeding');
+    await expect(sermonCard).toBeVisible();
 
-    await page.getByRole('link', { name: 'The Force Works All Things Out' }).click();
-    await expect(page.getByTestId('reader-control-strip')).toBeVisible();
+    await sermonCard.getByRole('link', { name: 'Read sermon' }).click();
+    await expect(page.getByTestId('reader-shell')).toBeVisible();
+    await expect(page.getByTestId('reader-controls-toggle')).toBeVisible();
     await expect(page.getByTestId('sermon-save-offline')).toBeVisible();
 
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-4-sermon-reader-mobile.png' });

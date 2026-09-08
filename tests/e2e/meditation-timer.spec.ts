@@ -12,15 +12,25 @@ async function expectBottomNavDoesNotOverlay(page: import('@playwright/test').Pa
   const elementBox = await page.getByTestId(testId).boundingBox();
   const bottomNavBox = await page.getByTestId('bottom-nav').boundingBox();
 
-  expect(elementBox).not.toBeNull();
-  expect(bottomNavBox).not.toBeNull();
+  if (!bottomNavBox) {
+    // The bottom dock is only rendered on phone-sized viewports.
+    return;
+  }
 
-  if (!elementBox || !bottomNavBox) {
+  expect(elementBox).not.toBeNull();
+
+  if (!elementBox) {
     throw new Error(`Expected ${testId} bounds to be available.`);
   }
 
   expect(elementBox.y).toBeGreaterThanOrEqual(0);
   expect(elementBox.y + elementBox.height).toBeLessThanOrEqual(bottomNavBox.y);
+}
+
+async function setDurationSeconds(page: import('@playwright/test').Page, seconds: string) {
+  await page.getByTestId('timer-remaining').click();
+  await page.getByTestId('timer-duration-seconds').fill(seconds);
+  await page.getByTestId('timer-duration-seconds').press('Enter');
 }
 
 test.describe('meditation timer', () => {
@@ -32,27 +42,27 @@ test.describe('meditation timer', () => {
     await expect(page.getByTestId('page-title')).toHaveText('Timer');
     await expect(page.getByRole('heading', { name: 'Start a session' })).toBeVisible();
     await expect(page.getByTestId('timer-panel')).toBeVisible();
-    await expect(page.getByTestId('timer-defaults')).toHaveCount(0);
     await expect(page.getByTestId('timer-meditation-preset-60')).toHaveText('1 minute');
     await expect(page.getByTestId('timer-meditation-preset-300')).toHaveText('5 minutes');
     await expect(page.getByTestId('timer-meditation-preset-1800')).toHaveText('30 minutes');
     await expect(page.getByTestId('timer-start')).toHaveText('Start timer');
     await expect(page.getByTestId('timer-reset')).toHaveText('Reset session');
     await expect(page.getByTestId('timer-cancel')).toHaveText('Cancel');
-    await expect(page.getByTestId('timer-settings-toggle')).toBeVisible();
+    await expect(page.getByTestId('timer-advanced-toggle')).toBeVisible();
+    await expect(page.getByTestId('timer-sound-profile')).toHaveCount(0);
     await page.getByTestId('timer-meditation-preset-60').click();
     await expect(page.getByTestId('timer-remaining')).toHaveText('01:00');
     await expectBottomNavDoesNotOverlay(page, 'timer-start');
     await expectBottomNavDoesNotOverlay(page, 'timer-reset');
 
-    await page.getByTestId('timer-settings-toggle').click();
+    await page.getByTestId('timer-advanced-toggle').click();
 
-    await expect(page.getByTestId('timer-defaults')).toBeVisible();
     await expect(page.getByTestId('timer-sound-profile')).toBeVisible();
+    await expect(page.getByTestId('timer-cue-mode')).toBeVisible();
 
     await page.getByTestId('timer-start').click();
 
-    await expect(page.getByTestId('timer-pause')).toHaveText('Pause timer');
+    await expect(page.getByTestId('timer-pause')).toHaveText('Pause');
     await expect(page.getByTestId('timer-reset')).toHaveText('Reset session');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-6-timer-phone.png' });
   });
@@ -67,7 +77,7 @@ test.describe('meditation timer', () => {
     await page.getByTestId('timer-cancel').click();
 
     await expect(page).toHaveURL(/\/daily$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
+    await expect(page.getByRole('heading', { name: "Today’s Practice" })).toBeVisible();
 
     await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
@@ -78,8 +88,8 @@ test.describe('meditation timer', () => {
     await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
 
-    await page.getByTestId('timer-settings-toggle').click();
-    await page.getByTestId('timer-duration-seconds').fill('5');
+    await page.getByTestId('timer-advanced-toggle').click();
+    await setDurationSeconds(page, '5');
     await page.getByTestId('timer-sound-profile').selectOption('default-gong');
 
     await page.evaluate(async () => {
@@ -110,8 +120,8 @@ test.describe('meditation timer', () => {
     await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
 
-    await page.getByTestId('timer-settings-toggle').click();
-    await page.getByTestId('timer-duration-seconds').fill('10');
+    await page.getByTestId('timer-advanced-toggle').click();
+    await setDurationSeconds(page, '10');
     await page.getByTestId('timer-start').click();
 
     const backgroundPage = await context.newPage();

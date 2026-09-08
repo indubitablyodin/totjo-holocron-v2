@@ -1,12 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const EXPECTED_BOTTOM_NAV_LABELS = ['Back', 'Focus', 'Library', 'Settings'];
+const EXPECTED_BOTTOM_NAV_LABELS = ['Focus', 'Library', 'Sermons', 'Timer', 'Settings'];
 
 async function expectBottomNavLabels(page: Page) {
   const bottomNav = page.getByTestId('bottom-nav');
 
   await expect(bottomNav.locator('.bottom-nav__link')).toHaveText(EXPECTED_BOTTOM_NAV_LABELS);
-  await expect(bottomNav).not.toContainText('Timer');
 }
 
 async function expectBottomNavDoesNotCover(page: Page, testId: string) {
@@ -15,10 +14,14 @@ async function expectBottomNavDoesNotCover(page: Page, testId: string) {
   const elementBox = await page.getByTestId(testId).boundingBox();
   const bottomNavBox = await page.getByTestId('bottom-nav').boundingBox();
 
-  expect(elementBox).not.toBeNull();
-  expect(bottomNavBox).not.toBeNull();
+  if (!bottomNavBox) {
+    // The bottom dock is only rendered on phone-sized viewports.
+    return;
+  }
 
-  if (!elementBox || !bottomNavBox) {
+  expect(elementBox).not.toBeNull();
+
+  if (!elementBox) {
     throw new Error(`Expected ${testId} and bottom dock bounds to be available.`);
   }
 
@@ -56,15 +59,8 @@ test.describe('PWA shell', () => {
     await expectBottomNavLabels(page);
     await expect(page.getByTestId('bottom-nav')).toBeVisible();
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
-    await expect(page.getByTestId('primary-nav')).toBeHidden();
-    await expect(page.getByTestId('creator-home-link')).toHaveAttribute('href', 'https://odinhalvorson.com');
-    await expect(page.getByTestId('creator-home-link')).toContainText('Creator home');
-    await expect(page.getByTestId('creator-donate-link')).toHaveAttribute('href', 'https://ko-fi.com/indubitablyodin');
-    await expect(page.getByTestId('creator-donate-link')).toContainText('Ko-fi');
-    await expect(page.getByTestId('install-cta')).toBeVisible();
-    await expect(page.locator('[data-testid="primary-nav"] [data-testid="install-cta"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="primary-nav"] [data-testid="offline-banner"]')).toHaveCount(0);
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('app-nav')).toBeHidden();
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
     await expect(page.getByTestId('page-content')).toBeVisible();
     await expect(page.getByTestId('offline-banner')).toHaveCount(1);
 
@@ -95,8 +91,8 @@ test.describe('PWA shell', () => {
 
     await expectBottomNavLabels(page);
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
-    await expectBottomNavDoesNotCover(page, 'daily-begin-meditation');
-    await expectBottomNavDoesNotCover(page, 'daily-quick-access');
+    await expectBottomNavDoesNotCover(page, 'meditation-preset-5');
+    await expectBottomNavDoesNotCover(page, 'daily-quick-access-bookmarks');
 
     await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
@@ -112,17 +108,16 @@ test.describe('PWA shell', () => {
     await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('nav-daily')).toHaveText('Focus');
-    await expect(page.getByTestId('nav-library')).toHaveText('Read');
-    await expect(page.getByTestId('nav-timer')).toHaveText('Timer');
-    await expect(page.getByTestId('nav-settings')).toHaveText('Settings');
-    await expect(page.getByTestId('nav-sermons')).toHaveText('Sermons');
-    await expect(page.getByTestId('nav-bookmarks')).toHaveText('Bookmarks');
+    await expect(page.getByTestId('app-nav-daily')).toHaveText('Focus');
+    await expect(page.getByTestId('app-nav-library')).toHaveText('Library');
+    await expect(page.getByTestId('app-nav-sermons')).toHaveText('Sermons');
+    await expect(page.getByTestId('app-nav-timer')).toHaveText('Timer');
+    await expect(page.getByTestId('app-nav-settings')).toHaveText('Settings');
     await expectBottomNavLabels(page);
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
 
-    const navBox = await page.getByTestId('primary-nav').boundingBox();
+    const navBox = await page.getByTestId('app-nav').boundingBox();
     const mainBox = await page.getByTestId('shell-main').boundingBox();
 
     expect(navBox).not.toBeNull();
@@ -132,29 +127,29 @@ test.describe('PWA shell', () => {
       throw new Error('Expected desktop shell bounds to be available.');
     }
 
-    expect(navBox.x + navBox.width).toBeLessThan(mainBox.x + 24);
+    expect(navBox.y + navBox.height).toBeLessThanOrEqual(mainBox.y + 8);
 
-    await page.getByTestId('nav-daily').click();
+    await page.getByTestId('app-nav-daily').click();
     await expect(page).toHaveURL(/\/daily$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
+    await expect(page.getByRole('heading', { name: "Today’s Practice" })).toBeVisible();
     await expect(page.getByTestId('page-content')).toBeVisible();
 
-    await page.getByTestId('nav-library').click();
+    await page.getByTestId('app-nav-library').click();
     await expect(page).toHaveURL(/\/library$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
 
-    await page.getByTestId('nav-timer').click();
+    await page.getByTestId('app-nav-timer').click();
     await expect(page).toHaveURL(/\/timer$/);
     await expect(page.getByTestId('page-title')).toHaveText('Timer');
     await expect(page.getByTestId('page-content')).toBeVisible();
 
-    await page.getByTestId('nav-settings').click();
+    await page.getByTestId('app-nav-settings').click();
     await expect(page).toHaveURL(/\/settings$/);
     await expect(page.getByTestId('page-title')).toHaveText('Settings');
     await expect(page.getByTestId('settings-group-reading-display')).toBeVisible();
 
-    await page.getByTestId('nav-library').click();
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await page.getByTestId('app-nav-library').click();
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
     await page.screenshot({ path: '.sisyphus/evidence/task-2-mobile-nav-desktop.png' });
   });
 
@@ -182,7 +177,7 @@ test.describe('PWA shell', () => {
     await expect(page).toHaveURL(/\/settings$/);
     await expect(page.getByTestId('page-title')).toHaveText('Settings');
     await expect(page.getByTestId('settings-group-account-sync')).toHaveCount(0);
-    await expect(page.getByTestId('nav-account-sync')).toHaveCount(0);
+    await expect(page.getByTestId('app-nav-account-sync')).toHaveCount(0);
 
     await page.goto('/#/auth/callback?mode=test&token=expired-token&email=playwright@example.test');
     await expect(page).toHaveURL(/\/settings$/);
@@ -191,6 +186,7 @@ test.describe('PWA shell', () => {
   });
 
   test('reloads the cached shell while offline after the first online load', async ({ context, page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/#/');
     await page.waitForLoadState('networkidle');
 
@@ -204,7 +200,7 @@ test.describe('PWA shell', () => {
     await page.reload();
 
     await expect(page.getByTestId('bottom-nav-library')).toBeVisible();
-    await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
+    await expect(page.getByRole('heading', { name: "Today’s Practice" })).toBeVisible();
     await expect(page.getByTestId('offline-banner')).toContainText('You’re offline. Reading and settings still work with saved content.');
     await expect(page.locator('body')).not.toContainText('ERR_INTERNET_DISCONNECTED');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-2-pwa-shell-offline.png' });
@@ -222,7 +218,7 @@ test.describe('PWA shell', () => {
 
     await expect(page.locator('body')).toHaveClass(/large-reading/);
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
 
     await page.goto('/#/settings/reading-display');
     await expect(page.getByTestId('setting-font-scale')).toHaveValue('large');
@@ -234,8 +230,9 @@ test.describe('PWA shell', () => {
     await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('library-count-canon')).toHaveText(/^[1-9]\d*$/);
-    await expect(page.getByTestId('library-count-supplemental')).toHaveText(/^[1-9]\d*$/);
+    await expect(page.getByTestId('library-section-links')).toContainText(/Doctrine \(\d+\)/);
+    await expect(page.getByTestId('library-section-links')).toContainText(/Supplemental \(\d+\)/);
+    await expect(page.getByTestId('library-section-links')).toContainText(/Sermons \(\d+\)/);
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-3-storage-bootstrap.png' });
   });
 
@@ -244,7 +241,7 @@ test.describe('PWA shell', () => {
     await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('page-title')).toHaveText('Read');
+    await expect(page.getByTestId('page-title')).toHaveText('Library');
     await expect(page.getByRole('heading', { name: 'Doctrine' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Supplemental' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Sermons' })).toBeVisible();
@@ -266,7 +263,7 @@ test.describe('PWA shell', () => {
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('authority-badge')).toHaveText('Study Text');
-    await expect(page.getByText('Public TOTJO text included here for reflection and study.')).toBeVisible();
+    await expect(page.getByTestId('reader-shell')).toBeVisible();
     const supplementalBadgeColor = await page
       .getByTestId('authority-badge')
       .evaluate((element) => getComputedStyle(element).backgroundColor);

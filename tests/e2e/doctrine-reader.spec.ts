@@ -43,7 +43,7 @@ test.describe('doctrine reader', () => {
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('reader-shell')).toBeVisible();
-    await expect(page.getByTestId('reader-control-strip')).toBeVisible();
+    await expect(page.getByTestId('reader-controls-toggle')).toBeVisible();
     await expect(page.getByText('In the Force, and in the inherent worth of all life within it.')).toBeVisible();
 
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-4-reader-mobile.png' });
