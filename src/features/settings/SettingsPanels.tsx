@@ -420,80 +420,12 @@ export function TimerDefaultsSettingsPage() {
         title="Session defaults"
       >
         <form className="settings-form" onChange={trigger}>
-          <label className="field-card" htmlFor="setting-timer-duration-seconds">
-            <span className="field-label">Default duration</span>
-            <span className="field-help">Set the length each new timer should open with on this device.</span>
-            <input
-              className="field-select"
-              data-testid="setting-timer-duration-seconds"
-              id="setting-timer-duration-seconds"
-              inputMode="numeric"
-              min={1}
-              onChange={(event) => {
-                updateTimerPreferences({
-                  defaultDurationSeconds: clampTimerDurationPreference(event.target.value),
-                });
-              }}
-              type="number"
-              value={timerPreferences.defaultDurationSeconds}
-            />
-          </label>
-
-          <label className="field-card" htmlFor="setting-timer-cue-mode">
-            <span className="field-label">Default bell mode</span>
-            <span className="field-help">Choose whether new timers ring at the beginning, the end, both, or on a custom spacing.</span>
-            <select
-              className="field-select"
-              data-testid="setting-timer-cue-mode"
-              id="setting-timer-cue-mode"
-              onChange={(event) => {
-                const nextCueMode = event.target.value as TimerCueMode;
-                updateTimerPreferences({
-                  defaultCueMode: nextCueMode,
-                  defaultIntervalSeconds:
-                    nextCueMode === 'custom' && timerPreferences.defaultIntervalSeconds === 0
-                      ? 60
-                      : nextCueMode === 'custom'
-                        ? timerPreferences.defaultIntervalSeconds
-                        : 0,
-                });
-              }}
-              value={timerPreferences.defaultCueMode}
-            >
-              {TIMER_CUE_MODES.map((cueMode) => (
-                <option key={cueMode} value={cueMode}>
-                  {TIMER_CUE_MODE_LABELS[cueMode]}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {timerPreferences.defaultCueMode === 'custom' ? (
-            <label className="field-card" htmlFor="setting-timer-interval-seconds">
-              <span className="field-label">Ring every</span>
-              <span className="field-help">Set how many seconds apart the bowl rings while a custom timer is running.</span>
-              <input
-                className="field-select"
-                data-testid="setting-timer-interval-seconds"
-                id="setting-timer-interval-seconds"
-                inputMode="numeric"
-                min={1}
-                onChange={(event) => {
-                  updateTimerPreferences({
-                    defaultIntervalSeconds: clampTimerIntervalPreference(event.target.value),
-                  });
-                }}
-                type="number"
-                value={timerPreferences.defaultIntervalSeconds}
-              />
-            </label>
-          ) : null}
-
           <label className="field-card" htmlFor="setting-timer-sound-profile">
             <span className="field-label">Default timer sound</span>
             <span className="field-help">
-              Pick the sound each new timer session should use. A guided file becomes the session audio and
-              locks the duration to the file — the timer stops when the file ends.
+              Pick the sound each new timer session should use. Choosing a guided file switches new sessions into
+              guided meditation mode: it becomes the session audio, locks the duration to the file — the timer
+              stops when the file ends — and the timed-only settings below no longer apply.
             </span>
             <select
               className="field-select"
@@ -539,6 +471,79 @@ export function TimerDefaultsSettingsPage() {
               <Link to="/timer/guided-audio">Manage your audio files</Link>
             </p>
           </label>
+
+          {!timerPreferences.defaultGuidedAudioFileId ? (
+            <>
+              <label className="field-card" htmlFor="setting-timer-duration-seconds">
+                <span className="field-label">Default duration</span>
+                <span className="field-help">Set the length each new timer should open with on this device.</span>
+                <input
+                  className="field-select"
+                  data-testid="setting-timer-duration-seconds"
+                  id="setting-timer-duration-seconds"
+                  inputMode="numeric"
+                  min={1}
+                  onChange={(event) => {
+                    updateTimerPreferences({
+                      defaultDurationSeconds: clampTimerDurationPreference(event.target.value),
+                    });
+                  }}
+                  type="number"
+                  value={timerPreferences.defaultDurationSeconds}
+                />
+              </label>
+
+              <label className="field-card" htmlFor="setting-timer-cue-mode">
+                <span className="field-label">Default bell mode</span>
+                <span className="field-help">Choose whether new timers ring at the beginning, the end, both, or on a custom spacing.</span>
+                <select
+                  className="field-select"
+                  data-testid="setting-timer-cue-mode"
+                  id="setting-timer-cue-mode"
+                  onChange={(event) => {
+                    const nextCueMode = event.target.value as TimerCueMode;
+                    updateTimerPreferences({
+                      defaultCueMode: nextCueMode,
+                      defaultIntervalSeconds:
+                        nextCueMode === 'custom' && timerPreferences.defaultIntervalSeconds === 0
+                          ? 60
+                          : nextCueMode === 'custom'
+                            ? timerPreferences.defaultIntervalSeconds
+                            : 0,
+                    });
+                  }}
+                  value={timerPreferences.defaultCueMode}
+                >
+                  {TIMER_CUE_MODES.map((cueMode) => (
+                    <option key={cueMode} value={cueMode}>
+                      {TIMER_CUE_MODE_LABELS[cueMode]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {timerPreferences.defaultCueMode === 'custom' ? (
+                <label className="field-card" htmlFor="setting-timer-interval-seconds">
+                  <span className="field-label">Ring every</span>
+                  <span className="field-help">Set how many seconds apart the bowl rings while a custom timer is running.</span>
+                  <input
+                    className="field-select"
+                    data-testid="setting-timer-interval-seconds"
+                    id="setting-timer-interval-seconds"
+                    inputMode="numeric"
+                    min={1}
+                    onChange={(event) => {
+                      updateTimerPreferences({
+                        defaultIntervalSeconds: clampTimerIntervalPreference(event.target.value),
+                      });
+                    }}
+                    type="number"
+                    value={timerPreferences.defaultIntervalSeconds}
+                  />
+                </label>
+              ) : null}
+            </>
+          ) : null}
 
           {timerPreferences.defaultGuidedAudioFileId ? (
             <label className="field-card field-card--toggle" htmlFor="setting-timer-guided-cue-overlay">

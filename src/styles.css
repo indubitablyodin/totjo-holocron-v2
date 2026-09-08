@@ -307,6 +307,22 @@ input {
   gap: var(--space-3);
 }
 
+.detail-grid,
+.settings-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-4);
+}
+
+.detail-card,
+.field-card {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
 .page-eyebrow,
 .metric-label,
 .field-label,
