@@ -1827,6 +1827,20 @@ input {
   background: var(--color-surface);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--bottom-nav-fade-start, 0px),
+    black calc(100% - var(--bottom-nav-fade-end, 0px)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--bottom-nav-fade-start, 0px),
+    black calc(100% - var(--bottom-nav-fade-end, 0px)),
+    transparent 100%
+  );
 }
 
 .bottom-nav::-webkit-scrollbar {
@@ -1904,11 +1918,13 @@ input {
   box-shadow: var(--glow-accent);
 }
 
-.bottom-nav__icon {
+.bottom-nav__icon,
+.bottom-nav__back-icon {
   flex-shrink: 0;
 }
 
-.bottom-nav__icon::before {
+.bottom-nav__icon::before,
+.bottom-nav__back-icon::before {
   content: attr(data-icon);
   line-height: 1;
 }
@@ -2978,6 +2994,14 @@ body {
   font-size: 0.8rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+@media (max-width: 36rem) {
+  .bottom-nav__back,
+  .bottom-nav__link {
+    font-size: 0.65rem;
+    padding: var(--space-1) var(--space-2);
+  }
 }
 
 .bottom-nav__link--active {
