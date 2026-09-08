@@ -1,45 +1,65 @@
-# PLAN: My documents (user-preferred, non-canon documents)
+# PLAN: Audio-driven guided meditation sessions
 
 ## Goal
 
-Let users import their own texts into the Holocron as a distinct, device-local
-"custom" document class: visible in a dedicated "My documents" lane, readable in
-the existing reader (bookmarks/notes/progress/controls/personalization), and
-included in the user-data export backup. Not cloud-synced.
+Make guided meditation a first-class timer experience:
+
+- A guided session is its own session kind (`timed | guided`), not a timed
+  countdown with a frozen duration.
+- The timer stops when the guided file actually ends (media `ended` event),
+  with the existing wall-clock countdown to the file's duration kept as a
+  fail-safe so a session never hangs.
+- Settings offers one "Default timer sound" selector: bundled sound profiles
+  OR any uploaded guided file. Choosing a guided file makes new timers open
+  in guided mode (duration locked to the file, bells optional via the
+  existing overlay toggle).
 
 ## Decisions
 
-- Dedicated `authorityClass: 'custom'` + `origin: 'user'`; no DB schema migration.
-- Import via file upload (`.md`, `.txt`, `.json`) and paste-text form.
-- Device-local, exported in `collectUserDataExport`.
-- Full reader parity via existing `LibraryDocumentPage`.
+- New `kind: 'timed' | 'guided'` on `TimerSessionState` / `TimerConfigUpdate`;
+  persisted in the stored session, no preference-schema migration.
+- `TimerPreferences` shape unchanged (`defaultSoundProfileId`,
+  `defaultGuidedAudioFileId`, `guidedCueOverlay`); the unification is a UI concern.
+- Completion via audio `ended` calls a new `completeNow()` on `useTimerSession`
+  (phase → complete, fires `onCue('complete')`, records history once, guarded
+  against the countdown racing to the same completion).
+- Guided sessions never play interval cues even if a custom bell mode is
+  configured; only the start/complete gong overlay applies (`guidedCueOverlay`).
+- Dashboard (`DashboardTimer`) stays timed-only; it already ignores guided.
 
 ## File changes
 
-1. `src/lib/content/types.ts` — done.
-2. `src/features/myDocuments/myDocuments.ts` — done.
-3. `src/features/myDocuments/MyDocumentsPage.tsx` — done.
-4. `src/features/myDocuments/myDocuments.test.ts` — done (14 tests).
-5. `src/features/library/libraryPresentation.ts` — done.
-6. `src/app/AppRoutes.tsx` — done.
-7. `src/features/library/LibraryPage.tsx` — done.
-8. `src/features/library/LibrarySectionLinks.tsx` — done.
-9. `src/lib/db/bootstrap.ts` — done.
-10. `src/features/library/librarySearchTypes.ts` + `searchHolocron.ts` — done.
-11. `src/content/contentTypes.ts` — done.
-12. `src/app/AppShell.tsx` — done.
-13. `src/features/settings/exportUserData.ts` — done.
-14. `src/styles.css` — done.
-15. `src/features/settings/SettingsPanels.tsx` — done.
-16. `docs/adr/0006-custom-user-documents.md` — done.
-17. `PLAN.md` — this file, all chunks complete.
-18. `tests/e2e/my-documents.spec.ts` — done (8 tests); added `tests/e2e/base.ts`
-    to stub the external announcements endpoint for hermetic networkidle waits.
+1. `src/features/timer/timerModel.ts` — `TimerSessionKind`, `kind` in session
+   and config updates, default from prefs, hydrate validation (guided requires
+   a file id), `applyEditableTimerConfig` clears guided file when kind→timed,
+   guided interval suppression in `advanceTimerSession`, export
+   `completeTimerSession`.
+2. `src/features/timer/useTimerSession.ts` — `kind` in initial/reset state;
+   new `completeNow()` API.
+3. `src/features/timer/TimerPage.tsx` — `useAudioElements` gains an
+   `onGuidedEnded` callback (ref-stable listener); `completeNow` wired in;
+   `isGuidedMode` derived from `session.kind`; mode/select handlers set kind
+   and duration; "Session type" row in details.
+4. `src/features/settings/SettingsPanels.tsx` — replace "Default bell sound"
+   + "Default guided audio" with one "Default timer sound" select
+   (`setting-timer-sound-profile`), profile values unchanged, guided files as
+   `guided:<id>` options; overlay toggle gated on a guided default.
+5. Tests — `meditation-timer.test.tsx` (kind/interval/hydrate/completeTimerSession),
+   `guided-audio-timer.test.tsx` (session-kind detail, audio `ended` completes and
+   records history), settings selector mapping in `audio-rights.test.tsx`; e2e
+   `guided-audio.spec.ts` uses the unified selector.
+6. `docs/adr/0007-audio-driven-guided-meditations.md` — ADR.
+
+## Status
+
+All implementation chunks are complete. Validation status below.
 
 ## Validation
 
-- `pnpm lint` — baseline 23 problems (22 errors, 1 warning), no new from feature.
+- `pnpm lint` — 23 problems (22 errors + 1 warning), identical to baseline
+  (the lone pre-existing `TimerPage` react-hooks error moved from line 363 to 390).
 - `pnpm typecheck` — clean.
-- `pnpm test` — 275 passed (275).
-- `pnpm build` — succeeds (51 precached entries).
-- `pnpm test:e2e` — 79 passed, 5 skipped, 0 failed.
+- `pnpm test` — 46 files, 283 tests passed (baseline 275 + 8 new).
+- `pnpm build` — pending final run.
+- `pnpm test:e2e` — pending final run.
+- `pnpm lint && pnpm typecheck && pnpm test && pnpm build` — full CI sequence pending.

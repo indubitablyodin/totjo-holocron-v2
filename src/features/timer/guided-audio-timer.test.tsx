@@ -1,37 +1,71 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+const { GUIDED_AUDIO } = vi.hoisted(() => ({
+  GUIDED_AUDIO: {
+    id: 'audio-file:guided-breathwork',
+    name: 'Guided Breathwork',
+    originalName: 'Guided Breathwork.mp3',
+    mimeType: 'audio/mpeg',
+    blob: new Blob(['sample-audio'], { type: 'audio/mpeg' }),
+    durationSeconds: 420,
+    sizeBytes: 12,
+    createdAt: '2026-01-03T00:00:00.000Z',
+  } as AudioFileRecord,
+}));
+
+vi.mock('@/features/timer/audioFileManager', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@/features/timer/audioFileManager')>();
+
+  return {
+    ...actual,
+    listAudioFiles: async () => [GUIDED_AUDIO],
+  };
+});
+
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, afterEach, describe, expect, it } from 'vitest';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AppTestRouter } from '@/App';
 import type { AudioFileRecord } from '@/lib/content';
 import { appDb, ensureStorageReady } from '@/lib/db';
-import { saveTimerPreferences } from '@/features/timer/timerPreferences';
+import { saveTimerPreferences, type TimerPreferences } from '@/features/timer/timerPreferences';
 import { clearTimerPreferencesStorage } from '@/features/timer/timerPreferences';
 import { clearTimerSessionStorage } from '@/features/timer/timerSessionStorage';
 
-const GUIDED_AUDIO: AudioFileRecord = {
-  id: 'audio-file:guided-breathwork',
-  name: 'Guided Breathwork',
-  originalName: 'Guided Breathwork.mp3',
-  mimeType: 'audio/mpeg',
-  blob: new Blob(['sample-audio'], { type: 'audio/mpeg' }),
-  durationSeconds: 420,
-  sizeBytes: 12,
-  createdAt: '2026-01-03T00:00:00.000Z',
+const GUIDED_PREFERENCES: TimerPreferences = {
+  defaultDurationSeconds: 300,
+  defaultCueMode: 'start-end',
+  defaultIntervalSeconds: 0,
+  defaultSoundProfileId: 'default-gong',
+  recordPracticeHistory: true,
+  defaultGuidedAudioFileId: GUIDED_AUDIO.id,
+  guidedCueOverlay: true,
 };
 
 describe('guided meditation timer', () => {
+  let createdAudioElements: HTMLAudioElement[];
+
   beforeEach(async () => {
     clearTimerPreferencesStorage();
     clearTimerSessionStorage();
     await ensureStorageReady(appDb);
     await appDb.audioFiles.put(GUIDED_AUDIO);
+
+    createdAudioElements = [];
+    const RealAudio = window.Audio;
+    vi.spyOn(window, 'Audio').mockImplementation(function MockAudio(this: unknown, src?: string) {
+      const element = new RealAudio(src);
+      createdAudioElements.push(element);
+      return element;
+    });
   });
 
   afterEach(async () => {
     await appDb.audioFiles.clear();
+    await appDb.practiceHistory.clear();
     clearTimerPreferencesStorage();
     clearTimerSessionStorage();
+    vi.restoreAllMocks();
   });
 
   it('opens guided mode from the toggle and navigates to the audio manager when no audio is chosen', async () => {
@@ -47,15 +81,7 @@ describe('guided meditation timer', () => {
   });
 
   it('loads guided mode by default when a default guided audio file is set', async () => {
-    saveTimerPreferences({
-      defaultDurationSeconds: 300,
-      defaultCueMode: 'start-end',
-      defaultIntervalSeconds: 0,
-      defaultSoundProfileId: 'default-gong',
-      recordPracticeHistory: true,
-      defaultGuidedAudioFileId: GUIDED_AUDIO.id,
-      guidedCueOverlay: true,
-    });
+    saveTimerPreferences(GUIDED_PREFERENCES);
 
     render(<AppTestRouter initialEntries={['/timer']} />);
 
@@ -71,16 +97,55 @@ describe('guided meditation timer', () => {
     expect(screen.getByTestId('timer-guided-audio-name')).toHaveTextContent('Guided Breathwork');
   });
 
-  it('shows configured quick durations are disabled while guided audio is selected', async () => {
-    saveTimerPreferences({
-      defaultDurationSeconds: 300,
-      defaultCueMode: 'start-end',
-      defaultIntervalSeconds: 0,
-      defaultSoundProfileId: 'default-gong',
-      recordPracticeHistory: true,
-      defaultGuidedAudioFileId: GUIDED_AUDIO.id,
-      guidedCueOverlay: true,
+  it('reports the session kind in session details and switches it with the mode toggle', async () => {
+    const user = userEvent.setup();
+
+    saveTimerPreferences(GUIDED_PREFERENCES);
+
+    render(<AppTestRouter initialEntries={['/timer']} />);
+
+    await fireEvent.click(screen.getByTestId('timer-details-toggle'));
+    expect(screen.getByTestId('timer-session-kind')).toHaveTextContent('Guided meditation');
+
+    await user.click(screen.getByTestId('timer-mode-timed'));
+
+    expect(screen.getByTestId('timer-mode-timed')).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByTestId('timer-session-kind')).toHaveTextContent('Timed meditation');
+  });
+
+  it('completes the guided session when the audio file ends', async () => {
+    saveTimerPreferences(GUIDED_PREFERENCES);
+
+    render(<AppTestRouter initialEntries={['/timer']} />);
+
+    await screen.findByRole('option', { name: 'Guided Breathwork' });
+
+    await fireEvent.click(screen.getByTestId('timer-start'));
+
+    expect(screen.getByTestId('timer-status')).toHaveTextContent('Running');
+
+    const guidedAudioElement = createdAudioElements.find((element) => element.src.startsWith('blob:'));
+
+    console.log('DEBUG2 created:', createdAudioElements.length, createdAudioElements.map((el) => el.src));
+
+    expect(guidedAudioElement).toBeDefined();
+
+    fireEvent(guidedAudioElement as HTMLAudioElement, new Event('ended'));
+
+    await waitFor(() => expect(screen.getByTestId('timer-status')).toHaveTextContent('Complete'));
+
+    const historyRecords = await appDb.practiceHistory.where('practiceKind').equals('meditation').toArray();
+
+    expect(historyRecords).toHaveLength(1);
+    expect(historyRecords[0]).toMatchObject({
+      practiceKind: 'meditation',
+      durationSeconds: 420,
+      guidedAudioName: 'Guided Breathwork',
     });
+  });
+
+  it('shows configured quick durations are disabled while guided audio is selected', async () => {
+    saveTimerPreferences(GUIDED_PREFERENCES);
 
     render(<AppTestRouter initialEntries={['/timer']} />);
 
@@ -91,15 +156,7 @@ describe('guided meditation timer', () => {
   it('switches back to timed mode and clears the guided selection', async () => {
     const user = userEvent.setup();
 
-    saveTimerPreferences({
-      defaultDurationSeconds: 300,
-      defaultCueMode: 'start-end',
-      defaultIntervalSeconds: 0,
-      defaultSoundProfileId: 'default-gong',
-      recordPracticeHistory: true,
-      defaultGuidedAudioFileId: GUIDED_AUDIO.id,
-      guidedCueOverlay: true,
-    });
+    saveTimerPreferences(GUIDED_PREFERENCES);
 
     render(<AppTestRouter initialEntries={['/timer']} />);
 

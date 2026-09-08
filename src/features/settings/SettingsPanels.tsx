@@ -490,48 +490,50 @@ export function TimerDefaultsSettingsPage() {
           ) : null}
 
           <label className="field-card" htmlFor="setting-timer-sound-profile">
-            <span className="field-label">Default bell sound</span>
-            <span className="field-help">Pick the sound each new timer session should use for opening, reminder, and closing bells.</span>
+            <span className="field-label">Default timer sound</span>
+            <span className="field-help">
+              Pick the sound each new timer session should use. A guided file becomes the session audio and
+              locks the duration to the file — the timer stops when the file ends.
+            </span>
             <select
               className="field-select"
               data-testid="setting-timer-sound-profile"
               id="setting-timer-sound-profile"
               onChange={(event) => {
+                const nextValue = event.target.value;
+
+                if (nextValue.startsWith('guided:')) {
+                  updateTimerPreferences({
+                    defaultGuidedAudioFileId: nextValue.slice('guided:'.length),
+                  });
+                  return;
+                }
+
                 updateTimerPreferences({
-                  defaultSoundProfileId: event.target.value as TimerPreferences['defaultSoundProfileId'],
+                  defaultSoundProfileId: nextValue as TimerPreferences['defaultSoundProfileId'],
+                  defaultGuidedAudioFileId: null,
                 });
               }}
-              value={timerPreferences.defaultSoundProfileId}
+              value={
+                timerPreferences.defaultGuidedAudioFileId
+                  ? `guided:${timerPreferences.defaultGuidedAudioFileId}`
+                  : timerPreferences.defaultSoundProfileId
+              }
             >
               {SOUND_PROFILES.map((profile) => (
                 <option key={profile.id} value={profile.id}>
                   {profile.label}
                 </option>
               ))}
-            </select>
-          </label>
-
-          <label className="field-card" htmlFor="setting-timer-default-guided-audio">
-            <span className="field-label">Default guided audio</span>
-            <span className="field-help">Pick a guided audio file for new guided sessions. Leave on "None" to start every new timer in timed mode.</span>
-            <select
-              className="field-select"
-              data-testid="setting-timer-default-guided-audio"
-              id="setting-timer-default-guided-audio"
-              onChange={(event) => {
-                const nextValue = event.target.value;
-                updateTimerPreferences({
-                  defaultGuidedAudioFileId: nextValue.length > 0 ? nextValue : null,
-                });
-              }}
-              value={timerPreferences.defaultGuidedAudioFileId ?? ''}
-            >
-              <option value="">None (timed mode)</option>
-              {audioFiles.map((file) => (
-                <option key={file.id} value={file.id}>
-                  {file.name}
-                </option>
-              ))}
+              {audioFiles.length > 0 ? (
+                <optgroup label="Guided meditation audio">
+                  {audioFiles.map((file) => (
+                    <option key={file.id} value={`guided:${file.id}`}>
+                      {file.name}
+                    </option>
+                  ))}
+                </optgroup>
+              ) : null}
             </select>
             <p className="support-copy">
               <Link to="/timer/guided-audio">Manage your audio files</Link>

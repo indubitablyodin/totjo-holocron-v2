@@ -12,7 +12,10 @@ import {
   resetTimerSession,
   resumeTimerSession,
   startTimerSession,
+  completeTimerSession,
 } from './timerModel';
+import type { TimerSessionState } from './timerModel';
+import { DEFAULT_TIMER_PREFERENCES } from './timerPreferences';
 import { listMeditationPracticeHistory, recordMeditationPractice } from './timerHistory';
 
 async function deleteDatabase(name: string): Promise<void> {
@@ -77,6 +80,105 @@ describe('meditation-timer model', () => {
     expect(completed.didComplete).toBe(true);
     expect(reset.phase).toBe('idle');
     expect(reset.remainingSeconds).toBe(10);
+  });
+
+  it('defaults new sessions to guided when a guided default file is set', () => {
+    const guided = createDefaultTimerSession({
+      ...DEFAULT_TIMER_PREFERENCES,
+      defaultGuidedAudioFileId: 'audio-file:guided-breathwork',
+    });
+    const timed = createDefaultTimerSession();
+
+    expect(guided.kind).toBe('guided');
+    expect(timed.kind).toBe('timed');
+  });
+
+  it('guided sessions never emit interval cues', () => {
+    const configured = applyEditableTimerConfig(createDefaultTimerSession(), {
+      kind: 'guided',
+      guidedAudioFileId: 'audio-file:guided-breathwork',
+      totalDurationSeconds: 420,
+      cueMode: 'custom',
+      intervalSeconds: 10,
+      soundProfileId: 'default-gong',
+      recordPracticeHistory: true,
+      guidedCueOverlay: true,
+    });
+    const started = startTimerSession(configured, 1_000);
+    const afterFifteenSeconds = advanceTimerSession(started, 16_000);
+
+    expect(configured.kind).toBe('guided');
+    expect(afterFifteenSeconds.session.kind).toBe('guided');
+    expect(afterFifteenSeconds.session.lastIntervalIndex).toBe(0);
+    expect(afterFifteenSeconds.cueKind).toBeNull();
+  });
+
+  it('switching the session kind to timed clears the guided audio file', () => {
+    const guided = applyEditableTimerConfig(createDefaultTimerSession(), {
+      kind: 'guided',
+      guidedAudioFileId: 'audio-file:guided-breathwork',
+    });
+    const timed = applyEditableTimerConfig(guided, { kind: 'timed' });
+
+    expect(guided.kind).toBe('guided');
+    expect(guided.guidedAudioFileId).toBe('audio-file:guided-breathwork');
+    expect(timed.kind).toBe('timed');
+    expect(timed.guidedAudioFileId).toBeNull();
+  });
+
+  it('hydrates persisted guided sessions and falls back to timed when no file exists', () => {
+    const preferences = { ...DEFAULT_TIMER_PREFERENCES, defaultGuidedAudioFileId: null };
+    const storedGuided: Partial<TimerSessionState> = {
+      kind: 'guided',
+      guidedAudioFileId: 'audio-file:guided-breathwork',
+      phase: 'running',
+      totalDurationSeconds: 420,
+      remainingSeconds: 300,
+      soundProfileId: 'default-gong',
+      recordPracticeHistory: true,
+      guidedCueOverlay: true,
+    };
+    const restoredGuided = hydrateStoredTimerSession(storedGuided, preferences, 0);
+    const restoredWithoutFile = hydrateStoredTimerSession(
+      { ...storedGuided, guidedAudioFileId: null },
+      preferences,
+      0,
+    );
+    const restoredInvalidKind = hydrateStoredTimerSession(
+      { ...storedGuided, kind: 'not-a-kind' },
+      preferences,
+      0,
+    );
+
+    expect(restoredGuided.kind).toBe('guided');
+    expect(restoredGuided.guidedAudioFileId).toBe('audio-file:guided-breathwork');
+    expect(restoredGuided.remainingSeconds).toBe(300);
+    expect(restoredWithoutFile.kind).toBe('timed');
+    expect(restoredInvalidKind.kind).toBe('timed');
+    expect(restoredInvalidKind.guidedAudioFileId).toBe('audio-file:guided-breathwork');
+  });
+
+  it('completes a guided session immediately when the audio ends', () => {
+    const running = startTimerSession(
+      applyEditableTimerConfig(createDefaultTimerSession(), {
+        kind: 'guided',
+        guidedAudioFileId: 'audio-file:guided-breathwork',
+        totalDurationSeconds: 420,
+        cueMode: 'start-end',
+        intervalSeconds: 0,
+        soundProfileId: 'default-gong',
+        recordPracticeHistory: true,
+        guidedCueOverlay: true,
+      }),
+      10_000,
+    );
+    const completed = completeTimerSession(running, 42_000);
+
+    expect(completed.kind).toBe('guided');
+    expect(completed.phase).toBe('complete');
+    expect(completed.remainingSeconds).toBe(0);
+    expect(completed.targetEndAtMs).toBeNull();
+    expect(completed.completedAtMs).toBe(42_000);
   });
 
   it('records optional local meditation practice history entries', async () => {

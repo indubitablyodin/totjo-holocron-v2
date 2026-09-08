@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTestRouter } from '@/App';
+import type { AudioFileRecord } from '@/lib/content';
+import { appDb, ensureStorageReady } from '@/lib/db';
 import {
   clearTimerPreferencesStorage,
   loadTimerPreferences,
@@ -10,13 +12,26 @@ import {
 } from '@/features/timer/timerPreferences';
 import { clearTimerSessionStorage } from '@/features/timer/timerSessionStorage';
 
+const GUIDED_AUDIO: AudioFileRecord = {
+  id: 'audio-file:guided-breathwork',
+  name: 'Guided Breathwork',
+  originalName: 'Guided Breathwork.mp3',
+  mimeType: 'audio/mpeg',
+  blob: new Blob(['sample-audio'], { type: 'audio/mpeg' }),
+  durationSeconds: 420,
+  sizeBytes: 12,
+  createdAt: '2026-01-03T00:00:00.000Z',
+};
+
 describe('audio-rights settings', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     clearTimerPreferencesStorage();
     clearTimerSessionStorage();
+    await ensureStorageReady(appDb);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    await appDb.audioFiles.clear();
     clearTimerPreferencesStorage();
     clearTimerSessionStorage();
   });
@@ -75,5 +90,33 @@ describe('audio-rights settings', () => {
     expect(screen.getByTestId('timer-interval-seconds')).toHaveValue(60);
     expect(screen.getByTestId('timer-sound-profile')).toHaveValue('silent');
     expect(screen.getByTestId('timer-record-history')).not.toBeChecked();
+  });
+
+  it('persists a guided audio file through the unified default timer sound selector', async () => {
+    const user = userEvent.setup();
+
+    await appDb.audioFiles.put(GUIDED_AUDIO);
+
+    render(<AppTestRouter initialEntries={['/settings/timer-defaults']} />);
+
+    const soundSelect = screen.getByTestId('setting-timer-sound-profile');
+
+    expect(await screen.findByRole('option', { name: 'Guided Breathwork' })).toBeVisible();
+
+    await user.selectOptions(soundSelect, `guided:${GUIDED_AUDIO.id}`);
+
+    expect(loadTimerPreferences()).toMatchObject({
+      defaultGuidedAudioFileId: GUIDED_AUDIO.id,
+    });
+    expect(screen.getByTestId('setting-timer-sound-profile')).toHaveValue(`guided:${GUIDED_AUDIO.id}`);
+    expect(screen.getByTestId('setting-timer-guided-cue-overlay')).toBeChecked();
+
+    await user.selectOptions(screen.getByTestId('setting-timer-sound-profile'), 'default-gong');
+
+    expect(loadTimerPreferences()).toMatchObject({
+      defaultSoundProfileId: 'default-gong',
+      defaultGuidedAudioFileId: null,
+    });
+    expect(screen.getByTestId('setting-timer-sound-profile')).toHaveValue('default-gong');
   });
 });

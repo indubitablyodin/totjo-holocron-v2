@@ -5,6 +5,7 @@ import { loadTimerPreferences } from '@/features/timer/timerPreferences';
 import {
   advanceTimerSession,
   applyEditableTimerConfig,
+  completeTimerSession,
   formatTimerClock,
   pauseTimerSession,
   resetTimerSession,
@@ -43,6 +44,7 @@ export type TimerSessionAPI = {
   setDurationMinutes: (minutes: number) => void;
   handleReset: () => void;
   handleConfigUpdate: (updates: Partial<TimerConfigUpdate>) => void;
+  completeNow: () => void;
 };
 
 export function useTimerSession({
@@ -58,6 +60,7 @@ export function useTimerSession({
     const seconds = initialDurationSeconds ?? resolvedDefaultMinutes * 60;
 
     return {
+      kind: initialSession?.kind ?? (preferences.defaultGuidedAudioFileId ? 'guided' : 'timed'),
       phase: 'idle',
       totalDurationSeconds: seconds,
       remainingSeconds: seconds,
@@ -226,6 +229,21 @@ export function useTimerSession({
     setSession((currentSession) => resetTimerSession(currentSession));
   }, []);
 
+  const completeNow = useCallback(() => {
+    const currentSession = sessionRef.current;
+
+    if (currentSession.phase !== 'running') {
+      return;
+    }
+
+    const completedSession = completeTimerSession(currentSession, Date.now());
+
+    sessionRef.current = completedSession;
+    setSession(completedSession);
+    void onCue?.('complete');
+    void handleComplete(completedSession);
+  }, [onCue, handleComplete]);
+
   const setDurationMinutes = useCallback((minutes: number) => {
     const seconds = minutes * 60;
     setSession((currentSession) => ({
@@ -245,6 +263,7 @@ export function useTimerSession({
 
     setSession((currentSession) => ({
       ...currentSession,
+      kind: preferences.defaultGuidedAudioFileId ? 'guided' : 'timed',
       phase: 'idle',
       totalDurationSeconds: seconds,
       remainingSeconds: seconds,
@@ -275,5 +294,6 @@ export function useTimerSession({
     setDurationMinutes,
     handleReset,
     handleConfigUpdate,
+    completeNow,
   };
 }

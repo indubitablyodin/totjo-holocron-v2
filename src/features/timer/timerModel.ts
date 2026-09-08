@@ -15,7 +15,16 @@ export const TIMER_PHASES = ['idle', 'running', 'paused', 'complete'] as const;
 
 export type TimerPhase = (typeof TIMER_PHASES)[number];
 
+export const TIMER_SESSION_KINDS = ['timed', 'guided'] as const;
+
+export type TimerSessionKind = (typeof TIMER_SESSION_KINDS)[number];
+
+export function isTimerSessionKind(value: unknown): value is TimerSessionKind {
+  return typeof value === 'string' && TIMER_SESSION_KINDS.includes(value as TimerSessionKind);
+}
+
 export type TimerSessionState = {
+  kind: TimerSessionKind;
   phase: TimerPhase;
   totalDurationSeconds: number;
   remainingSeconds: number;
@@ -32,6 +41,7 @@ export type TimerSessionState = {
 };
 
 export type TimerConfigUpdate = {
+  kind: TimerSessionKind;
   totalDurationSeconds: unknown;
   cueMode: TimerCueMode;
   intervalSeconds: unknown;
@@ -103,6 +113,7 @@ export function formatTimerClock(totalSeconds: number): string {
 
 export function createDefaultTimerSession(preferences: TimerPreferences = DEFAULT_TIMER_PREFERENCES): TimerSessionState {
   return {
+    kind: preferences.defaultGuidedAudioFileId ? 'guided' : 'timed',
     phase: 'idle',
     totalDurationSeconds: preferences.defaultDurationSeconds,
     remainingSeconds: preferences.defaultDurationSeconds,
@@ -123,6 +134,12 @@ export function applyEditableTimerConfig(
   session: TimerSessionState,
   updates: Partial<TimerConfigUpdate>,
 ): TimerSessionState {
+  const kind =
+    updates.kind === undefined
+      ? session.kind
+      : isTimerSessionKind(updates.kind)
+        ? updates.kind
+        : session.kind;
   const totalDurationSeconds =
     updates.totalDurationSeconds === undefined
       ? session.totalDurationSeconds
@@ -141,12 +158,17 @@ export function applyEditableTimerConfig(
       ? session.recordPracticeHistory
       : updates.recordPracticeHistory;
   const guidedAudioFileId =
-    updates.guidedAudioFileId === undefined ? session.guidedAudioFileId : updates.guidedAudioFileId;
+    updates.guidedAudioFileId === undefined
+      ? kind === 'timed'
+        ? null
+        : session.guidedAudioFileId
+      : updates.guidedAudioFileId;
   const guidedCueOverlay =
     updates.guidedCueOverlay === undefined ? session.guidedCueOverlay : updates.guidedCueOverlay;
 
   return {
     ...session,
+    kind,
     phase: 'idle',
     totalDurationSeconds,
     remainingSeconds: totalDurationSeconds,
@@ -174,7 +196,13 @@ export function hydrateStoredTimerSession(
 
   const totalDurationSeconds = clampTimerDurationSecondsWithFallback(value.totalDurationSeconds, preferences.defaultDurationSeconds);
   const intervalSeconds = clampIntervalSecondsWithFallback(value.intervalSeconds, preferences.defaultIntervalSeconds);
+  const guidedAudioFileId =
+    typeof value.guidedAudioFileId === 'string' && value.guidedAudioFileId.length > 0
+      ? value.guidedAudioFileId
+      : preferences.defaultGuidedAudioFileId;
   const baseSession: TimerSessionState = {
+    kind:
+      value.kind === 'guided' && guidedAudioFileId !== null ? 'guided' : 'timed',
     phase: validTimerPhases.has(value.phase as TimerPhase) ? (value.phase as TimerPhase) : 'idle',
     totalDurationSeconds,
     remainingSeconds: Math.min(totalDurationSeconds, Math.max(0, toSafeInteger(value.remainingSeconds, totalDurationSeconds))),
@@ -189,10 +217,7 @@ export function hydrateStoredTimerSession(
       typeof value.recordPracticeHistory === 'boolean'
         ? value.recordPracticeHistory
         : preferences.recordPracticeHistory,
-    guidedAudioFileId:
-      typeof value.guidedAudioFileId === 'string' && value.guidedAudioFileId.length > 0
-        ? value.guidedAudioFileId
-        : preferences.defaultGuidedAudioFileId,
+    guidedAudioFileId,
     guidedCueOverlay:
       typeof value.guidedCueOverlay === 'boolean'
         ? value.guidedCueOverlay
@@ -313,6 +338,8 @@ function completeTimerSession(session: TimerSessionState, completedAtMs: number)
   };
 }
 
+export { completeTimerSession };
+
 export function advanceTimerSession(session: TimerSessionState, now = Date.now()): AdvanceTimerResult {
   if (session.phase !== 'running' || session.targetEndAtMs === null) {
     return {
@@ -337,11 +364,13 @@ export function advanceTimerSession(session: TimerSessionState, now = Date.now()
   }
 
   const elapsedSeconds = session.totalDurationSeconds - remainingSeconds;
+  const isGuided = session.kind === 'guided';
   const nextIntervalIndex =
-    session.cueMode === 'custom' && session.intervalSeconds > 0
+    !isGuided && session.cueMode === 'custom' && session.intervalSeconds > 0
       ? Math.floor(elapsedSeconds / session.intervalSeconds)
       : session.lastIntervalIndex;
   const shouldPlayIntervalCue =
+    !isGuided &&
     session.cueMode === 'custom' &&
     session.intervalSeconds > 0 &&
     nextIntervalIndex > session.lastIntervalIndex &&

@@ -76,7 +76,7 @@ test.describe('guided meditation audio', () => {
     await page.goto('/#/settings/timer-defaults');
     await page.waitForLoadState('networkidle');
 
-    await page.getByTestId('setting-timer-default-guided-audio').selectOption({ label: 'Silence Guide' });
+    await page.getByTestId('setting-timer-sound-profile').selectOption({ label: 'Silence Guide' });
     await page.getByTestId('setting-timer-guided-cue-overlay').click();
 
     await page.goto('/#/timer');

@@ -57,10 +57,24 @@ function toSentenceCase(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');
 }
 
-function useAudioElements(soundProfileId: SoundProfileId, guidedAudioFile?: AudioFileRecord | null) {
+function useAudioElements(
+  soundProfileId: SoundProfileId,
+  guidedAudioFile?: AudioFileRecord | null,
+  onGuidedEnded?: () => void,
+) {
   const audioElementsRef = useRef<Partial<Record<CueKind, HTMLAudioElement>>>({});
   const guidedAudioRef = useRef<HTMLAudioElement | null>(null);
   const guidedAudioUrlRef = useRef<string | null>(null);
+  const onGuidedEndedRef = useRef(onGuidedEnded);
+
+  useEffect(() => {
+    onGuidedEndedRef.current = onGuidedEnded;
+  }, [onGuidedEnded]);
+
+  const handleGuidedEnded = useCallback(() => {
+    onGuidedEndedRef.current?.();
+  }, []);
+
   const audioStatus: AudioStatus = useMemo(() => {
     const profile = getSoundProfileById(soundProfileId);
 
@@ -125,17 +139,20 @@ function useAudioElements(soundProfileId: SoundProfileId, guidedAudioFile?: Audi
 
     const objectUrl = URL.createObjectURL(guidedAudioFile.blob);
     guidedAudioUrlRef.current = objectUrl;
-    guidedAudioRef.current = new Audio(objectUrl);
-    guidedAudioRef.current.preload = 'metadata';
+    const guidedAudio = new Audio(objectUrl);
+    guidedAudio.preload = 'metadata';
+    guidedAudio.addEventListener('ended', handleGuidedEnded);
+    guidedAudioRef.current = guidedAudio;
 
     return () => {
+      guidedAudio.removeEventListener('ended', handleGuidedEnded);
       if (guidedAudioUrlRef.current) {
         URL.revokeObjectURL(guidedAudioUrlRef.current);
         guidedAudioUrlRef.current = null;
       }
       guidedAudioRef.current = null;
     };
-  }, [guidedAudioFile]);
+  }, [guidedAudioFile, handleGuidedEnded]);
 
   const playGuidedAudio = useCallback(async () => {
     const audio = guidedAudioRef.current;
@@ -216,9 +233,14 @@ export function TimerPage() {
   const [selectedGuidedAudioId, setSelectedGuidedAudioId] = useState<string | null>(
     isActiveSession ? savedSession.guidedAudioFileId : loadTimerPreferences().defaultGuidedAudioFileId,
   );
+  const completeNowRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     void listAudioFiles().then(setAudioFiles);
+  }, []);
+
+  const notifyGuidedAudioEnded = useCallback(() => {
+    completeNowRef.current?.();
   }, []);
 
   const selectedGuidedAudio = useMemo(() => {
@@ -227,7 +249,7 @@ export function TimerPage() {
   }, [audioFiles, selectedGuidedAudioId]);
 
   const { audioElementsRef, audioStatus, playGuidedAudio, pauseGuidedAudio, resumeGuidedAudio, stopGuidedAudio } =
-    useAudioElements(audioProfileId, selectedGuidedAudio);
+    useAudioElements(audioProfileId, selectedGuidedAudio, notifyGuidedAudioEnded);
 
   const playCue = useCallback(
     async (cueKind: CueKind, soundProfileId: SoundProfileId) => {
@@ -309,6 +331,7 @@ export function TimerPage() {
     setDurationMinutes,
     handleReset,
     handleConfigUpdate,
+    completeNow,
   } = useTimerSession({
     initialDurationSeconds: selectedGuidedAudio
       ? Math.ceil(selectedGuidedAudio.durationSeconds)
@@ -358,6 +381,10 @@ export function TimerPage() {
   });
 
   useEffect(() => {
+    completeNowRef.current = completeNow;
+  });
+
+  useEffect(() => {
     const nextSession = { ...session, guidedAudioFileId: selectedGuidedAudioId };
     saveTimerSession(nextSession);
     setAudioProfileId(nextSession.soundProfileId);
@@ -390,7 +417,7 @@ export function TimerPage() {
     }
   }, []);
 
-  const isGuidedMode = selectedGuidedAudioId !== null;
+  const isGuidedMode = session.kind === 'guided';
   const canChangeConfig = isIdle || isComplete;
   const canEditSession = canChangeConfig && !isGuidedMode;
   const soundProfile = getSoundProfileById(session.soundProfileId);
@@ -405,14 +432,21 @@ export function TimerPage() {
   const handleModeChange = useCallback(
     (mode: 'timed' | 'guided') => {
       if (mode === 'guided') {
-        if (selectedGuidedAudioId !== null) {
+        if (session.kind === 'guided' && selectedGuidedAudioId !== null) {
           return;
         }
 
         const defaultGuidedFileId = loadTimerPreferences().defaultGuidedAudioFileId;
 
         if (defaultGuidedFileId !== null) {
+          const guidedFile = audioFiles.find((file) => file.id === defaultGuidedFileId);
+          const guidedSeconds = guidedFile
+            ? Math.ceil(guidedFile.durationSeconds)
+            : session.totalDurationSeconds;
+
           setSelectedGuidedAudioId(defaultGuidedFileId);
+          handleConfigUpdate({ kind: 'guided', guidedAudioFileId: defaultGuidedFileId });
+          setDurationMinutes(guidedSeconds / 60);
           return;
         }
 
@@ -421,13 +455,26 @@ export function TimerPage() {
       }
 
       setSelectedGuidedAudioId(null);
+      handleConfigUpdate({ kind: 'timed' });
     },
-    [navigate, selectedGuidedAudioId],
+    [navigate, session.kind, session.totalDurationSeconds, selectedGuidedAudioId, audioFiles, handleConfigUpdate, setDurationMinutes],
   );
 
-  const handleGuidedAudioChange = useCallback((fileId: string) => {
-    setSelectedGuidedAudioId(fileId.length > 0 ? fileId : null);
-  }, []);
+  const handleGuidedAudioChange = useCallback(
+    (fileId: string) => {
+      if (fileId.length === 0) {
+        setSelectedGuidedAudioId(null);
+        handleConfigUpdate({ kind: 'timed' });
+        return;
+      }
+
+      const guidedFile = audioFiles.find((file) => file.id === fileId);
+      setSelectedGuidedAudioId(fileId);
+      handleConfigUpdate({ kind: 'guided', guidedAudioFileId: fileId });
+      setDurationMinutes((guidedFile ? Math.ceil(guidedFile.durationSeconds) : session.totalDurationSeconds) / 60);
+    },
+    [audioFiles, handleConfigUpdate, setDurationMinutes, session.totalDurationSeconds],
+  );
 
   const handleGuidedCueOverlayChange = useCallback(
     (checked: boolean) => {
@@ -802,6 +849,10 @@ export function TimerPage() {
                   </section>
 
                   <dl className="detail-list">
+                    <div>
+                      <dt>Session type</dt>
+                      <dd data-testid="timer-session-kind">{session.kind === 'guided' ? 'Guided meditation' : 'Timed meditation'}</dd>
+                    </div>
                     <div>
                       <dt>Total duration</dt>
                       <dd data-testid="timer-total-duration">{formatDurationSummary(session.totalDurationSeconds)}</dd>
