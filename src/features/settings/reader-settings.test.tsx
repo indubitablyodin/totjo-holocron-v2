@@ -53,7 +53,7 @@ describe('reader-settings persistence', () => {
       expect(document.documentElement).toHaveAttribute('data-contrast', 'high');
     });
 
-    expect(screen.getByTestId('page-title')).toHaveTextContent('Library');
+    expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
   });
 
   it('hydrates the settings controls from persisted storage', () => {

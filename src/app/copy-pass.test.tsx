@@ -8,7 +8,7 @@ describe('copy pass', () => {
     const libraryView = render(<AppTestRouter initialEntries={['/library']} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId('page-title')).toHaveTextContent('Library');
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
     });
 
     expect(screen.getByRole('link', { name: 'Open sermons' })).toBeVisible();
