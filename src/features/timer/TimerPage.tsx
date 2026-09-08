@@ -436,28 +436,32 @@ export function TimerPage() {
           return;
         }
 
-        const defaultGuidedFileId = loadTimerPreferences().defaultGuidedAudioFileId;
-
-        if (defaultGuidedFileId !== null) {
-          const guidedFile = audioFiles.find((file) => file.id === defaultGuidedFileId);
-          const guidedSeconds = guidedFile
-            ? Math.ceil(guidedFile.durationSeconds)
-            : session.totalDurationSeconds;
-
-          setSelectedGuidedAudioId(defaultGuidedFileId);
-          handleConfigUpdate({ kind: 'guided', guidedAudioFileId: defaultGuidedFileId });
-          setDurationMinutes(guidedSeconds / 60);
+        if (audioFiles.length === 0) {
+          void navigate('/timer/guided-audio');
           return;
         }
 
-        void navigate('/timer/guided-audio');
+        const defaultGuidedFileId = loadTimerPreferences().defaultGuidedAudioFileId;
+        const guidedFile = defaultGuidedFileId
+          ? audioFiles.find((file) => file.id === defaultGuidedFileId)
+          : undefined;
+
+        if (guidedFile) {
+          setSelectedGuidedAudioId(guidedFile.id);
+          handleConfigUpdate({ kind: 'guided', guidedAudioFileId: guidedFile.id });
+          setDurationMinutes(Math.ceil(guidedFile.durationSeconds) / 60);
+          return;
+        }
+
+        setSelectedGuidedAudioId(null);
+        handleConfigUpdate({ kind: 'guided', guidedAudioFileId: null });
         return;
       }
 
       setSelectedGuidedAudioId(null);
       handleConfigUpdate({ kind: 'timed' });
     },
-    [navigate, session.kind, session.totalDurationSeconds, selectedGuidedAudioId, audioFiles, handleConfigUpdate, setDurationMinutes],
+    [navigate, session.kind, selectedGuidedAudioId, audioFiles, handleConfigUpdate, setDurationMinutes],
   );
 
   const handleGuidedAudioChange = useCallback(
@@ -484,6 +488,10 @@ export function TimerPage() {
   );
 
   const handleStartSession = useCallback(() => {
+    if (isGuidedMode && !selectedGuidedAudio) {
+      return;
+    }
+
     if (isGuidedMode && selectedGuidedAudio) {
       handleStart(Math.ceil(selectedGuidedAudio.durationSeconds) / 60);
       return;
@@ -497,7 +505,7 @@ export function TimerPage() {
       description=""
       eyebrow="Meditation timer"
       title="Timer"
-      headerActions={<Link aria-label="Open timer defaults in settings" className="gear-link" data-testid="timer-gear-link" to="/settings/timer-defaults" title="Timer defaults">⚙</Link>}
+      headerActions={<Link aria-label="Open timer defaults in settings" className="gear-link" data-testid="timer-gear-link" to="/settings/timer-defaults" title="Timer defaults">⏳</Link>}
     >
       <PageSection description="" title="Start a session">
         <div className="timer-grid">
@@ -665,48 +673,52 @@ export function TimerPage() {
 
             {showAdvancedSettings ? (
               <div className="timer-inline-controls">
-                <label className="inline-control">
-                  <span className="field-help">Bell mode</span>
-                  <select
-                    className="field-select"
-                    data-testid="timer-cue-mode"
-                    disabled={!canEditSession}
-                    onChange={(event) => {
-                      const nextCueMode = event.target.value as TimerCueMode;
-                      handleConfigUpdate({
-                        cueMode: nextCueMode,
-                        intervalSeconds: nextCueMode === 'custom' ? 60 : 0,
-                      });
-                    }}
-                    value={session.cueMode}
-                  >
-                    {(Object.keys(TIMER_CUE_MODE_LABELS) as TimerCueMode[]).map((cueMode) => (
-                      <option key={cueMode} value={cueMode}>
-                        {TIMER_CUE_MODE_LABELS[cueMode]}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                {!isGuidedMode ? (
+                  <>
+                    <label className="inline-control">
+                      <span className="field-help">Bell mode</span>
+                      <select
+                        className="field-select"
+                        data-testid="timer-cue-mode"
+                        disabled={!canEditSession}
+                        onChange={(event) => {
+                          const nextCueMode = event.target.value as TimerCueMode;
+                          handleConfigUpdate({
+                            cueMode: nextCueMode,
+                            intervalSeconds: nextCueMode === 'custom' ? 60 : 0,
+                          });
+                        }}
+                        value={session.cueMode}
+                      >
+                        {(Object.keys(TIMER_CUE_MODE_LABELS) as TimerCueMode[]).map((cueMode) => (
+                          <option key={cueMode} value={cueMode}>
+                            {TIMER_CUE_MODE_LABELS[cueMode]}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
 
-                {session.cueMode === 'custom' ? (
-                  <label className="inline-control">
-                    <span className="field-help">Ring every (s)</span>
-                    <input
-                      className="field-select"
-                      data-testid="timer-interval-seconds"
-                      disabled={!canEditSession}
-                      inputMode="numeric"
-                      min={1}
-                      onChange={(event) => {
-                      const raw = event.target.value;
-                      handleConfigUpdate({
-                        intervalSeconds: raw,
-                      });
-                    }}
-                      type="number"
-                      value={session.intervalSeconds}
-                    />
-                  </label>
+                    {session.cueMode === 'custom' ? (
+                      <label className="inline-control">
+                        <span className="field-help">Ring every (s)</span>
+                        <input
+                          className="field-select"
+                          data-testid="timer-interval-seconds"
+                          disabled={!canEditSession}
+                          inputMode="numeric"
+                          min={1}
+                          onChange={(event) => {
+                          const raw = event.target.value;
+                          handleConfigUpdate({
+                            intervalSeconds: raw,
+                          });
+                        }}
+                          type="number"
+                          value={session.intervalSeconds}
+                        />
+                      </label>
+                    ) : null}
+                  </>
                 ) : null}
 
                 <label className="inline-control">
@@ -764,9 +776,10 @@ export function TimerPage() {
                 <button
                   className="primary-button"
                   data-testid="timer-start"
-                    onClick={() => {
-                      handleStartSession();
-                    }}
+                  disabled={isGuidedMode && !selectedGuidedAudio}
+                  onClick={() => {
+                    handleStartSession();
+                  }}
                   type="button"
                 >
                   {isGuidedMode ? 'Start guided session' : 'Start timer'}

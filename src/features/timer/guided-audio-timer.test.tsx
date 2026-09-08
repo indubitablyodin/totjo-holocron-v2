@@ -1,5 +1,5 @@
-const { GUIDED_AUDIO } = vi.hoisted(() => ({
-  GUIDED_AUDIO: {
+const { GUIDED_AUDIO, mockListAudioFiles } = vi.hoisted(() => {
+  const GUIDED_AUDIO = {
     id: 'audio-file:guided-breathwork',
     name: 'Guided Breathwork',
     originalName: 'Guided Breathwork.mp3',
@@ -8,8 +8,13 @@ const { GUIDED_AUDIO } = vi.hoisted(() => ({
     durationSeconds: 420,
     sizeBytes: 12,
     createdAt: '2026-01-03T00:00:00.000Z',
-  } as AudioFileRecord,
-}));
+  };
+
+  return {
+    GUIDED_AUDIO,
+    mockListAudioFiles: { current: async () => [GUIDED_AUDIO] },
+  };
+});
 
 vi.mock('@/features/timer/audioFileManager', async (importOriginal) => {
   const actual =
@@ -17,7 +22,7 @@ vi.mock('@/features/timer/audioFileManager', async (importOriginal) => {
 
   return {
     ...actual,
-    listAudioFiles: async () => [GUIDED_AUDIO],
+    listAudioFiles: () => mockListAudioFiles.current(),
   };
 });
 
@@ -26,7 +31,6 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AppTestRouter } from '@/App';
-import type { AudioFileRecord } from '@/lib/content';
 import { appDb, ensureStorageReady } from '@/lib/db';
 import { saveTimerPreferences, type TimerPreferences } from '@/features/timer/timerPreferences';
 import { clearTimerPreferencesStorage } from '@/features/timer/timerPreferences';
@@ -50,6 +54,7 @@ describe('guided meditation timer', () => {
     clearTimerSessionStorage();
     await ensureStorageReady(appDb);
     await appDb.audioFiles.put(GUIDED_AUDIO);
+    mockListAudioFiles.current = async () => [GUIDED_AUDIO];
 
     createdAudioElements = [];
     const RealAudio = window.Audio;
@@ -68,12 +73,28 @@ describe('guided meditation timer', () => {
     vi.restoreAllMocks();
   });
 
-  it('opens guided mode from the toggle and navigates to the audio manager when no audio is chosen', async () => {
+  it('opens guided mode from the toggle and lets you pick from existing audio when no default is chosen', async () => {
     const user = userEvent.setup();
 
     render(<AppTestRouter initialEntries={['/timer']} />);
 
     expect(screen.getByTestId('timer-mode-guided')).toHaveAttribute('aria-pressed', 'false');
+
+    await user.click(screen.getByTestId('timer-mode-guided'));
+
+    expect(screen.getByTestId('timer-mode-guided')).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByRole('option', { name: 'Guided Breathwork' })).toBeVisible();
+    expect(screen.getByTestId('timer-guided-audio-select')).toHaveValue('');
+    expect(screen.getByTestId('timer-start')).toBeDisabled();
+  });
+
+  it('sends you to the audio manager when no guided audio exists on the device at all', async () => {
+    const user = userEvent.setup();
+
+    mockListAudioFiles.current = async () => [];
+    await appDb.audioFiles.clear();
+
+    render(<AppTestRouter initialEntries={['/timer']} />);
 
     await user.click(screen.getByTestId('timer-mode-guided'));
 
