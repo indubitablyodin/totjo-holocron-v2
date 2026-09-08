@@ -68,7 +68,8 @@ Durable defaults belong in Settings. Session-level and page-level actions belong
 | Contrast | Settings | Global default, with optional quick reader adjustment later mirroring the same setting | It applies across reading surfaces and should not be buried in a one-off panel. |
 | Pronoun preference | Settings | Global default only | It is a durable display preference and must never rewrite stored source text. |
 | Reset reading defaults | Settings | Global settings action only | Reset is global and should not appear in the reader. |
-| Default cue sound | Settings | Global default only | It seeds future timer sessions. |
+| Default timer sound (bell profile or guided audio file) | Settings | Global default only | One shared setting seeds every future session; choosing a guided file opens new timers in guided mode, choosing a profile keeps timed mode. |
+| Default guided audio | Settings | Global default only | Replaced by the unified "Default timer sound" setting (guided files appear in the same selector as bell profiles). |
 | Record practice history by default | Settings | Global default only | It changes timer session behavior across the app. |
 | Reset timer defaults | Settings | Global settings action only | Reset is global. |
 | Account access | Settings | Settings index and account subpage only | Account remains inside Settings IA. |
@@ -79,7 +80,8 @@ Durable defaults belong in Settings. Session-level and page-level actions belong
 | Reader view mode, such as side by side or single column | Read surface | Reader-local control | It is a page-level reading mode. |
 | Bookmark, save offline, note, or quick reading actions added later | Read surface | Reader-local action row or panel | They are contextual reading actions, not durable app defaults. |
 | Start, pause, resume, and reset timer session | Timer surface | Timer-local primary controls | They operate on the active session. |
-| Current timer duration and interval edits | Timer surface | Timer-local controls | They shape the active session. |
+| Guided session mode (choose a guided audio file) | Timer surface | Timer-local control; the Settings default seeds it | Choosing a guide locks the duration to the file; the timer completes when the file ends. |
+| Current timer duration and interval edits | Timer surface | Timer-local controls | They shape the active session. Interval edits do not apply to guided sessions. |
 | Cue playback state and last cue message | Timer surface | Timer-local status | It belongs with the active timer session. |
 
 ## Copy inventory

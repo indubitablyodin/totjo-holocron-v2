@@ -24,6 +24,7 @@ Markdown is the primary human-readable format. JSON is the canonical machine-rea
 | Notes | IndexedDB notes table | ✅ |
 | Bookmarks | IndexedDB bookmarks table | ✅ |
 | Practice/meditation history | IndexedDB practiceHistory table | ✅ |
+| My documents (custom user documents) | IndexedDB documents table (`authorityClass: "custom"`) | ✅ |
 | Timer defaults | localStorage timerPreferences | ✅ |
 | Reader settings (theme, font, contrast) | localStorage readingSettings | ✅ |
 | Saved sermon metadata | IndexedDB downloads table | ✅ |
@@ -37,6 +38,7 @@ Markdown is the primary human-readable format. JSON is the canonical machine-rea
 | Bundled doctrine/supplemental text | Public content, not user-owned |
 | Remote sermon bodies | Not user-created unless explicitly saved |
 | Synced sermon index | Public content, not user-owned |
+| Guided audio files | Device-local playback files in the IndexedDB `audioFiles` table; they are not part of the user-data export or JSON backup |
 
 ## Privacy
 
@@ -80,6 +82,15 @@ Note body markdown content preserved here.
 |---|---|---|---|
 | 2026-06-22 | meditation | 300 sec | Completed |
 
+## My Documents
+
+### Study from my shelf
+
+Slug: my-shelf-study
+Updated: 2026-06-20
+
+Custom document body markdown preserved here.
+
 ## Settings
 
 - Timer default: 15 min
@@ -94,7 +105,7 @@ Note body markdown content preserved here.
 ## JSON Backup format
 
 JSON backup is available from Settings > User Data > Export JSON Backup.  
-The file uses schemaVersion 1 and includes notes, bookmarks, practice history, downloads, timer preferences, reader settings, dismissed announcements, and cached remote announcement metadata.
+The file uses schemaVersion 1 and includes notes, bookmarks, practice history, downloads, timer preferences, reader settings, dismissed announcements, and cached remote announcement metadata. Custom documents and guided audio files are not part of the JSON backup in schemaVersion 1.
 
 Filename: `totjo-holocron-backup-YYYY-MM-DD.json`
 
