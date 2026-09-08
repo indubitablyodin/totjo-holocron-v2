@@ -1,4 +1,4 @@
-import { expect, test as base } from '@playwright/test';
+import { expect, type Page, type TestInfo, test as base } from '@playwright/test';
 
 const ANNOUNCEMENTS_URL = '**/totjo-holocron-announcements/announcements.json';
 
@@ -13,3 +13,4 @@ export const test = base.extend({
 });
 
 export { expect };
+export type { Page, TestInfo };
