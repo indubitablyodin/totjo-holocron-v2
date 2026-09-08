@@ -1,4 +1,4 @@
-export const authorityClasses = ['canonical', 'supplemental', 'sermon'] as const;
+export const authorityClasses = ['canonical', 'supplemental', 'sermon', 'custom'] as const;
 export const approvalStatuses = ['approved', 'review-required', 'blocked'] as const;
 export const provenanceStatuses = ['recorded', 'needs-review', 'blocked'] as const;
 
@@ -6,7 +6,7 @@ export type DocumentAuthorityClass = (typeof authorityClasses)[number];
 export type ApprovalStatus = (typeof approvalStatuses)[number];
 export type ProvenanceStatus = (typeof provenanceStatuses)[number];
 export type DocumentType = 'study-text' | 'sermon';
-export type ContentOrigin = 'bundled' | 'synced';
+export type ContentOrigin = 'bundled' | 'synced' | 'user';
 export type DownloadStatus = 'queued' | 'ready' | 'failed';
 export type PracticeKind = 'reading' | 'reflection' | 'meditation';
 export type PersonalizationScope = 'global' | 'document';
@@ -15,6 +15,7 @@ export type LibraryCounts = {
   canonical: number;
   supplemental: number;
   sermon: number;
+  custom: number;
 };
 
 export type DocumentSource = {

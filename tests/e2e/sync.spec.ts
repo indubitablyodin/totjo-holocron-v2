@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './base';
 
 test.describe('sync account state', () => {
   test('settings exposes local-only groups without sync status or previews', async ({ page }) => {

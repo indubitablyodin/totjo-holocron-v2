@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './base';
 
 function parseClockToSeconds(clockText: string): number {
   const [minutes, seconds] = clockText.split(':').map((value) => Number.parseInt(value, 10));

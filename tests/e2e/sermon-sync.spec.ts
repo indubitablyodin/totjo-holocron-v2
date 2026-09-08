@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './base';
 
 async function waitForServiceWorker(page: import('@playwright/test').Page) {
   await page.evaluate(async () => {

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './base';
 
 test.describe('doctrine reader', () => {
   test('offline-reader keeps bundled doctrine readable after first online load', async ({ context, page }) => {

@@ -9,6 +9,7 @@ const EMPTY_EXPORT: ExportData = {
   bookmarks: [],
   practiceHistory: [],
   settings: { Theme: 'dark', 'Font scale': 'standard' },
+  myDocuments: [],
 };
 
 const FULL_EXPORT: ExportData = {
@@ -44,6 +45,18 @@ const FULL_EXPORT: ExportData = {
     Theme: 'dark',
     'Font scale': 'standard',
   },
+  myDocuments: [
+    {
+      title: 'My custom text',
+      slug: 'my-custom-text',
+      summary: 'A custom doc.',
+      author: 'Odin',
+      tags: ['personal'],
+      bodyMarkdown: 'Hello from the custom doc.',
+      createdAt: '2026-06-18T00:00:00.000Z',
+      updatedAt: '2026-06-18T00:00:00.000Z',
+    },
+  ],
 };
 
 describe('createExportFilename', () => {
@@ -82,11 +95,19 @@ describe('formatUserDataMarkdown', () => {
     expect(output).toContain('Theme: dark');
   });
 
+  it('includes custom documents section', () => {
+    const output = formatUserDataMarkdown(FULL_EXPORT);
+    expect(output).toContain('## My Documents');
+    expect(output).toContain('Hello from the custom doc.');
+    expect(output).toContain('Slug: my-custom-text');
+  });
+
   it('handles empty export gracefully', () => {
     const output = formatUserDataMarkdown(EMPTY_EXPORT);
     expect(output).toContain('No notes yet.');
     expect(output).toContain('No bookmarks yet.');
     expect(output).toContain('No practice history yet.');
+    expect(output).toContain('No custom documents.');
   });
 
   it('produces valid markdown headings', () => {

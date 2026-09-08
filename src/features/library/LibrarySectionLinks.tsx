@@ -18,6 +18,9 @@ export function LibrarySectionLinks({ counts, bookmarkCount }: LibrarySectionLin
       <Link className="first-order-link" data-testid="nav-sermons" to="/library/sermons">
         Sermons ({counts?.sermon ?? 0})
       </Link>
+      <Link className="first-order-link" data-testid="nav-my-documents" to="/library/mydocs">
+        My documents ({counts?.custom ?? 0})
+      </Link>
       <Link className="first-order-link" data-testid="nav-bookmarks" to="/library/bookmarks">
         Bookmarks ({bookmarkCount})
       </Link>

@@ -24,6 +24,16 @@ export type ExportData = {
     durationSeconds: number;
   }>;
   settings: Record<string, string>;
+  myDocuments: Array<{
+    title: string;
+    slug: string;
+    summary: string;
+    author: string | null;
+    tags: string[];
+    bodyMarkdown: string;
+    createdAt: string;
+    updatedAt: string;
+  }>;
 };
 
 export function createExportFilename(): string {
@@ -111,18 +121,41 @@ export function formatUserDataMarkdown(data: ExportData): string {
   }
   lines.push('');
 
+  // My documents
+  lines.push('## My Documents');
+  lines.push('');
+
+  if (data.myDocuments.length === 0) {
+    lines.push('No custom documents.');
+    lines.push('');
+  } else {
+    for (const doc of data.myDocuments) {
+      lines.push(`### ${doc.title}`);
+      lines.push('');
+      lines.push(`Slug: ${doc.slug}`);
+      if (doc.author) lines.push(`Author: ${doc.author}`);
+      if (doc.tags.length > 0) lines.push(`Tags: ${doc.tags.join(', ')}`);
+      if (doc.summary) lines.push(`Summary: ${doc.summary}`);
+      lines.push(`Updated: ${formatDate(doc.updatedAt)}`);
+      lines.push('');
+      lines.push(doc.bodyMarkdown);
+      lines.push('');
+    }
+  }
+
   return lines.join('\n');
 }
 
 export async function collectUserDataExport(
   database: HolocronDatabase,
 ): Promise<ExportData> {
-  const [notes, bookmarks, practiceHistory, timerPrefs, readingSettings] = await Promise.all([
+  const [notes, bookmarks, practiceHistory, timerPrefs, readingSettings, myDocuments] = await Promise.all([
     database.notes.toArray(),
     database.bookmarks.toArray(),
     database.practiceHistory.toArray(),
     Promise.resolve(loadTimerPreferences()),
     Promise.resolve(loadReadingSettings()),
+    database.documents.where('authorityClass').equals('custom').toArray(),
   ]);
 
   // Resolve document titles and routes for notes and bookmarks
@@ -142,6 +175,7 @@ export async function collectUserDataExport(
     if (!doc) return '/library';
     if (doc.authorityClass === 'sermon') return `/library/sermons/${doc.slug}`;
     if (doc.authorityClass === 'canonical') return `/library/doctrine/${doc.slug}`;
+    if (doc.authorityClass === 'custom') return `/library/mydocs/${doc.slug}`;
     return `/library/supplemental/${doc.slug}`;
   }
 
@@ -179,6 +213,16 @@ export async function collectUserDataExport(
       'Font scale': readingSettings.fontScale,
       'Contrast': readingSettings.contrast,
     },
+    myDocuments: myDocuments.map((doc) => ({
+      title: doc.title,
+      slug: doc.slug,
+      summary: doc.summary,
+      author: doc.author,
+      tags: doc.tags,
+      bodyMarkdown: doc.bodyMarkdown,
+      createdAt: doc.updatedAt,
+      updatedAt: doc.updatedAt,
+    })),
   };
 }
 

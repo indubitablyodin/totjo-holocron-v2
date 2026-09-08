@@ -83,6 +83,15 @@ export const PRIMARY_PAGES: PageDefinition[] = [
   },
   {
     group: 'library',
+    icon: 'supplemental',
+    id: 'my-documents',
+    path: '/library/mydocs',
+    title: 'My documents',
+    navTestId: 'nav-my-documents',
+    match: (pathname) => pathname.startsWith('/library/mydocs'),
+  },
+  {
+    group: 'library',
     icon: 'sermons',
     id: 'sermons',
     path: '/library/sermons',

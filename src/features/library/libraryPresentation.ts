@@ -1,7 +1,7 @@
 import type { DocumentAuthorityClass, DocumentRecord } from '@/lib/content';
 
-export type LibraryAuthorityClass = Extract<DocumentAuthorityClass, 'canonical' | 'supplemental'>;
-export type LibraryRouteSegment = 'doctrine' | 'supplemental';
+export type LibraryAuthorityClass = Extract<DocumentAuthorityClass, 'canonical' | 'supplemental' | 'custom'>;
+export type LibraryRouteSegment = 'doctrine' | 'supplemental' | 'mydocs';
 export type LibraryDocumentRecord = DocumentRecord & {
   authorityClass: LibraryAuthorityClass;
   documentType: 'study-text';
@@ -36,6 +36,15 @@ const authorityPresentation: Record<LibraryAuthorityClass, AuthorityPresentation
     explanation: 'This section contains supporting study texts alongside doctrine.',
     emptyState: 'No supplemental entries match the current search.',
   },
+  custom: {
+    routeSegment: 'mydocs',
+    eyebrow: 'My documents',
+    laneTitle: 'My documents',
+    laneDescription: 'Preferred and personal documents stored on this device.',
+    badgeLabel: 'My Doc',
+    explanation: 'This section contains documents you added to this device.',
+    emptyState: 'No custom documents match the current search.',
+  },
 };
 
 export function getAuthorityPresentation(authorityClass: LibraryAuthorityClass): AuthorityPresentation {
@@ -45,7 +54,9 @@ export function getAuthorityPresentation(authorityClass: LibraryAuthorityClass):
 export function isLibraryDocument(document: DocumentRecord): document is LibraryDocumentRecord {
   return (
     document.documentType === 'study-text' &&
-    (document.authorityClass === 'canonical' || document.authorityClass === 'supplemental')
+    (document.authorityClass === 'canonical' ||
+      document.authorityClass === 'supplemental' ||
+      document.authorityClass === 'custom')
   );
 }
 
@@ -56,6 +67,10 @@ export function getLibraryDocumentHref(document: Pick<DocumentRecord, 'slug' | '
 
   if (document.authorityClass === 'supplemental') {
     return `/library/supplemental/${document.slug}`;
+  }
+
+  if (document.authorityClass === 'custom') {
+    return `/library/mydocs/${document.slug}`;
   }
 
   throw new Error(`Unsupported library authority class: ${document.authorityClass}`);

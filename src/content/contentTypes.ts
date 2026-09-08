@@ -4,6 +4,7 @@ export type HolocronAuthorityClass =
   | 'doctrine'
   | 'supplemental'
   | 'sermon'
+  | 'custom'
   | 'practice'
   | 'community';
 
@@ -53,6 +54,7 @@ const AUTHORITY_CLASS_MAP: Record<string, HolocronAuthorityClass> = {
   canonical: 'doctrine',
   supplemental: 'supplemental',
   sermon: 'sermon',
+  custom: 'custom',
 };
 
 export function getHolocronAuthorityClass(
@@ -81,6 +83,8 @@ export function getAuthorityLabel(authorityClass: HolocronAuthorityClass): strin
       return 'Study Text';
     case 'sermon':
       return 'TOTJO Sermon';
+    case 'custom':
+      return 'My Document';
     case 'practice':
       return 'Practice';
     case 'community':
@@ -96,8 +100,10 @@ export function getDocumentRoute(document: HolocronDocument): string {
       return `/library/supplemental/${document.slug}`;
     case 'sermon':
       return `/library/sermons/${document.slug}`;
+    case 'custom':
+      return `/library/mydocs/${document.slug}`;
     default:
-      return `/library`;
+      return '/library';
   }
 }
 

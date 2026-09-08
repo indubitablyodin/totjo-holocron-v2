@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './base';
 
 function makeWaveBuffer(seconds: number): Buffer {
   const sampleRate = 8000;

@@ -32,6 +32,11 @@ const LANE_COPY = {
     laneMeta: 'Supplemental reading',
     laneTitle: 'Supplemental',
   },
+  custom: {
+    actionLabel: 'Read text',
+    laneMeta: 'My documents',
+    laneTitle: 'My documents',
+  },
 } as const;
 
 function LibraryCard({ document }: { document: LibraryDocumentRecord }) {
@@ -104,6 +109,7 @@ export function LibraryPage() {
   const libraryDocuments = useMemo(() => documents.filter(isLibraryDocument), [documents]);
   const doctrineDocuments = libraryDocuments.filter((document) => document.authorityClass === 'canonical');
   const supplementalDocuments = libraryDocuments.filter((document) => document.authorityClass === 'supplemental');
+  const customDocuments = libraryDocuments.filter((document) => document.authorityClass === 'custom');
 
   const normalizedDocuments = useMemo(() => documents.map(normalizeDocumentRecord), [documents]);
   const documentMap = useMemo(() => new Map(normalizedDocuments.map((doc) => [doc.id, doc])), [normalizedDocuments]);
@@ -181,6 +187,21 @@ export function LibraryPage() {
         ) : (
           <p className="support-copy">{getAuthorityPresentation('supplemental').emptyState}</p>
         )}
+      </PageSection>
+
+      <PageSection title="My documents">
+        {customDocuments.length > 0 ? (
+          <div className="library-grid" role="list">
+            {customDocuments.map((document) => (
+              <LibraryCard document={document} key={document.id} />
+            ))}
+          </div>
+        ) : null}
+        <div className="document-actions">
+          <Link className="secondary-button" to="/library/mydocs">
+            {customDocuments.length === 0 ? 'Add a document' : 'Manage my documents'}
+          </Link>
+        </div>
       </PageSection>
 
       <PageSection title="Sermons">

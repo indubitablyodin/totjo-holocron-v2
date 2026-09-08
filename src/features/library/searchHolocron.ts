@@ -7,6 +7,7 @@ function authorityToScope(authorityClass: string): HolocronSearchScope {
   if (authorityClass === 'doctrine') return 'doctrine';
   if (authorityClass === 'supplemental') return 'supplemental';
   if (authorityClass === 'sermon') return 'sermon';
+  if (authorityClass === 'custom') return 'custom';
   return 'doctrine';
 }
 

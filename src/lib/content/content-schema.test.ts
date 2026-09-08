@@ -9,7 +9,7 @@ describe('content-schema', () => {
     expect(bundledAuthorityClasses.has('canonical')).toBe(true);
     expect(bundledAuthorityClasses.has('supplemental')).toBe(true);
     expect(bundledAuthorityClasses.has('sermon')).toBe(true);
-    expect(authorityClasses).toEqual(['canonical', 'supplemental', 'sermon']);
+    expect(authorityClasses).toEqual(['canonical', 'supplemental', 'sermon', 'custom']);
   });
 
   it('tracks version and checksum metadata for every bundled document', () => {

@@ -67,6 +67,9 @@
   --color-authority-sermon-surface: rgba(82, 146, 103, 0.14);
   --color-authority-sermon-border: rgba(82, 146, 103, 0.28);
   --color-authority-sermon-text: #28553c;
+  --color-authority-custom-surface: rgba(130, 100, 160, 0.14);
+  --color-authority-custom-border: rgba(130, 100, 160, 0.28);
+  --color-authority-custom-text: #5e467d;
   --color-personalization-surface: rgba(164, 126, 33, 0.14);
   --color-personalization-border: rgba(164, 126, 33, 0.28);
   --color-personalization-text: #6c4f00;
@@ -139,6 +142,9 @@
   --color-authority-sermon-surface: rgba(76, 123, 96, 0.2);
   --color-authority-sermon-border: rgba(153, 214, 177, 0.32);
   --color-authority-sermon-text: #c7efd5;
+  --color-authority-custom-surface: rgba(170, 140, 210, 0.2);
+  --color-authority-custom-border: rgba(200, 170, 230, 0.35);
+  --color-authority-custom-text: #d9c0ee;
   --color-personalization-surface: rgba(214, 188, 122, 0.18);
   --color-personalization-border: rgba(234, 212, 160, 0.4);
   --color-personalization-text: #f3dfaf;
@@ -730,6 +736,10 @@ input {
   border-color: var(--color-authority-sermon-border);
 }
 
+.library-card--custom {
+  border-color: var(--color-authority-custom-border);
+}
+
 .library-card__title,
 .document-actions {
   margin: 0;
@@ -1012,6 +1022,12 @@ input {
   border-color: var(--color-authority-sermon-border);
   background: var(--color-authority-sermon-surface);
   color: var(--color-authority-sermon-text);
+}
+
+.authority-badge--custom {
+  border-color: var(--color-authority-custom-border);
+  background: var(--color-authority-custom-surface);
+  color: var(--color-authority-custom-text);
 }
 
 .authority-badge--personalized {

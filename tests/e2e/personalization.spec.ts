@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './base';
 
 test.describe('personalization overlay', () => {
   test('personalization follows the saved settings preference without extra reader chrome', async ({ page }) => {

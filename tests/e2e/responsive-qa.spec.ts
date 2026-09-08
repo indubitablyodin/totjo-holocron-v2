@@ -1,4 +1,4 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test';
+import { expect, test, type Page, type TestInfo } from './base';
 
 const EXPECTED_BOTTOM_NAV_LABELS = ['Focus', 'Library', 'Sermons', 'Timer', 'Settings'];
 

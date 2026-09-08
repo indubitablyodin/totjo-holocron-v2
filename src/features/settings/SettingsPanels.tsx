@@ -667,7 +667,7 @@ export function AboutLegalSettingsPage() {
         <div className="detail-grid">
           <div className="detail-card">
             <h3>Private local-only release</h3>
-            <p>This shipped interface stores personal notes, bookmarks, practice history, reading settings, and saved-sermon markers in this browser on this device.</p>
+            <p>This shipped interface stores personal notes, bookmarks, practice history, reading settings, saved-sermon markers, and any documents you add via <em>My documents</em> in this browser on this device. Your custom documents are included in the data export for backup.</p>
           </div>
           <div className="detail-card">
             <h3>Install on this device</h3>

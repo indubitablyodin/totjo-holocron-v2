@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './base';
 
 test.describe('auth account', () => {
   test('dormant account route redirects to private local-only settings', async ({ page }) => {

@@ -82,15 +82,16 @@ export async function ensureStorageReady(database: HolocronDatabase = appDb): Pr
 export async function getLibraryCounts(database: HolocronDatabase = appDb): Promise<LibraryCounts> {
   await ensureStorageReady(database);
 
-  const [canonical, supplemental, sermonDocuments] = await Promise.all([
+  const [canonical, supplemental, sermonDocuments, custom] = await Promise.all([
     database.documents.where('authorityClass').equals('canonical').count(),
     database.documents.where('authorityClass').equals('supplemental').count(),
     database.documents.where('authorityClass').equals('sermon').toArray(),
+    database.documents.where('authorityClass').equals('custom').count(),
   ]);
 
   const sermon = sermonDocuments.filter((document) => document.sourceId === 'totjo-sermons').length;
 
-  return { canonical, supplemental, sermon };
+  return { canonical, supplemental, sermon, custom };
 }
 
 export async function getLibraryDocuments(database: HolocronDatabase = appDb): Promise<DocumentRecord[]> {

@@ -4,6 +4,7 @@ import { AppShell } from '@/app/AppShell';
 import { AuthProvider } from '@/features/auth/AuthContext';
 import { LibraryDocumentPage } from '@/features/library/LibraryDocumentPage';
 import { BookmarksPage } from '@/features/library/BookmarksPage';
+import { MyDocumentsPage } from '@/features/myDocuments/MyDocumentsPage';
 import { PersonalizationProvider } from '@/features/personalization/PersonalizationContext';
 import { LibraryPage } from '@/features/library/LibraryPage';
 import { DailyPracticePage } from '@/features/practice/DailyPracticePage';
@@ -31,6 +32,8 @@ function RoutedApp() {
         <Route element={<BookmarksPage />} path="/library/bookmarks" />
         <Route element={<DoctrinePage />} path="/library/doctrine/:slug" />
         <Route element={<LibraryDocumentPage authorityClass="supplemental" />} path="/library/supplemental/:slug" />
+        <Route element={<MyDocumentsPage />} path="/library/mydocs" />
+        <Route element={<LibraryDocumentPage authorityClass="custom" />} path="/library/mydocs/:slug" />
         <Route element={<SermonsPage />} path="/library/sermons" />
         <Route element={<SermonPage />} path="/library/sermons/:slug" />
         <Route element={<Navigate replace to="/settings" />} path="/auth/callback" />

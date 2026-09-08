@@ -4,6 +4,7 @@ export type HolocronSearchScope =
   | 'doctrine'
   | 'supplemental'
   | 'sermon'
+  | 'custom'
   | 'bookmark'
   | 'note';
 
@@ -28,6 +29,7 @@ export const DEFAULT_SEARCH_SCOPES: Record<HolocronSearchScope, boolean> = {
   doctrine: true,
   supplemental: true,
   sermon: true,
+  custom: true,
   bookmark: true,
   note: true,
 };
@@ -36,6 +38,7 @@ export const SEARCH_SCOPE_LABELS: Record<HolocronSearchScope, string> = {
   doctrine: 'Doctrine',
   supplemental: 'Supplemental',
   sermon: 'Sermons',
+  custom: 'My documents',
   bookmark: 'Bookmarks',
   note: 'Notes',
 };
