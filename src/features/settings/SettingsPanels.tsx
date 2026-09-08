@@ -25,7 +25,9 @@ import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/
 import { APP_BUILD } from '@/app/buildInfo';
 import { checkForUpdateFromStore } from '@/app/pwaUpdate';
 import { getAppAssetPath } from '@/lib/appAssets';
+import type { AudioFileRecord } from '@/lib/content';
 import { getBundledAudioRightsAssets, SOUND_PROFILES, type AudioRightsAsset } from '@/features/timer/audioProfiles';
+import { listAudioFiles } from '@/features/timer/audioFileManager';
 import { appDb, ensureStorageReady } from '@/lib/db';
 import {
   clampTimerDurationPreference,
@@ -378,7 +380,22 @@ export function FocusPracticeSettingsPage() {
 
 export function TimerDefaultsSettingsPage() {
   const [timerPreferences, setTimerPreferences] = useState<TimerPreferences>(() => loadTimerPreferences());
+  const [audioFiles, setAudioFiles] = useState<AudioFileRecord[]>([]);
   const { showToast, trigger } = useSaveToast();
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void listAudioFiles().then((files) => {
+      if (isMounted) {
+        setAudioFiles(files);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const updateTimerPreferences = (updates: Partial<TimerPreferences>) => {
     const nextPreferences = {
@@ -493,6 +510,54 @@ export function TimerDefaultsSettingsPage() {
               ))}
             </select>
           </label>
+
+          <label className="field-card" htmlFor="setting-timer-default-guided-audio">
+            <span className="field-label">Default guided audio</span>
+            <span className="field-help">Pick a guided audio file for new guided sessions. Leave on "None" to start every new timer in timed mode.</span>
+            <select
+              className="field-select"
+              data-testid="setting-timer-default-guided-audio"
+              id="setting-timer-default-guided-audio"
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                updateTimerPreferences({
+                  defaultGuidedAudioFileId: nextValue.length > 0 ? nextValue : null,
+                });
+              }}
+              value={timerPreferences.defaultGuidedAudioFileId ?? ''}
+            >
+              <option value="">None (timed mode)</option>
+              {audioFiles.map((file) => (
+                <option key={file.id} value={file.id}>
+                  {file.name}
+                </option>
+              ))}
+            </select>
+            <p className="support-copy">
+              <Link to="/timer/guided-audio">Manage your audio files</Link>
+            </p>
+          </label>
+
+          {timerPreferences.defaultGuidedAudioFileId ? (
+            <label className="field-card field-card--toggle" htmlFor="setting-timer-guided-cue-overlay">
+              <span className="field-label">Play bell cues during guided sessions</span>
+              <span className="field-help">Layer start/complete gongs over your guided audio by default.</span>
+              <span className="filter-toggle">
+                <input
+                  checked={timerPreferences.guidedCueOverlay}
+                  data-testid="setting-timer-guided-cue-overlay"
+                  id="setting-timer-guided-cue-overlay"
+                  onChange={(event) => {
+                    updateTimerPreferences({
+                      guidedCueOverlay: event.target.checked,
+                    });
+                  }}
+                  type="checkbox"
+                />
+                Play bell cues over guided audio by default
+              </span>
+            </label>
+          ) : null}
 
           <label className="field-card field-card--toggle" htmlFor="setting-timer-record-history">
             <span className="field-label">Record practice history by default</span>

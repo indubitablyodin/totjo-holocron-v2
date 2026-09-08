@@ -10,6 +10,7 @@ import {
   type CueKind,
   type SoundProfileId,
 } from '@/features/timer/audioProfiles';
+import { formatDuration, listAudioFiles } from '@/features/timer/audioFileManager';
 import {
   clearTimerSessionStorage,
   loadTimerSession,
@@ -17,12 +18,12 @@ import {
 } from '@/features/timer/timerSessionStorage';
 import {
   formatTimerClock,
-  shouldPlayTimerCue,
 } from '@/features/timer/timerModel';
 import { loadTimerPreferences, type TimerCueMode } from '@/features/timer/timerPreferences';
 import { listMeditationPracticeHistory, recordMeditationPractice } from '@/features/timer/timerHistory';
 import { useTimerSession } from '@/features/timer/useTimerSession';
 import { TimerControls } from '@/features/timer/TimerControls';
+import type { AudioFileRecord } from '@/lib/content';
 
 type AudioStatus = 'ready' | 'silent' | 'unavailable';
 
@@ -56,8 +57,10 @@ function toSentenceCase(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');
 }
 
-function useAudioElements(soundProfileId: SoundProfileId) {
+function useAudioElements(soundProfileId: SoundProfileId, guidedAudioFile?: AudioFileRecord | null) {
   const audioElementsRef = useRef<Partial<Record<CueKind, HTMLAudioElement>>>({});
+  const guidedAudioRef = useRef<HTMLAudioElement | null>(null);
+  const guidedAudioUrlRef = useRef<string | null>(null);
   const audioStatus: AudioStatus = useMemo(() => {
     const profile = getSoundProfileById(soundProfileId);
 
@@ -104,9 +107,86 @@ function useAudioElements(soundProfileId: SoundProfileId) {
     };
   }, [soundProfileId]);
 
+  useEffect(() => {
+    if (typeof Audio === 'undefined') {
+      return;
+    }
+
+    if (guidedAudioUrlRef.current) {
+      URL.revokeObjectURL(guidedAudioUrlRef.current);
+      guidedAudioUrlRef.current = null;
+    }
+
+    guidedAudioRef.current = null;
+
+    if (!guidedAudioFile || !(guidedAudioFile.blob instanceof Blob)) {
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(guidedAudioFile.blob);
+    guidedAudioUrlRef.current = objectUrl;
+    guidedAudioRef.current = new Audio(objectUrl);
+    guidedAudioRef.current.preload = 'metadata';
+
+    return () => {
+      if (guidedAudioUrlRef.current) {
+        URL.revokeObjectURL(guidedAudioUrlRef.current);
+        guidedAudioUrlRef.current = null;
+      }
+      guidedAudioRef.current = null;
+    };
+  }, [guidedAudioFile]);
+
+  const playGuidedAudio = useCallback(async () => {
+    const audio = guidedAudioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    try {
+      await audio.play();
+    } catch {
+      // Playback blocked or unavailable.
+    }
+  }, []);
+
+  const pauseGuidedAudio = useCallback(() => {
+    guidedAudioRef.current?.pause();
+  }, []);
+
+  const resumeGuidedAudio = useCallback(async () => {
+    const audio = guidedAudioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    try {
+      await audio.play();
+    } catch {
+      // Playback blocked or unavailable.
+    }
+  }, []);
+
+  const stopGuidedAudio = useCallback(() => {
+    const audio = guidedAudioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    audio.pause();
+    audio.currentTime = 0;
+  }, []);
+
   return {
     audioElementsRef,
     audioStatus,
+    playGuidedAudio,
+    pauseGuidedAudio,
+    resumeGuidedAudio,
+    stopGuidedAudio,
   };
 }
 
@@ -125,15 +205,29 @@ export function TimerPage() {
       : undefined;
 
   const [lastCueMessage, setLastCueMessage] = useState('No cue has played yet.');
-  const [historyEntries, setHistoryEntries] = useState<Array<{ id: string; completedAt: string; durationSeconds: number }>>([]);
+  const [historyEntries, setHistoryEntries] = useState<Array<{ id: string; completedAt: string; durationSeconds: number; guidedAudioName?: string }>>([]);
   const [showTimerDetails, setShowTimerDetails] = useState(false);
   const [editingDuration, setEditingDuration] = useState(false);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [audioProfileId, setAudioProfileId] = useState(
     isActiveSession ? savedSession.soundProfileId : loadTimerPreferences().defaultSoundProfileId,
   );
+  const [audioFiles, setAudioFiles] = useState<AudioFileRecord[]>([]);
+  const [selectedGuidedAudioId, setSelectedGuidedAudioId] = useState<string | null>(
+    isActiveSession ? savedSession.guidedAudioFileId : loadTimerPreferences().defaultGuidedAudioFileId,
+  );
 
-  const { audioElementsRef, audioStatus } = useAudioElements(audioProfileId);
+  useEffect(() => {
+    void listAudioFiles().then(setAudioFiles);
+  }, []);
+
+  const selectedGuidedAudio = useMemo(() => {
+    if (!selectedGuidedAudioId) return null;
+    return audioFiles.find((file) => file.id === selectedGuidedAudioId) ?? null;
+  }, [audioFiles, selectedGuidedAudioId]);
+
+  const { audioElementsRef, audioStatus, playGuidedAudio, pauseGuidedAudio, resumeGuidedAudio, stopGuidedAudio } =
+    useAudioElements(audioProfileId, selectedGuidedAudio);
 
   const playCue = useCallback(
     async (cueKind: CueKind, soundProfileId: SoundProfileId) => {
@@ -216,28 +310,58 @@ export function TimerPage() {
     handleReset,
     handleConfigUpdate,
   } = useTimerSession({
-    initialDurationSeconds,
+    initialDurationSeconds: selectedGuidedAudio
+      ? Math.ceil(selectedGuidedAudio.durationSeconds)
+      : initialDurationSeconds,
     initialSession: isActiveSession ? savedSession : undefined,
     onComplete: async (event) => {
-      await recordMeditationPractice(event);
+      await recordMeditationPractice({
+        completedAt: event.completedAt,
+        durationSeconds: event.durationSeconds,
+        ...(selectedGuidedAudio ? { guidedAudioName: selectedGuidedAudio.name } : {}),
+      });
       await refreshHistory();
     },
     onCue: async (cue) => {
       if (cue === 'start') {
         primeAudio(session.soundProfileId);
+
+        const isGuided = Boolean(selectedGuidedAudio);
+
+        if (isGuided) {
+          await playGuidedAudio();
+        }
+
+        if (!isGuided || session.guidedCueOverlay) {
+          await playCue('start', session.soundProfileId);
+        }
       }
 
-      if (cue === 'complete' || cue === 'start') {
-        const cueKind = cue === 'start' ? 'start' : 'complete';
-        await playCue(cueKind, session.soundProfileId);
+      if (cue === 'pause' && selectedGuidedAudio) {
+        pauseGuidedAudio();
+      }
+
+      if (cue === 'resume' && selectedGuidedAudio) {
+        await resumeGuidedAudio();
+      }
+
+      if (cue === 'complete') {
+        if (selectedGuidedAudio) {
+          stopGuidedAudio();
+        }
+
+        if (!selectedGuidedAudio || session.guidedCueOverlay) {
+          await playCue('complete', session.soundProfileId);
+        }
       }
     },
   });
 
   useEffect(() => {
-    saveTimerSession(session);
-    setAudioProfileId(session.soundProfileId);
-  }, [session]);
+    const nextSession = { ...session, guidedAudioFileId: selectedGuidedAudioId };
+    saveTimerSession(nextSession);
+    setAudioProfileId(nextSession.soundProfileId);
+  }, [session, selectedGuidedAudioId]);
 
   const primeAudio = useCallback((soundProfileId: SoundProfileId) => {
     const profile = getSoundProfileById(soundProfileId);
@@ -266,7 +390,9 @@ export function TimerPage() {
     }
   }, []);
 
-  const canEditSession = isIdle || isComplete;
+  const isGuidedMode = selectedGuidedAudioId !== null;
+  const canChangeConfig = isIdle || isComplete;
+  const canEditSession = canChangeConfig && !isGuidedMode;
   const soundProfile = getSoundProfileById(session.soundProfileId);
   const timerStatusLabel = toSentenceCase(session.phase);
   const audioStatusLabel =
@@ -275,6 +401,49 @@ export function TimerPage() {
       : audioStatus === 'ready'
         ? 'Bundled cues ready'
         : 'Audio unavailable';
+
+  const handleModeChange = useCallback(
+    (mode: 'timed' | 'guided') => {
+      if (mode === 'guided') {
+        if (selectedGuidedAudioId !== null) {
+          return;
+        }
+
+        const defaultGuidedFileId = loadTimerPreferences().defaultGuidedAudioFileId;
+
+        if (defaultGuidedFileId !== null) {
+          setSelectedGuidedAudioId(defaultGuidedFileId);
+          return;
+        }
+
+        void navigate('/timer/guided-audio');
+        return;
+      }
+
+      setSelectedGuidedAudioId(null);
+    },
+    [navigate, selectedGuidedAudioId],
+  );
+
+  const handleGuidedAudioChange = useCallback((fileId: string) => {
+    setSelectedGuidedAudioId(fileId.length > 0 ? fileId : null);
+  }, []);
+
+  const handleGuidedCueOverlayChange = useCallback(
+    (checked: boolean) => {
+      handleConfigUpdate({ guidedCueOverlay: checked });
+    },
+    [handleConfigUpdate],
+  );
+
+  const handleStartSession = useCallback(() => {
+    if (isGuidedMode && selectedGuidedAudio) {
+      handleStart(Math.ceil(selectedGuidedAudio.durationSeconds) / 60);
+      return;
+    }
+
+    handleStart(session.totalDurationSeconds / 60);
+  }, [handleStart, isGuidedMode, selectedGuidedAudio, session.totalDurationSeconds]);
 
   return (
     <PageLayout
@@ -336,6 +505,81 @@ export function TimerPage() {
                 {timerStatusLabel}
               </p>
             </div>
+
+            <div className="timer-mode-toggle" data-testid="timer-mode-toggle">
+              <button
+                aria-pressed={!isGuidedMode}
+                className={`reader-option-button${!isGuidedMode ? ' reader-option-button--active' : ''}`}
+                data-testid="timer-mode-timed"
+                disabled={!canChangeConfig}
+                onClick={() => {
+                  handleModeChange('timed');
+                }}
+                type="button"
+              >
+                Timed
+              </button>
+              <button
+                aria-pressed={isGuidedMode}
+                className={`reader-option-button${isGuidedMode ? ' reader-option-button--active' : ''}`}
+                data-testid="timer-mode-guided"
+                disabled={!canChangeConfig}
+                onClick={() => {
+                  handleModeChange('guided');
+                }}
+                type="button"
+              >
+                Guided
+              </button>
+            </div>
+
+            {isGuidedMode ? (
+              <div className="guided-audio-select-block" data-testid="timer-guided-audio-block">
+                <label className="guided-audio-select-label" htmlFor="timer-guided-audio-select">
+                  <span className="field-help">Guided audio</span>
+                  <select
+                    className="field-select"
+                    data-testid="timer-guided-audio-select"
+                    disabled={!canChangeConfig}
+                    id="timer-guided-audio-select"
+                    onChange={(event) => {
+                      handleGuidedAudioChange(event.target.value);
+                    }}
+                    value={selectedGuidedAudioId ?? ''}
+                  >
+                    <option value="">Select an audio file…</option>
+                    {audioFiles.map((file) => (
+                      <option key={file.id} value={file.id}>
+                        {file.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <p className="support-copy" data-testid="timer-guided-duration">
+                  {selectedGuidedAudio
+                    ? `Duration locked to ${selectedGuidedAudio.name} (${formatDuration(selectedGuidedAudio.durationSeconds)}).`
+                    : 'Duration locks to the length of the audio file.'}
+                </p>
+
+                <label className="filter-toggle timer-checkbox">
+                  <input
+                    checked={session.guidedCueOverlay}
+                    data-testid="timer-guided-cue-overlay"
+                    disabled={!canChangeConfig}
+                    onChange={(event) => {
+                      handleGuidedCueOverlayChange(event.target.checked);
+                    }}
+                    type="checkbox"
+                  />
+                  <span className="field-help">Play bell cues over guided audio</span>
+                </label>
+
+                <p className="support-copy">
+                  <Link to="/timer/guided-audio">Manage audio</Link>
+                </p>
+              </div>
+            ) : null}
 
             <fieldset className="timer-preset-group">
               <legend className="field-label">Quick duration</legend>
@@ -474,11 +718,11 @@ export function TimerPage() {
                   className="primary-button"
                   data-testid="timer-start"
                     onClick={() => {
-                      handleStart(session.totalDurationSeconds / 60);
+                      handleStartSession();
                     }}
                   type="button"
                 >
-                  Start timer
+                  {isGuidedMode ? 'Start guided session' : 'Start timer'}
                 </button>
               ) : null}
 
@@ -547,6 +791,7 @@ export function TimerPage() {
                           <li className="detail-card" key={entry.id}>
                             <p className="detail-card__eyebrow">Meditation</p>
                             <h3>{formatDurationSummary(entry.durationSeconds)}</h3>
+                            {entry.guidedAudioName ? <p>Guided: {entry.guidedAudioName}</p> : null}
                             <p>Completed {formatHistoryTimestamp(entry.completedAt)}</p>
                           </li>
                         ))}
@@ -560,6 +805,10 @@ export function TimerPage() {
                     <div>
                       <dt>Total duration</dt>
                       <dd data-testid="timer-total-duration">{formatDurationSummary(session.totalDurationSeconds)}</dd>
+                    </div>
+                    <div>
+                      <dt>Guided audio</dt>
+                      <dd data-testid="timer-guided-audio-name">{selectedGuidedAudio ? selectedGuidedAudio.name : 'None (timed mode)'}</dd>
                     </div>
                     <div>
                       <dt>Cue audio</dt>

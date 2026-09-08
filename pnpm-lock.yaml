@@ -11,6 +11,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.108.2
         version: 2.108.2
+      audiobox:
+        specifier: ^1.1.0
+        version: 1.1.0
       dexie:
         specifier: ^4.4.4
         version: 4.4.4
@@ -1383,6 +1386,10 @@ packages:
   at-least-node@1.0.0:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
     engines: {node: '>= 4.0.0'}
+
+  audiobox@1.1.0:
+    resolution: {integrity: sha512-W+SxG7y/nm6Y0Pi04brs3c7vnrmKLpYT78GicRyCP3HNDzQts9jRnQap6Cpe7xHEVy06riU1V5iBJyQpvKR3IA==}
+    engines: {node: '>=20'}
 
   available-typed-arrays@1.0.7:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
@@ -4405,6 +4412,8 @@ snapshots:
   async@3.2.6: {}
 
   at-least-node@1.0.0: {}
+
+  audiobox@1.1.0: {}
 
   available-typed-arrays@1.0.7:
     dependencies:

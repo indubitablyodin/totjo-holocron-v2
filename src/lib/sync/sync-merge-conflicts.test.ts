@@ -86,6 +86,8 @@ describe('sync merge-conflicts', () => {
           defaultIntervalSeconds: 0,
           defaultSoundProfileId: 'silent' as const,
           recordPracticeHistory: false,
+          defaultGuidedAudioFileId: null,
+          guidedCueOverlay: true,
         },
         updatedAt: '2026-04-27T13:30:00.000Z',
       },

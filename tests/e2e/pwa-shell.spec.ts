@@ -37,7 +37,7 @@ test.describe('PWA shell', () => {
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
     await page.evaluate(() => {
@@ -90,7 +90,7 @@ test.describe('PWA shell', () => {
 
   test('bottom dock leaves daily and timer actions clear on phone', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/daily');
+    await page.goto('/#/daily');
     await page.waitForLoadState('networkidle');
 
     await expectBottomNavLabels(page);
@@ -98,7 +98,7 @@ test.describe('PWA shell', () => {
     await expectBottomNavDoesNotCover(page, 'daily-begin-meditation');
     await expectBottomNavDoesNotCover(page, 'daily-quick-access');
 
-    await page.goto('/timer');
+    await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
 
     await expectBottomNavLabels(page);
@@ -109,7 +109,7 @@ test.describe('PWA shell', () => {
 
   test('mobile-nav desktop adaptation preserves labels and route reachability', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1024 });
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('nav-daily')).toHaveText('Focus');
@@ -160,7 +160,7 @@ test.describe('PWA shell', () => {
 
   test('settings-mobile phone layout shows a short settings index with focused groups', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/settings');
+    await page.goto('/#/settings');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Settings');
@@ -176,7 +176,7 @@ test.describe('PWA shell', () => {
 
   test('settings-mobile redirects dormant account and callback routes to settings', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/settings/account');
+    await page.goto('/#/settings/account');
     await page.waitForLoadState('networkidle');
 
     await expect(page).toHaveURL(/\/settings$/);
@@ -184,14 +184,14 @@ test.describe('PWA shell', () => {
     await expect(page.getByTestId('settings-group-account-sync')).toHaveCount(0);
     await expect(page.getByTestId('nav-account-sync')).toHaveCount(0);
 
-    await page.goto('/auth/callback?mode=test&token=expired-token&email=playwright@example.test');
+    await page.goto('/#/auth/callback?mode=test&token=expired-token&email=playwright@example.test');
     await expect(page).toHaveURL(/\/settings$/);
     await expect(page.getByTestId('page-title')).toHaveText('Settings');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-3-settings-local-only.png' });
   });
 
   test('reloads the cached shell while offline after the first online load', async ({ context, page }) => {
-    await page.goto('/');
+    await page.goto('/#/');
     await page.waitForLoadState('networkidle');
 
     await page.evaluate(async () => {
@@ -211,27 +211,27 @@ test.describe('PWA shell', () => {
   });
 
   test('persists reading settings across reloads', async ({ page }) => {
-    await page.goto('/settings/reading-display');
+    await page.goto('/#/settings/reading-display');
     await page.waitForLoadState('networkidle');
 
     await page.getByTestId('setting-font-scale').selectOption('large');
     await page.getByTestId('setting-theme').selectOption('dark');
 
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.reload();
 
     await expect(page.locator('body')).toHaveClass(/large-reading/);
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect(page.getByTestId('page-title')).toHaveText('Read');
 
-    await page.goto('/settings/reading-display');
+    await page.goto('/#/settings/reading-display');
     await expect(page.getByTestId('setting-font-scale')).toHaveValue('large');
     await expect(page.getByTestId('setting-theme')).toHaveValue('dark');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-4-shell-settings.png' });
   });
 
   test('bootstraps seeded library counts without manual sync', async ({ page }) => {
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('library-count-canon')).toHaveText(/^[1-9]\d*$/);
@@ -241,7 +241,7 @@ test.describe('PWA shell', () => {
 
   test('read-surface stays compact and authority-safe on phone', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Read');
@@ -256,13 +256,13 @@ test.describe('PWA shell', () => {
   });
 
   test('renders distinct authority badges for doctrine and supplemental routes', async ({ page }) => {
-    await page.goto('/library/doctrine/jedi-believe');
+    await page.goto('/#/library/doctrine/jedi-believe');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('authority-badge')).toHaveText('Doctrine Text');
     const doctrineBadgeColor = await page.getByTestId('authority-badge').evaluate((element) => getComputedStyle(element).backgroundColor);
 
-    await page.goto('/library/supplemental/knights-code');
+    await page.goto('/#/library/supplemental/knights-code');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('authority-badge')).toHaveText('Study Text');
@@ -277,7 +277,7 @@ test.describe('PWA shell', () => {
 
   test('read-surface keeps doctrine and supplemental cards available on phone', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('library-card-knights-code')).toBeVisible();

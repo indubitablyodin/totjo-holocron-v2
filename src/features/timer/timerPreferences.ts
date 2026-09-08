@@ -26,6 +26,8 @@ export type TimerPreferences = {
   defaultIntervalSeconds: number;
   defaultSoundProfileId: SoundProfileId;
   recordPracticeHistory: boolean;
+  defaultGuidedAudioFileId: string | null;
+  guidedCueOverlay: boolean;
 };
 
 export const DEFAULT_TIMER_PREFERENCES: TimerPreferences = {
@@ -34,6 +36,8 @@ export const DEFAULT_TIMER_PREFERENCES: TimerPreferences = {
   defaultIntervalSeconds: 0,
   defaultSoundProfileId: DEFAULT_SOUND_PROFILE_ID,
   recordPracticeHistory: true,
+  defaultGuidedAudioFileId: null,
+  guidedCueOverlay: true,
 };
 
 type StorageLike = {
@@ -126,6 +130,14 @@ export function normalizeTimerPreferences(value: unknown): TimerPreferences {
       typeof value.recordPracticeHistory === 'boolean'
         ? value.recordPracticeHistory
         : DEFAULT_TIMER_PREFERENCES.recordPracticeHistory,
+    defaultGuidedAudioFileId:
+      typeof value.defaultGuidedAudioFileId === 'string' && value.defaultGuidedAudioFileId.length > 0
+        ? value.defaultGuidedAudioFileId
+        : DEFAULT_TIMER_PREFERENCES.defaultGuidedAudioFileId,
+    guidedCueOverlay:
+      typeof value.guidedCueOverlay === 'boolean'
+        ? value.guidedCueOverlay
+        : DEFAULT_TIMER_PREFERENCES.guidedCueOverlay,
   };
 }
 

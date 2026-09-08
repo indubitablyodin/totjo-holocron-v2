@@ -133,6 +133,8 @@ describe('dashboard timer settings', () => {
       defaultIntervalSeconds: 0,
       defaultSoundProfileId: 'default-gong',
       recordPracticeHistory: true,
+      defaultGuidedAudioFileId: null,
+      guidedCueOverlay: true,
     });
 
     const user = userEvent.setup();

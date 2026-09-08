@@ -58,6 +58,8 @@ describe('meditation-timer model', () => {
       defaultIntervalSeconds: 0,
       defaultSoundProfileId: 'default-gong',
       recordPracticeHistory: true,
+      defaultGuidedAudioFileId: null,
+      guidedCueOverlay: true,
     }, 10_000);
     const completed = advanceTimerSession(restored, 13_000);
     const reset = resetTimerSession(completed.session);

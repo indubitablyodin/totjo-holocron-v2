@@ -1,6 +1,7 @@
 import Dexie, { type Table, type Transaction } from 'dexie';
 
 import {
+  type AudioFileRecord,
   type BookmarkRecord,
   type ContentBootstrapMetaRecord,
   type DocumentAuthorityClass,
@@ -15,7 +16,7 @@ import {
   createChecksum,
 } from '@/lib/content';
 
-export const CURRENT_DB_SCHEMA_VERSION = 3;
+export const CURRENT_DB_SCHEMA_VERSION = 4;
 export const DEFAULT_DB_NAME = 'totjo-holocron';
 
 type LegacyDocumentRecord = {
@@ -87,6 +88,7 @@ export class HolocronDatabase extends Dexie {
   downloads!: Table<DownloadRecord, string>;
   personalizationRules!: Table<PersonalizationRuleRecord, string>;
   bootstrapMeta!: Table<ContentBootstrapMetaRecord, string>;
+  audioFiles!: Table<AudioFileRecord, string>;
 
   constructor(name = DEFAULT_DB_NAME) {
     super(name);
@@ -111,6 +113,7 @@ export class HolocronDatabase extends Dexie {
         downloads: '&id, documentId, status, updatedAt',
         personalizationRules: '&id, scope, documentId, updatedAt',
         bootstrapMeta: '&key',
+        audioFiles: '&id, name, createdAt',
       })
       .upgrade(async (transaction) => {
         await migrateDocuments(transaction);

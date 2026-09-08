@@ -26,7 +26,7 @@ async function expectBottomNavDoesNotOverlay(page: import('@playwright/test').Pa
 test.describe('meditation timer', () => {
   test('timer-phone keeps live controls primary and hides session setup until requested', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/timer');
+    await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Timer');
@@ -58,7 +58,7 @@ test.describe('meditation timer', () => {
   });
 
   test('timer cancel clears the session and returns to Daily', async ({ page }) => {
-    await page.goto('/timer');
+    await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
 
     await page.getByTestId('timer-meditation-preset-60').click();
@@ -69,13 +69,13 @@ test.describe('meditation timer', () => {
     await expect(page).toHaveURL(/\/daily$/);
     await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
 
-    await page.goto('/timer');
+    await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
     await expect(page.getByTestId('timer-remaining')).toHaveText('05:00');
   });
 
   test('timer completes offline with bundled default-gong cues', async ({ context, page }) => {
-    await page.goto('/timer');
+    await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
 
     await page.getByTestId('timer-settings-toggle').click();
@@ -107,7 +107,7 @@ test.describe('meditation timer', () => {
   });
 
   test('timer reflects elapsed duration after background and resume', async ({ context, page }) => {
-    await page.goto('/timer');
+    await page.goto('/#/timer');
     await page.waitForLoadState('networkidle');
 
     await page.getByTestId('timer-settings-toggle').click();
@@ -115,7 +115,7 @@ test.describe('meditation timer', () => {
     await page.getByTestId('timer-start').click();
 
     const backgroundPage = await context.newPage();
-    await backgroundPage.goto('/settings');
+    await backgroundPage.goto('/#/settings');
     await backgroundPage.waitForLoadState('networkidle');
     await backgroundPage.waitForTimeout(3200);
 
@@ -131,12 +131,12 @@ test.describe('meditation timer', () => {
   });
 
   test('audio-rights settings surface bundled cue provenance', async ({ page }) => {
-    await page.goto('/settings/timer-defaults');
+    await page.goto('/#/settings/timer-defaults');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('setting-timer-sound-profile')).toHaveValue('default-gong');
 
-    await page.goto('/settings/about-legal');
+    await page.goto('/#/settings/about-legal');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('audio-rights-default-gong')).toContainText('CC0-1.0');

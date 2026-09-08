@@ -74,7 +74,7 @@ test.describe('daily focus route', () => {
     await mockDailyClock(page, '2026-04-26T14:00:00.000Z');
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/daily');
+    await page.goto('/#/daily');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Daily Focus');
@@ -103,7 +103,7 @@ test.describe('daily focus route', () => {
   test('daily focus changes only when the UTC day changes', async ({ page }) => {
     await mockDailyClock(page, '2026-04-27T04:55:00.000Z');
 
-    await page.goto('/daily');
+    await page.goto('/#/daily');
     await page.waitForLoadState('networkidle');
     await expect(page.getByTestId('daily-focus-day')).toContainText('UTC 2026-04-27');
 
@@ -129,7 +129,7 @@ test.describe('daily focus route', () => {
   test('daily meditation card opens timer with quick preset and shows quick access', async ({ page }) => {
     await mockDailyClock(page, '2026-04-26T14:00:00.000Z');
 
-    await page.goto('/daily');
+    await page.goto('/#/daily');
     await page.waitForLoadState('networkidle');
 
     const meditationCard = page.getByTestId('daily-meditation-card');
@@ -162,14 +162,14 @@ test.describe('daily focus route', () => {
   test('focus settings picks, persists, and clears the quick access middle slot', async ({ page }) => {
     await mockDailyClock(page, '2026-04-26T14:00:00.000Z');
 
-    await page.goto('/settings/focus-practice');
+    await page.goto('/#/settings/focus-practice');
     await page.waitForLoadState('networkidle');
 
     await page.getByTestId('setting-daily-quick-access-middle-slot').selectOption('document:canon-three-tenets');
 
     await expect(page.getByTestId('setting-daily-quick-access-middle-slot')).toHaveValue('document:canon-three-tenets');
 
-    await page.goto('/daily');
+    await page.goto('/#/daily');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveText('The Three Tenets');
@@ -180,9 +180,9 @@ test.describe('daily focus route', () => {
     await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveText('The Three Tenets');
     await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/library/doctrine/three-tenets');
 
-    await page.goto('/settings/focus-practice');
+    await page.goto('/#/settings/focus-practice');
     await page.getByTestId('setting-daily-quick-access-clear').click();
-    await page.goto('/daily');
+    await page.goto('/#/daily');
 
     await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveText('Default slot');
     await expect(page.getByTestId('daily-quick-access-middle-slot')).toHaveAttribute('href', '/settings/focus-practice');

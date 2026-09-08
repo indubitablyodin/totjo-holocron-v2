@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('sync account state', () => {
   test('settings exposes local-only groups without sync status or previews', async ({ page }) => {
-    await page.goto('/settings');
+    await page.goto('/#/settings');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('settings-group-reading-display')).toBeVisible();

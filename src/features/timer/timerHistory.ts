@@ -4,6 +4,7 @@ import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 type RecordMeditationPracticeInput = {
   completedAt: string;
   durationSeconds: number;
+  guidedAudioName?: string;
 };
 
 function createMeditationHistoryId(input: RecordMeditationPracticeInput): string {
@@ -30,6 +31,7 @@ export async function recordMeditationPractice(
     practiceKind: 'meditation',
     completedAt: input.completedAt,
     durationSeconds: input.durationSeconds,
+    ...(input.guidedAudioName ? { guidedAudioName: input.guidedAudioName } : {}),
   };
 
   await database.practiceHistory.put(record);

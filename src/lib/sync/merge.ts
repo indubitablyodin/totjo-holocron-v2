@@ -202,6 +202,8 @@ export function createEmptyUserSyncProfile(now = '1970-01-01T00:00:00.000Z'): Us
         defaultIntervalSeconds: 0,
         defaultSoundProfileId: 'default-gong',
         recordPracticeHistory: true,
+        defaultGuidedAudioFileId: null,
+        guidedCueOverlay: true,
       },
       updatedAt: now,
     },

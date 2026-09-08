@@ -4,11 +4,14 @@ import {
   type CueKind,
   type SoundProfileId,
 } from '@/features/timer/audioProfiles';
+import type { AudioFileRecord } from '@/lib/content';
 
 export type TimerAudioStatus = 'ready' | 'silent' | 'unavailable';
 
-export function useTimerAudio(soundProfileId: SoundProfileId) {
+export function useTimerAudio(soundProfileId: SoundProfileId, guidedAudioFile?: AudioFileRecord | null) {
   const audioElementsRef = useRef<Partial<Record<CueKind, HTMLAudioElement>>>({});
+  const guidedAudioRef = useRef<HTMLAudioElement | null>(null);
+  const guidedAudioUrlRef = useRef<string | null>(null);
 
   const audioStatus: TimerAudioStatus = (() => {
     const profile = getSoundProfileById(soundProfileId);
@@ -43,6 +46,43 @@ export function useTimerAudio(soundProfileId: SoundProfileId) {
       });
     };
   }, [soundProfileId]);
+
+  useEffect(() => {
+    if (guidedAudioRef.current) {
+      guidedAudioRef.current.pause();
+      guidedAudioRef.current.removeAttribute('src');
+      guidedAudioRef.current.load();
+      guidedAudioRef.current = null;
+    }
+
+    if (guidedAudioUrlRef.current) {
+      URL.revokeObjectURL(guidedAudioUrlRef.current);
+      guidedAudioUrlRef.current = null;
+    }
+
+    if (guidedAudioFile) {
+      const url = URL.createObjectURL(guidedAudioFile.blob);
+      const audio = new Audio(url);
+      audio.preload = 'auto';
+      audio.load();
+      guidedAudioRef.current = audio;
+      guidedAudioUrlRef.current = url;
+    }
+
+    return () => {
+      if (guidedAudioRef.current) {
+        guidedAudioRef.current.pause();
+        guidedAudioRef.current.removeAttribute('src');
+        guidedAudioRef.current.load();
+        guidedAudioRef.current = null;
+      }
+
+      if (guidedAudioUrlRef.current) {
+        URL.revokeObjectURL(guidedAudioUrlRef.current);
+        guidedAudioUrlRef.current = null;
+      }
+    };
+  }, [guidedAudioFile]);
 
   const playCue = useCallback(async (cueKind: CueKind, profileId: SoundProfileId) => {
     const profile = getSoundProfileById(profileId);
@@ -91,15 +131,88 @@ export function useTimerAudio(soundProfileId: SoundProfileId) {
     }
   }, []);
 
-  const handleCue = useCallback(async (cue: 'start' | 'pause' | 'resume' | 'complete', profileId: SoundProfileId) => {
-    if (cue === 'start') {
-      primeAudio(profileId);
-    }
-    if (cue === 'complete' || cue === 'start') {
-      const cueKind: CueKind = cue === 'start' ? 'start' : 'complete';
-      await playCue(cueKind, profileId);
-    }
-  }, [playCue, primeAudio]);
+  const playGuidedAudio = useCallback(async () => {
+    if (!guidedAudioRef.current) return;
 
-  return { audioStatus, handleCue, primeAudio, playCue };
+    try {
+      guidedAudioRef.current.currentTime = 0;
+      await guidedAudioRef.current.play();
+    } catch {
+      // Autoplay blocked — timer continues without guided audio.
+    }
+  }, []);
+
+  const pauseGuidedAudio = useCallback(() => {
+    if (!guidedAudioRef.current) return;
+    guidedAudioRef.current.pause();
+  }, []);
+
+  const resumeGuidedAudio = useCallback(async () => {
+    if (!guidedAudioRef.current) return;
+
+    try {
+      await guidedAudioRef.current.play();
+    } catch {
+      // Ignore.
+    }
+  }, []);
+
+  const stopGuidedAudio = useCallback(() => {
+    if (!guidedAudioRef.current) return;
+    guidedAudioRef.current.pause();
+    guidedAudioRef.current.currentTime = 0;
+  }, []);
+
+  const handleCue = useCallback(
+    async (
+      cue: 'start' | 'pause' | 'resume' | 'complete',
+      profileId: SoundProfileId,
+      options?: { guided?: boolean; guidedCueOverlay?: boolean },
+    ) => {
+      const isGuided = options?.guided ?? false;
+      const overlayBells = options?.guidedCueOverlay ?? true;
+
+      if (cue === 'start') {
+        primeAudio(profileId);
+
+        if (isGuided) {
+          await playGuidedAudio();
+        }
+
+        if (!isGuided || overlayBells) {
+          await playCue('start', profileId);
+        }
+      }
+
+      if (cue === 'pause' && isGuided) {
+        pauseGuidedAudio();
+      }
+
+      if (cue === 'resume' && isGuided) {
+        await resumeGuidedAudio();
+      }
+
+      if (cue === 'complete') {
+        if (isGuided) {
+          stopGuidedAudio();
+        }
+
+        if (!isGuided || overlayBells) {
+          await playCue('complete', profileId);
+        }
+      }
+    },
+    [playCue, primeAudio, playGuidedAudio, pauseGuidedAudio, resumeGuidedAudio, stopGuidedAudio],
+  );
+
+  return {
+    audioStatus,
+    handleCue,
+    primeAudio,
+    playCue,
+    playGuidedAudio,
+    pauseGuidedAudio,
+    resumeGuidedAudio,
+    stopGuidedAudio,
+  };
 }

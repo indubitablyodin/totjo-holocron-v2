@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('doctrine reader', () => {
   test('offline-reader keeps bundled doctrine readable after first online load', async ({ context, page }) => {
-    await page.goto('/library/doctrine/jedi-believe');
+    await page.goto('/#/library/doctrine/jedi-believe');
     await page.waitForLoadState('networkidle');
 
     await page.evaluate(async () => {
@@ -20,7 +20,7 @@ test.describe('doctrine reader', () => {
   });
 
   test('doctrine code reader preserves both formulations across layout modes', async ({ page }) => {
-    await page.goto('/library/doctrine/code');
+    await page.goto('/#/library/doctrine/code');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('code-view-side-by-side')).toBeVisible();
@@ -39,7 +39,7 @@ test.describe('doctrine reader', () => {
 
   test('reader-mobile keeps doctrine content-first on phone', async ({ page }) => {
     await page.setViewportSize({ height: 844, width: 390 });
-    await page.goto('/library/doctrine/jedi-believe');
+    await page.goto('/#/library/doctrine/jedi-believe');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('reader-shell')).toBeVisible();

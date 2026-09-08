@@ -104,6 +104,8 @@ describe('timer page layout', () => {
       defaultIntervalSeconds: 60,
       defaultSoundProfileId: 'silent',
       recordPracticeHistory: false,
+      defaultGuidedAudioFileId: null,
+      guidedCueOverlay: true,
     });
 
     await user.click(screen.getByTestId('timer-reset'));

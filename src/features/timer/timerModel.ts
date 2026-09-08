@@ -27,6 +27,8 @@ export type TimerSessionState = {
   lastIntervalIndex: number;
   historyRecorded: boolean;
   completedAtMs: number | null;
+  guidedAudioFileId: string | null;
+  guidedCueOverlay: boolean;
 };
 
 export type TimerConfigUpdate = {
@@ -35,6 +37,8 @@ export type TimerConfigUpdate = {
   intervalSeconds: unknown;
   soundProfileId: SoundProfileId;
   recordPracticeHistory: boolean;
+  guidedAudioFileId: string | null;
+  guidedCueOverlay: boolean;
 };
 
 export type AdvanceTimerResult = {
@@ -110,6 +114,8 @@ export function createDefaultTimerSession(preferences: TimerPreferences = DEFAUL
     lastIntervalIndex: 0,
     historyRecorded: false,
     completedAtMs: null,
+    guidedAudioFileId: preferences.defaultGuidedAudioFileId,
+    guidedCueOverlay: preferences.guidedCueOverlay,
   };
 }
 
@@ -134,6 +140,10 @@ export function applyEditableTimerConfig(
     updates.recordPracticeHistory === undefined
       ? session.recordPracticeHistory
       : updates.recordPracticeHistory;
+  const guidedAudioFileId =
+    updates.guidedAudioFileId === undefined ? session.guidedAudioFileId : updates.guidedAudioFileId;
+  const guidedCueOverlay =
+    updates.guidedCueOverlay === undefined ? session.guidedCueOverlay : updates.guidedCueOverlay;
 
   return {
     ...session,
@@ -144,6 +154,8 @@ export function applyEditableTimerConfig(
     intervalSeconds,
     soundProfileId,
     recordPracticeHistory,
+    guidedAudioFileId,
+    guidedCueOverlay,
     targetEndAtMs: null,
     lastIntervalIndex: 0,
     historyRecorded: false,
@@ -177,6 +189,14 @@ export function hydrateStoredTimerSession(
       typeof value.recordPracticeHistory === 'boolean'
         ? value.recordPracticeHistory
         : preferences.recordPracticeHistory,
+    guidedAudioFileId:
+      typeof value.guidedAudioFileId === 'string' && value.guidedAudioFileId.length > 0
+        ? value.guidedAudioFileId
+        : preferences.defaultGuidedAudioFileId,
+    guidedCueOverlay:
+      typeof value.guidedCueOverlay === 'boolean'
+        ? value.guidedCueOverlay
+        : preferences.guidedCueOverlay,
     targetEndAtMs: typeof value.targetEndAtMs === 'number' && Number.isFinite(value.targetEndAtMs) ? value.targetEndAtMs : null,
     lastIntervalIndex: Math.max(0, toSafeInteger(value.lastIntervalIndex, 0)),
     historyRecorded: typeof value.historyRecorded === 'boolean' ? value.historyRecorded : false,
@@ -351,5 +371,7 @@ export function createTimerPreferencesFromSession(session: TimerSessionState): T
       ? session.soundProfileId
       : DEFAULT_SOUND_PROFILE_ID,
     recordPracticeHistory: session.recordPracticeHistory,
+    defaultGuidedAudioFileId: session.guidedAudioFileId,
+    guidedCueOverlay: session.guidedCueOverlay,
   };
 }

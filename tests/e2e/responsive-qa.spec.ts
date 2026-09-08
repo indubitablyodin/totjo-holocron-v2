@@ -28,7 +28,7 @@ test.describe('responsive QA matrix', () => {
   test('mobile-nav phone matrix keeps content wide and dock reachable', async ({ page }, testInfo) => {
     requirePhoneProject(testInfo);
 
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Read');
@@ -71,7 +71,7 @@ test.describe('responsive QA matrix', () => {
   test('mobile-nav desktop matrix keeps the larger-screen rail labeled and route-complete', async ({ page }, testInfo) => {
     requireDesktopProject(testInfo);
 
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Read');
@@ -124,7 +124,7 @@ test.describe('responsive QA matrix', () => {
   test('reader-mobile phone matrix keeps large text, contrast, and reader actions usable under keyboard pressure', async ({ page }, testInfo) => {
     requirePhoneProject(testInfo);
 
-    await page.goto('/settings/reading-display');
+    await page.goto('/#/settings/reading-display');
     await page.waitForLoadState('networkidle');
     await page.getByTestId('setting-font-scale').selectOption('large');
     await page.getByTestId('setting-contrast').selectOption('high');
@@ -132,7 +132,7 @@ test.describe('responsive QA matrix', () => {
     await expect(page.locator('body')).toHaveClass(/large-reading/);
     await expect(page.locator('html')).toHaveAttribute('data-contrast', 'high');
 
-    await page.goto('/library/doctrine/jedi-believe');
+    await page.goto('/#/library/doctrine/jedi-believe');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('reader-control-strip')).toBeVisible();
@@ -190,12 +190,12 @@ test.describe('responsive QA matrix', () => {
   test('settings-mobile phone matrix keeps larger text and high contrast readable on narrow widths', async ({ page }, testInfo) => {
     requirePhoneProject(testInfo);
 
-    await page.goto('/settings/reading-display');
+    await page.goto('/#/settings/reading-display');
     await page.waitForLoadState('networkidle');
     await page.getByTestId('setting-font-scale').selectOption('large');
     await page.getByTestId('setting-contrast').selectOption('high');
 
-    await page.goto('/settings');
+    await page.goto('/#/settings');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('page-title')).toHaveText('Settings');
@@ -213,7 +213,7 @@ test.describe('responsive QA matrix', () => {
   test('copy-pass phone matrix keeps saved reader state copy visible on phone widths', async ({ page }, testInfo) => {
     requirePhoneProject(testInfo);
 
-    await page.goto('/library');
+    await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('library-card-knights-code')).toBeVisible();

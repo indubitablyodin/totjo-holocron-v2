@@ -14,6 +14,8 @@ export type TimerSettings = {
   intervalSeconds: number;
   soundProfileId: SoundProfileId;
   recordPracticeHistory: boolean;
+  defaultGuidedAudioFileId: string | null;
+  guidedCueOverlay: boolean;
 };
 
 export const DEFAULT_TIMER_SETTINGS: TimerSettings = {
@@ -22,6 +24,8 @@ export const DEFAULT_TIMER_SETTINGS: TimerSettings = {
   intervalSeconds: 0,
   soundProfileId: DEFAULT_SOUND_PROFILE_ID,
   recordPracticeHistory: true,
+  defaultGuidedAudioFileId: null,
+  guidedCueOverlay: true,
 };
 
 function preferencesToSettings(prefs: TimerPreferences): TimerSettings {
@@ -31,6 +35,8 @@ function preferencesToSettings(prefs: TimerPreferences): TimerSettings {
     intervalSeconds: prefs.defaultIntervalSeconds,
     soundProfileId: prefs.defaultSoundProfileId,
     recordPracticeHistory: prefs.recordPracticeHistory,
+    defaultGuidedAudioFileId: prefs.defaultGuidedAudioFileId,
+    guidedCueOverlay: prefs.guidedCueOverlay,
   };
 }
 
@@ -41,6 +47,8 @@ function settingsToPreferences(settings: TimerSettings): TimerPreferences {
     defaultIntervalSeconds: settings.intervalSeconds,
     defaultSoundProfileId: settings.soundProfileId,
     recordPracticeHistory: settings.recordPracticeHistory,
+    defaultGuidedAudioFileId: settings.defaultGuidedAudioFileId,
+    guidedCueOverlay: settings.guidedCueOverlay,
   };
 }
 

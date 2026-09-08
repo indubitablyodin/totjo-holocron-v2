@@ -20,6 +20,7 @@ import {
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { SyncProvider } from '@/features/sync/SyncContext';
 import { TimerPage } from '@/features/timer/TimerPage';
+import { GuidedAudioManager } from '@/features/timer/GuidedAudioManager';
 
 function RoutedApp() {
   return (
@@ -35,6 +36,7 @@ function RoutedApp() {
         <Route element={<Navigate replace to="/settings" />} path="/auth/callback" />
         <Route element={<DailyPracticePage />} path="/daily" />
         <Route element={<TimerPage />} path="/timer" />
+        <Route element={<GuidedAudioManager />} path="/timer/guided-audio" />
         <Route element={<SettingsPage />} path="/settings" />
         <Route element={<ReadingDisplaySettingsPage />} path="/settings/reading-display" />
         <Route element={<FocusPracticeSettingsPage />} path="/settings/focus-practice" />

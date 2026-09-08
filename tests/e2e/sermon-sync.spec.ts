@@ -10,7 +10,7 @@ async function waitForServiceWorker(page: import('@playwright/test').Page) {
 
 test.describe('sermon sync flows', () => {
   test('sermon-sync saves a sermon for offline reading', async ({ context, page }) => {
-    await page.goto('/library/sermons');
+    await page.goto('/#/library/sermons');
     await page.waitForLoadState('networkidle');
     await waitForServiceWorker(page);
 
@@ -29,7 +29,7 @@ test.describe('sermon sync flows', () => {
   });
 
   test('sermon-offline shows a clear message for uncached sermons', async ({ context, page }) => {
-    await page.goto('/library/sermons');
+    await page.goto('/#/library/sermons');
     await page.waitForLoadState('networkidle');
     await waitForServiceWorker(page);
 
@@ -45,7 +45,7 @@ test.describe('sermon sync flows', () => {
 
   test('reader-mobile keeps sermon save controls in the compact reader on phone', async ({ page }) => {
     await page.setViewportSize({ height: 844, width: 390 });
-    await page.goto('/library/sermons');
+    await page.goto('/#/library/sermons');
     await page.waitForLoadState('networkidle');
     await waitForServiceWorker(page);
 

@@ -93,6 +93,18 @@ export type PracticeHistoryRecord = {
   practiceKind: PracticeKind;
   completedAt: string;
   durationSeconds: number;
+  guidedAudioName?: string;
+};
+
+export type AudioFileRecord = {
+  id: string;
+  name: string;
+  originalName: string;
+  mimeType: string;
+  blob: Blob;
+  durationSeconds: number;
+  sizeBytes: number;
+  createdAt: string;
 };
 
 export type DownloadRecord = {

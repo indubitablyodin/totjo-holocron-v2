@@ -47,6 +47,8 @@ describe('audio-rights settings', () => {
       defaultIntervalSeconds: 60,
       defaultSoundProfileId: 'silent',
       recordPracticeHistory: false,
+      defaultGuidedAudioFileId: null,
+      guidedCueOverlay: true,
     });
   });
 
@@ -59,6 +61,8 @@ describe('audio-rights settings', () => {
       defaultIntervalSeconds: 60,
       defaultSoundProfileId: 'silent',
       recordPracticeHistory: false,
+      defaultGuidedAudioFileId: null,
+      guidedCueOverlay: true,
     });
 
     render(<AppTestRouter initialEntries={['/timer']} />);

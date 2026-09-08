@@ -1421,6 +1421,58 @@ input {
   align-items: flex-start;
 }
 
+.timer-mode-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.guided-audio-select-block {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+  text-align: center;
+}
+
+.guided-audio-select-label {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: center;
+  min-width: min(100%, 22rem);
+}
+
+.guided-audio-select-label .field-select {
+  width: 100%;
+}
+
+.guided-audio-row {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.guided-audio-info {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.guided-audio-edit,
+.guided-audio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.guided-audio-actions {
+  justify-content: flex-start;
+}
+
+.guided-audio-player {
+  width: 100%;
+  max-width: 28rem;
+}
+
 .status-pill,
 .timer-metric-value,
 .detail-card__eyebrow {

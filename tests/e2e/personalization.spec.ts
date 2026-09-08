@@ -2,12 +2,12 @@ import { expect, test } from '@playwright/test';
 
 test.describe('personalization overlay', () => {
   test('personalization follows the saved settings preference without extra reader chrome', async ({ page }) => {
-    await page.goto('/settings/reading-display');
+    await page.goto('/#/settings/reading-display');
     await page.waitForLoadState('networkidle');
 
     await page.getByTestId('pronoun-mode').selectOption('they');
 
-    await page.goto('/library/doctrine/code');
+    await page.goto('/#/library/doctrine/code');
     await page.waitForLoadState('networkidle');
 
     await expect(
