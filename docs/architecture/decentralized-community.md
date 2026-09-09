@@ -9,7 +9,7 @@ Holocron should become a durable, local-first, user-owned, federation-ready comp
 ## Core principles
 
 - **Local-first private data.** Notes, bookmarks, practice history, and settings stay on the user's device unless explicitly exported or shared.
-- **User-owned export and backup.** Markdown export exists now; JSON export with import/restore capability is the next step.
+- **User-owned export and backup.** Markdown export and JSON backup exist now, plus a JSON restore *preview* (parse, validate, classify what would change). Actually applying a restore — writing the previewed data back into the live device — is not implemented yet; see `docs/architecture/user-data-export.md`.
 - **No central storage of private notes by default.** Private user data is not synced to any server unless the user explicitly chooses to share or publish.
 - **Public community content can be fetched, cached, and federated.** Announcements, sermons, doctrine, and public study content are fetched from static feeds and cached locally.
 - **Sharing must be explicit.** No automatic transmission of private data. Sharing is opt-in and deliberate.
@@ -54,7 +54,8 @@ Holocron should become a durable, local-first, user-owned, federation-ready comp
 | Local dismissal state | ✅ Implemented |
 | Cached sermon/content indexes | ✅ Implemented |
 | Markdown export | ✅ Implemented |
-| JSON backup/restore | ⬜ Not yet implemented |
+| JSON backup + restore preview | ✅ Implemented |
+| JSON restore apply (write preview back to device) | ⬜ Not yet implemented |
 | No accounts required | ✅ Core design decision |
 
 This phase already delivers a fully functional local-first app. No account, no login, no central server dependency.
@@ -184,7 +185,7 @@ The current architecture already aligns with the long-term vision:
 - **Dismissal and read state** remain local (stored in `localStorage`)
 - **Links and actions** are validated and safe (internal paths and `https://` only)
 - **Content is plain text** — never arbitrary HTML or unsanitized Markdown
-- **Exports are central to trust** — Markdown export exists now; JSON with import/restore is next
+- **Exports are central to trust** — Markdown export and JSON backup/restore-preview exist now; only applying a restore is next
 
 The announcement system's static JSON feed can serve as the starting point for a future ActivityPub-compatible public feed. The `id`, `publishedAt`, and action schema pattern can map to ActivityPub objects with minimal transformation.
 

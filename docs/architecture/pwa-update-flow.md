@@ -1,5 +1,25 @@
 # PWA Update Flow
 
+## This is not the Announcements system
+
+This doc covers the **app-update banner** (`app-update-card` in `AppShell.tsx`): it fires when
+a new build of the app's own code (JS/CSS/service worker) is waiting to activate, driven entirely
+by the browser's Service Worker lifecycle in `registerAppServiceWorker.ts`/`pwaUpdate.ts`.
+
+The separate **Announcements system** (`AnnouncementModal.tsx`, `announcementRegistry.ts`,
+`docs/architecture/announcements.md`) shows content notices — "what's new," sermon availability,
+support prompts — via a small badge the user taps to open. It has nothing to do with whether new
+app code is installed; it's driven by `public/announcements.json` plus bundled fallback content,
+checked once per app load.
+
+These two were confused for months: a bundled announcement literally titled "Welcome to TOTJO
+Holocron" was tagged `kind: 'app'`, which renders the label "App update" — so a first-run welcome
+message wore the same badge language as this doc's actual update banner. Fixed in `e40f398`
+(retagged `kind: 'totjo'`). If you're chasing "the update banner doesn't reflect the real app
+version," check which of these two systems is actually rendering what you're looking at before
+changing code — grep for `app-update-card` (this system) vs `announcement-badge`/
+`announcement-overlay` (that one).
+
 ## Why refreshing may not show new CSS/JS
 
 When the app is served as a production build (via `pnpm build` + `pnpm preview` or deployed to GitHub Pages), the service worker (SW) precaches all JS, CSS, and HTML assets at build time. Once the SW is registered, it serves these precached assets even when the server has newer files.
@@ -57,15 +77,24 @@ When a new SW is waiting, a non-blocking card appears at the top of the page:
 > [Update now] [Later]
 
 - "Update now" posts `{ type: 'SKIP_WAITING' }` to the waiting SW, waits for the controller change, then reloads.
-- "Later" dismisses the card until the next update check finds a new SW.
+- "Later" dismisses the card. Dismissal is not time-based or sticky-forever: `notifyPwaUpdateAvailable()`
+  resets `dismissed: false` every time a *new* service-worker install reaches the `installed` state
+  (via the `updatefound` listener) or is already `registration.waiting` on load — so the card reappears
+  automatically once a genuinely newer build is waiting, but not just because time passed since dismissal.
 
 ## Build marker
 
-Settings > About & Legal shows the current build version and label:
+Settings > About & Legal shows the current build version and label, read from `APP_BUILD` in
+`src/app/buildInfo.ts` (`version`/`buildLabel`, sourced from `VITE_APP_VERSION`/
+`VITE_APP_BUILD_LABEL` env vars with hardcoded fallbacks). This is meant to be the simplest way to
+confirm which build the browser is actually running.
 
-> Version 0.1.0-rc.4-dev · Build local
-
-This is the simplest way to confirm which build the browser is actually running.
+**Known issue:** `.github/workflows/deploy-pages.yml` never sets `VITE_APP_VERSION` or
+`VITE_APP_BUILD_LABEL`, so every production deploy has shown the hardcoded fallback
+(`0.1.0-rc.4-dev` · `local`) since it was introduced (`b8efd67`, 2026-06-26) — through v0.1.0
+via v0.1.4 and everything since. The version shown in Settings has never reflected what's actually
+deployed. See `docs/architecture/known-issues-and-fixes.md` for the suggested fix (inject
+`git describe --tags` and the short SHA as build-time env vars in the deploy workflow).
 
 ## Check for update (manual)
 

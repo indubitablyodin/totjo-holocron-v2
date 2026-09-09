@@ -3,6 +3,16 @@
 ## Status
 Accepted for Task 1 of the mobile-first UX revision plan.
 
+**Amendment (2026-09-09):** this contract originally locked the `/daily` destination label to
+"Today" (see below). The shipped implementation instead uses "Focus" — not an oversight, but a
+label choice that predates this contract and is now load-bearing across the codebase (the
+`Focus & Practice` settings group, `dailyFocusEngine.ts`, `dailyQuickAccess.ts`'s "Daily Focus
+quick access" naming, `daily-focus-card`/`nav-daily` test ids, and the page's own `id="focus"`).
+Renaming the shipped label to match this document would touch more surface area than amending the
+document to match reality, so every "Today" reference below has been updated to "Focus" to keep
+this contract accurate. If a future redesign wants "Today" back, treat it as a deliberate rename
+across all of the above, not a one-line label swap.
+
 ## Purpose
 Lock the information architecture, shell wording, and control placement rules before shell implementation begins.
 
@@ -20,7 +30,7 @@ The app shell uses exactly four top-level destinations:
 
 | Label | Primary route | Purpose |
 | --- | --- | --- |
-| Today | `/daily` | Open the current day’s guided practice and completion flow. |
+| Focus | `/daily` | Open the current day’s guided practice and completion flow. |
 | Read | `/library` | Browse doctrine, supplemental reading, sermons, and reader entry points. |
 | Timer | `/timer` | Start and manage meditation sessions. |
 | Settings | `/settings` | Manage durable defaults, account access, and app-wide preferences. |
@@ -32,7 +42,7 @@ The existing route map stays intact. This revision changes presentation and word
 
 | Top-level label | Route(s) covered by the label | Notes |
 | --- | --- | --- |
-| Today | `/daily` | `/` may still redirect here or to the current default route during implementation, but the visible destination label is locked to `Today`. |
+| Focus | `/daily` | `/` may still redirect here or to the current default route during implementation, but the visible destination label is locked to `Focus`. |
 | Read | `/library`, `/library/doctrine/:slug`, `/library/supplemental/:slug`, `/library/sermons`, `/library/sermons/:slug` | Reader and archive routes stay inside the Read destination. |
 | Timer | `/timer` | Timer remains a single top-level destination. |
 | Settings | `/settings`, `/settings/account` | Account remains inside Settings, not in primary navigation. |
@@ -54,7 +64,7 @@ The existing route map stays intact. This revision changes presentation and word
 
 ### Desktop, 1024 px and up
 - Adapt to a left rail or sidebar if it improves scanability.
-- Keep the same four labels, in the same order: Today, Read, Timer, Settings.
+- Keep the same four labels, in the same order: Focus, Read, Timer, Settings.
 - Labels remain visible. No icon-only rail.
 - Install and offline status may live in the header or rail support area, but they must stay secondary to route navigation.
 
@@ -91,7 +101,7 @@ This inventory locks the exact replacement strings for shell labels, section tit
 | Location | Current string | Locked string |
 | --- | --- | --- |
 | Primary nav label for `/library` | Library | Read |
-| Primary nav label for `/daily` | Daily | Today |
+| Primary nav label for `/daily` | Daily | Focus |
 | Primary nav label for `/timer` | Timer | Timer |
 | Primary nav label for `/settings` | Settings | Settings |
 | Install button in shell header | Install app | Install on this device |
@@ -107,7 +117,7 @@ This inventory locks the exact replacement strings for shell labels, section tit
 | `/library` section title | Browse texts | Find a reading |
 | `/library` section title | Sermon archive | Sermons |
 | `/library` section title | Reading environment | Reading defaults |
-| `/daily` page title | Daily | Today |
+| `/daily` page title | Daily | Focus |
 | `/daily` section title | Today’s practice | Today’s practice |
 | `/daily` section title | Rollover policy | How today resets |
 | `/timer` page title | Timer | Timer |
@@ -153,7 +163,10 @@ Implementation-facing terms from the current shell stay out of user-facing UI co
 - Do not reintroduce implementation-facing copy in the shell, settings, reader, or timer UX.
 
 ## Verification commands
-Run these exact commands from the repository root.
+Run these exact commands from the repository root. These reflect the original 2026-06 acceptance
+of this contract, before the 2026-09-09 "Focus" amendment above — the `Today`/`Daily | Today`
+matches they were designed to find no longer appear in the locked-destinations/copy-inventory
+tables (only in the amendment note), which is expected.
 
 ```bash
 grep -nE "Today|Read|Timer|Settings|Control placement matrix" docs/ux/mobile-first-ia-contract.md > .sisyphus/evidence/task-1-mobile-ia.txt

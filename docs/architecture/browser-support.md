@@ -26,7 +26,7 @@ These must work without Chromium-only APIs:
 - Remote announcement fetch
 - Markdown export via Blob download
 - JSON backup via Blob download
-- Future JSON restore via file input
+- JSON restore preview via file input (parse/validate/classify only — applying a restore isn't built yet, see `docs/architecture/user-data-export.md`)
 
 ---
 

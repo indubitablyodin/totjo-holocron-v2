@@ -1,5 +1,10 @@
 # UX Backlog — TOTJO Holocron v2
 
+> **Historical snapshot — superseded.** Frozen at 2026-06-12 (PRs #19–#22). Substantial UX work has
+> landed since (guided meditation audio, My Documents, mobile-first IA rework, announcements
+> consolidation) that this file doesn't reflect. See `docs/architecture/known-issues-and-fixes.md`
+> for what's actually shipped and fixed since. Do not treat this as a live backlog.
+
 **Last updated:** 2026-06-12
 
 ---

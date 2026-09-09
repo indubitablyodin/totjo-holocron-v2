@@ -1,5 +1,11 @@
 # TOTJO Holocron v2 — UI/UX Audit Report
 
+> **Historical snapshot — superseded.** This audit is frozen at 2026-06-12 and describes issues
+> from that point in time (e.g. the "icon dump" mobile nav below). Several since-fixed items are
+> now addressed differently than this doc suggests — see `docs/architecture/known-issues-and-fixes.md`
+> for current status and later fixes (`3136d87`, `e6e6164`, and others). Do not treat this file as
+> current state; it's kept for historical context only.
+
 **Date:** 2026-06-12  
 **Audit scope:** All primary routes on desktop (1440×1024) + mobile Pixel 5 (393×851)  
 **Validator:** `pnpm lint` ✅ | `pnpm typecheck` ✅ | `pnpm test` ✅ (78/78) | `pnpm build:pages` ✅

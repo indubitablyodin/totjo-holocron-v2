@@ -12,10 +12,12 @@ Markdown is chosen for:
 - Portability — can be imported into Obsidian, Notion, or similar tools
 - Durability — no special software required to read it
 
-## Secondary future export format: JSON
+## Secondary export format: JSON
 
-JSON is reserved for a future restore/import path.  
-Markdown is the primary human-readable format. JSON is the canonical machine-readable format for round-trip fidelity.
+JSON backup and restore-preview are implemented today (see "Restore" sections below) — this
+section was written before that shipped and originally called JSON a "future" format; it isn't.
+Markdown is the primary human-readable format. JSON is the canonical machine-readable format for
+round-trip fidelity, and the only format restore reads.
 
 ## Data included
 
@@ -148,19 +150,20 @@ Functions:
 - Existing notes are never overwritten without confirmation.
 - Destructive "replace all" mode is not included in the first version.
 
-### Preview screen (future UI)
+### Preview screen (implemented, mostly)
 
-The restore preview should show:
+`SettingsPage.tsx` renders the preview counts from `createUserDataRestorePreview` — confirmed
+present: notes to add, notes to update, bookmarks to add, practice records to add, settings
+available, and records skipped. **Not present:** an explicit "export a safety backup before
+restoring" prompt — the UI currently only reassures that preview itself changes nothing
+(`"Preview a JSON backup before restoring. No data will be changed."`). Worth adding once the
+apply step below actually exists and a backup-first prompt would matter.
 
-- Notes to add
-- Notes to update (matched by id or documentId + body)
-- Bookmarks to add
-- Practice records to add
-- Settings to import
-- Records skipped (duplicates, invalid, or unsupported schema)
-- "Export a safety backup before restoring" prompt
+### Merge rules (design intent — apply step not built yet)
 
-### Merge rules
+These rules describe how the *apply* step should behave once it exists; `restoreUserData.ts`
+does not currently write anything back to IndexedDB/localStorage, so none of this is live behavior
+yet, only preview counts (above) are real today.
 
 - Duplicate detection uses stable record ids where available.
 - For notes without matching id, fallback comparison uses `documentId` + `bodyMarkdown` + timestamps.
@@ -169,7 +172,7 @@ The restore preview should show:
 - Practice history records are appended; existing records are never modified.
 - Settings (timer defaults, reader settings) are imported as new defaults; the previous settings are saved to a backup key before overwriting.
 
-### Safety
+### Safety (design intent — apply step not built yet)
 
 - Restore exports a safety backup before applying changes.
 - Restore must never import remote code, arbitrary HTML, or executable content.
