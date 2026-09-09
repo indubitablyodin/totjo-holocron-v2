@@ -20,6 +20,7 @@ const KIND_LABELS: Record<string, string> = {
   event: 'Event',
   app: 'App update',
   practice: 'Practice',
+  support: 'Support',
 };
 
 export function AnnouncementModal() {

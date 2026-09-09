@@ -4,7 +4,8 @@ export type AnnouncementKind =
   | 'doctrine'
   | 'event'
   | 'app'
-  | 'practice';
+  | 'practice'
+  | 'support';
 
 export type AnnouncementPriority = 'low' | 'normal' | 'high' | 'urgent';
 

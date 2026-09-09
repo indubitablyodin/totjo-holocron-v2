@@ -716,8 +716,16 @@ export function AboutLegalSettingsPage() {
             </button>
           </div>
           <div className="detail-card">
-            <h3>Creator and support links</h3>
-            <p>The app header links to <a href="https://odinhalvorson.com" rel="noreferrer" target="_blank">odinhalvorson.com</a> and a Ko-fi support page at <a href="https://ko-fi.com/indubitablyodin" rel="noreferrer" target="_blank">ko-fi.com/indubitablyodin</a>.</p>
+            <h3>Support this project</h3>
+            <p>
+              Built and maintained by one person at <a href="https://odinhalvorson.com" rel="noreferrer" target="_blank">odinhalvorson.com</a>.
+              If the Holocron is useful to you, a Ko-fi contribution helps keep it going — entirely optional.
+            </p>
+            <p>
+              <a className="secondary-button button-inline" href="https://ko-fi.com/indubitablyodin" rel="noreferrer" target="_blank">
+                Support on Ko-fi
+              </a>
+            </p>
           </div>
           <div className="detail-card">
             <h3>Offline reading</h3>

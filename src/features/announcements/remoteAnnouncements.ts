@@ -1,6 +1,6 @@
 import type { Announcement, AnnouncementAction, AnnouncementKind, AnnouncementPlacement, AnnouncementPriority } from './announcementTypes';
 
-const VALID_KINDS: AnnouncementKind[] = ['totjo', 'sermon', 'doctrine', 'event', 'app', 'practice'];
+const VALID_KINDS: AnnouncementKind[] = ['totjo', 'sermon', 'doctrine', 'event', 'app', 'practice', 'support'];
 const VALID_PRIORITIES: AnnouncementPriority[] = ['low', 'normal', 'high', 'urgent'];
 const VALID_PLACEMENTS: AnnouncementPlacement[] = ['badge', 'banner', 'modal', 'card'];
 

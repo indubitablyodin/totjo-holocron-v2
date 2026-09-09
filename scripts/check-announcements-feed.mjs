@@ -11,7 +11,7 @@
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 
-const VALID_KINDS = ['totjo', 'sermon', 'doctrine', 'event', 'app', 'practice'];
+const VALID_KINDS = ['totjo', 'sermon', 'doctrine', 'event', 'app', 'practice', 'support'];
 const VALID_PRIORITIES = ['low', 'normal', 'high', 'urgent'];
 const VALID_PLACEMENTS = ['badge', 'banner', 'modal', 'card'];
 

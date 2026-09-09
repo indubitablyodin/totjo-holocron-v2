@@ -1,5 +1,15 @@
 # Announcements
 
+## This is not the PWA update banner
+
+This system shows content notices — badge only by default, tap to read, dismissible per
+`id`+`version`. It is unrelated to whether the app's own code is up to date; that's the separate
+service-worker-driven update banner covered in `docs/architecture/pwa-update-flow.md`. A bundled
+announcement being tagged `kind: 'app'` (label "App update") does **not** mean it has anything to
+do with a pending code update — that kind exists for announcing app-level news through this same
+badge, and was previously misused for a first-run welcome message (fixed in `e40f398`; see the
+other doc's disambiguation section for the full story).
+
 ## How bundled announcements work
 
 Bundled announcements live in `src/features/announcements/announcementRegistry.ts`.
@@ -86,7 +96,7 @@ Create or edit `public/announcements.json` in the repo root.
 |---|---|---|---|
 | `id` | yes | string | Unique identifier. |
 | `version` | yes | integer ≥1 | Bump to re-show a dismissed announcement. |
-| `kind` | yes | enum | `totjo`, `sermon`, `doctrine`, `event`, `app`, `practice` |
+| `kind` | yes | enum | `totjo`, `sermon`, `doctrine`, `event`, `app`, `practice`, `support` |
 | `priority` | yes | enum | `low`, `normal`, `high`, `urgent` |
 | `placement` | yes | enum | `badge`, `banner`, `modal`, `card` |
 | `title` | yes | string | Plain text title. |

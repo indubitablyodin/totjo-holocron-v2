@@ -25,4 +25,16 @@ export const BUNDLED_ANNOUNCEMENTS: Announcement[] = [
     publishedAt: '2026-06-22T00:00:00.000Z',
     dismissible: true,
   },
+  {
+    id: 'support-the-creator',
+    version: 1,
+    kind: 'support',
+    priority: 'low',
+    placement: 'badge',
+    title: 'Enjoying the Holocron?',
+    body: 'This app is built and maintained by one person in their spare time. If it has been useful to you, a Ko-fi contribution helps keep it going — no pressure, ever.',
+    action: { label: 'Support on Ko-fi', href: 'https://ko-fi.com/indubitablyodin', external: true },
+    publishedAt: '2026-09-09T00:00:00.000Z',
+    dismissible: true,
+  },
 ];
