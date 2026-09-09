@@ -63,6 +63,14 @@ function getChoiceForDocument(document: DocumentRecord): DailyQuickAccessChoice 
     };
   }
 
+  if (document.authorityClass === 'custom') {
+    return {
+      id: `document:${document.id}`,
+      title: document.title,
+      href: `/library/mydocs/${document.slug}`,
+    };
+  }
+
   return null;
 }
 
@@ -76,6 +84,7 @@ export function createDailyQuickAccessChoices(documents: DocumentRecord[], downl
       (document) =>
         document.authorityClass === 'canonical' ||
         document.authorityClass === 'supplemental' ||
+        document.authorityClass === 'custom' ||
         (document.authorityClass === 'sermon' && savedSermonDocumentIds.has(document.id)),
     )
     .map((document) => getChoiceForDocument(document))

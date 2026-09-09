@@ -50,7 +50,7 @@ beforeEach(() => {
 });
 
 describe('daily quick access middle slot', () => {
-  it('builds choices from canonical docs, supplemental docs, and ready saved sermons only', () => {
+  it('builds choices from canonical docs, supplemental docs, My Documents, and ready saved sermons only', () => {
     const choices = createDailyQuickAccessChoices(
       [
         createDocument({ authorityClass: 'supplemental', id: 'supplemental-knights-code', slug: 'knights-code', title: "Knight's Code" }),
@@ -58,6 +58,7 @@ describe('daily quick access middle slot', () => {
         createDocument({ authorityClass: 'sermon', id: 'sermon-ready', slug: 'saved-sermon', title: 'Saved Sermon' }),
         createDocument({ authorityClass: 'sermon', id: 'sermon-failed', slug: 'failed-sermon', title: 'Failed Sermon' }),
         createDocument({ authorityClass: 'sermon', id: 'sermon-other-ready', slug: 'other-ready-sermon', title: 'Other Ready Sermon' }),
+        createDocument({ authorityClass: 'custom', id: 'custom-my-notes', slug: 'my-notes', title: 'My Notes' }),
       ],
       [
         createDownload({ documentId: 'sermon-ready', id: 'sermon-download:sermon-ready', status: 'ready' }),
@@ -71,6 +72,11 @@ describe('daily quick access middle slot', () => {
         href: '/library/supplemental/knights-code',
         id: 'document:supplemental-knights-code',
         title: "Knight's Code",
+      },
+      {
+        href: '/library/mydocs/my-notes',
+        id: 'document:custom-my-notes',
+        title: 'My Notes',
       },
       {
         href: '/library/sermons/saved-sermon',
