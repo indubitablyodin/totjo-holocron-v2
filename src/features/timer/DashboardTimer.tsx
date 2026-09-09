@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import { TimerCore } from '@/features/timer/TimerCore';
 import { recordMeditationPractice } from '@/features/timer/timerHistory';
 import { loadTimerSettings } from '@/features/timer/timerSettingsStorage';
-import { useTimerAudio } from '@/features/timer/useTimerAudio';
 
 type DashboardTimerProps = {
   defaultDurationMinutes?: number;
@@ -12,7 +11,6 @@ type DashboardTimerProps = {
 export function DashboardTimer({ defaultDurationMinutes }: DashboardTimerProps) {
   const settings = useMemo(() => loadTimerSettings(), []);
   const duration = defaultDurationMinutes ?? settings.defaultDurationMinutes;
-  const { handleCue } = useTimerAudio(settings.soundProfileId);
 
   return (
     <TimerCore
@@ -23,10 +21,8 @@ export function DashboardTimer({ defaultDurationMinutes }: DashboardTimerProps) 
         await recordMeditationPractice({
           completedAt: event.completedAt,
           durationSeconds: event.durationSeconds,
+          ...(event.guidedAudioName ? { guidedAudioName: event.guidedAudioName } : {}),
         });
-      }}
-      onCue={async (cue) => {
-        await handleCue(cue, settings.soundProfileId);
       }}
     />
   );

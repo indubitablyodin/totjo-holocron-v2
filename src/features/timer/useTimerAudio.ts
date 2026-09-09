@@ -8,10 +8,19 @@ import type { AudioFileRecord } from '@/lib/content';
 
 export type TimerAudioStatus = 'ready' | 'silent' | 'unavailable';
 
-export function useTimerAudio(soundProfileId: SoundProfileId, guidedAudioFile?: AudioFileRecord | null) {
+export function useTimerAudio(
+  soundProfileId: SoundProfileId,
+  guidedAudioFile?: AudioFileRecord | null,
+  onGuidedEnded?: () => void,
+) {
   const audioElementsRef = useRef<Partial<Record<CueKind, HTMLAudioElement>>>({});
   const guidedAudioRef = useRef<HTMLAudioElement | null>(null);
   const guidedAudioUrlRef = useRef<string | null>(null);
+  const onGuidedEndedRef = useRef(onGuidedEnded);
+
+  useEffect(() => {
+    onGuidedEndedRef.current = onGuidedEnded;
+  }, [onGuidedEnded]);
 
   const audioStatus: TimerAudioStatus = (() => {
     const profile = getSoundProfileById(soundProfileId);
@@ -47,8 +56,13 @@ export function useTimerAudio(soundProfileId: SoundProfileId, guidedAudioFile?: 
     };
   }, [soundProfileId]);
 
+  const handleGuidedEnded = useCallback(() => {
+    onGuidedEndedRef.current?.();
+  }, []);
+
   useEffect(() => {
     if (guidedAudioRef.current) {
+      guidedAudioRef.current.removeEventListener('ended', handleGuidedEnded);
       guidedAudioRef.current.pause();
       guidedAudioRef.current.removeAttribute('src');
       guidedAudioRef.current.load();
@@ -64,6 +78,7 @@ export function useTimerAudio(soundProfileId: SoundProfileId, guidedAudioFile?: 
       const url = URL.createObjectURL(guidedAudioFile.blob);
       const audio = new Audio(url);
       audio.preload = 'auto';
+      audio.addEventListener('ended', handleGuidedEnded);
       audio.load();
       guidedAudioRef.current = audio;
       guidedAudioUrlRef.current = url;
@@ -71,6 +86,7 @@ export function useTimerAudio(soundProfileId: SoundProfileId, guidedAudioFile?: 
 
     return () => {
       if (guidedAudioRef.current) {
+        guidedAudioRef.current.removeEventListener('ended', handleGuidedEnded);
         guidedAudioRef.current.pause();
         guidedAudioRef.current.removeAttribute('src');
         guidedAudioRef.current.load();
@@ -82,7 +98,7 @@ export function useTimerAudio(soundProfileId: SoundProfileId, guidedAudioFile?: 
         guidedAudioUrlRef.current = null;
       }
     };
-  }, [guidedAudioFile]);
+  }, [guidedAudioFile, handleGuidedEnded]);
 
   const playCue = useCallback(async (cueKind: CueKind, profileId: SoundProfileId) => {
     const profile = getSoundProfileById(profileId);

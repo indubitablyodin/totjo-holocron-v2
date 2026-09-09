@@ -1,8 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 
-import { TimerCore } from './TimerCore';
+import { TimerCore, type TimerCoreProps } from './TimerCore';
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -12,13 +13,17 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-async function advanceTime(seconds: number) {
-  await vi.advanceTimersByTimeAsync(seconds * 1000);
+function renderTimerCore(props: Partial<TimerCoreProps> = {}) {
+  return render(
+    <MemoryRouter>
+      <TimerCore mode="compact" source="daily-dashboard" {...props} />
+    </MemoryRouter>,
+  );
 }
 
 describe('TimerCore dashboard mode', () => {
   it('renders preset buttons when idle', () => {
-    render(<TimerCore mode="compact" source="daily-dashboard" />);
+    renderTimerCore();
 
     expect(screen.getByTestId('dashboard-meditation-timer')).toBeVisible();
     expect(screen.getByTestId('meditation-presets')).toBeVisible();
@@ -31,7 +36,7 @@ describe('TimerCore dashboard mode', () => {
   it('starts timer in-place when a preset is clicked — does not navigate', async () => {
     const user = userEvent.setup();
 
-    render(<TimerCore mode="compact" source="daily-dashboard" />);
+    renderTimerCore();
 
     await user.click(screen.getByTestId('meditation-preset-10'));
 
@@ -42,7 +47,7 @@ describe('TimerCore dashboard mode', () => {
   });
 
   it('preset buttons are buttons, not links — no navigation possible', () => {
-    render(<TimerCore mode="compact" source="daily-dashboard" />);
+    renderTimerCore();
 
     expect(screen.getByTestId('meditation-preset-5').tagName).toBe('BUTTON');
     expect(screen.getByTestId('meditation-preset-10').tagName).toBe('BUTTON');
@@ -52,7 +57,7 @@ describe('TimerCore dashboard mode', () => {
   it('shows pause button while running and hides it on pause', async () => {
     const user = userEvent.setup();
 
-    render(<TimerCore mode="compact" source="daily-dashboard" />);
+    renderTimerCore();
 
     await user.click(screen.getByTestId('meditation-preset-5'));
 
@@ -68,7 +73,7 @@ describe('TimerCore dashboard mode', () => {
   it('shows resume button after pausing and can resume', async () => {
     const user = userEvent.setup();
 
-    render(<TimerCore mode="compact" source="daily-dashboard" />);
+    renderTimerCore();
 
     await user.click(screen.getByTestId('meditation-preset-5'));
     await user.click(screen.getByTestId('timer-pause'));
@@ -84,7 +89,7 @@ describe('TimerCore dashboard mode', () => {
   it('returns to preset selection after stopping', async () => {
     const user = userEvent.setup();
 
-    render(<TimerCore mode="compact" source="daily-dashboard" />);
+    renderTimerCore();
 
     await user.click(screen.getByTestId('meditation-preset-5'));
     await user.click(screen.getByTestId('timer-stop'));
@@ -96,7 +101,7 @@ describe('TimerCore dashboard mode', () => {
   it('custom duration input starts timer in-place', async () => {
     const user = userEvent.setup();
 
-    render(<TimerCore mode="compact" source="daily-dashboard" />);
+    renderTimerCore();
 
     await user.click(screen.getByTestId('meditation-custom-trigger'));
     expect(screen.getByTestId('meditation-custom-input')).toBeVisible();
@@ -116,13 +121,13 @@ describe('TimerCore dashboard mode', () => {
   });
 
   it('renders without error and accepts callbacks', () => {
-    render(<TimerCore mode="compact" source="daily-dashboard" />);
+    renderTimerCore();
 
     expect(screen.getByTestId('dashboard-meditation-timer')).toBeVisible();
   });
 
   it('cleans up interval on unmount', () => {
-    const { unmount } = render(<TimerCore mode="compact" source="daily-dashboard" />);
+    const { unmount } = renderTimerCore();
 
     unmount();
 
@@ -132,14 +137,7 @@ describe('TimerCore dashboard mode', () => {
   it('fires onComplete once when a 5-minute session completes', async () => {
     const onComplete = vi.fn();
 
-    render(
-      <TimerCore
-        mode="compact"
-        source="daily-dashboard"
-        defaultDurationMinutes={5}
-        onComplete={onComplete}
-      />,
-    );
+    renderTimerCore({ defaultDurationMinutes: 5, onComplete });
 
     await userEvent.setup({ advanceTimers: vi.advanceTimersByTimeAsync })
       .click(screen.getByTestId('meditation-preset-5'));
@@ -154,14 +152,7 @@ describe('TimerCore dashboard mode', () => {
   it('does not fire onComplete multiple times', async () => {
     const onComplete = vi.fn();
 
-    render(
-      <TimerCore
-        mode="compact"
-        source="daily-dashboard"
-        defaultDurationMinutes={5}
-        onComplete={onComplete}
-      />,
-    );
+    renderTimerCore({ defaultDurationMinutes: 5, onComplete });
 
     await userEvent.setup({ advanceTimers: vi.advanceTimersByTimeAsync })
       .click(screen.getByTestId('meditation-preset-5'));

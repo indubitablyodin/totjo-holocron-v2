@@ -18,6 +18,7 @@ import {
 export type TimerCompletionEvent = {
   durationSeconds: number;
   completedAt: string;
+  guidedAudioName?: string;
 };
 
 export type TimerCueEvent = 'start' | 'pause' | 'resume' | 'complete';
