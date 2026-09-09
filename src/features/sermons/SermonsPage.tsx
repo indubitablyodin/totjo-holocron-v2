@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 
 import { getSermonCacheState, getSermonDocuments, getSermonDownloadRecord, syncSermonArchive } from './sermonSync';
+import { markSermonsVisitedNow } from './sermonsVisit';
 import type { SermonCacheState, SermonDocumentRecord } from './types';
 import { useOnlineStatus } from './useOnlineStatus';
 
@@ -79,6 +80,10 @@ export function SermonsPage() {
     kind: 'idle',
     message: isOnline ? 'Sermons ready. Tap Refresh to get the latest.' : 'Connect to browse sermons.',
   });
+
+  useEffect(() => {
+    markSermonsVisitedNow();
+  }, []);
 
   useEffect(() => {
     let isMounted = true;

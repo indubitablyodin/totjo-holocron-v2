@@ -10,6 +10,7 @@ import { TotjoBrandMark } from '@/app/TotjoBrandMark';
 import { appDb, ensureStorageReady, type HolocronDatabase } from '@/lib/db';
 
 import { getSermonDocuments } from '@/features/sermons/sermonSync';
+import { countNewSermons, loadSermonsLastVisitedAt } from '@/features/sermons/sermonsVisit';
 import type { SermonDocumentRecord } from '@/features/sermons/types';
 
 import {
@@ -161,6 +162,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   const [statsStatus, setStatsStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [latestSermon, setLatestSermon] = useState<SermonDocumentRecord | null>(null);
   const [sermonStatus, setSermonStatus] = useState<'loading' | 'ready' | 'empty'>('loading');
+  const [newSermonsCount, setNewSermonsCount] = useState(0);
   const [completedDates, setCompletedDates] = useState<Set<string>>(new Set());
   const [streakStartDate, setStreakStartDate] = useState<string | null>(null);
   const [timerSettingsOpen, setTimerSettingsOpen] = useState(false);
@@ -209,6 +211,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
         if (isMounted) {
           setLatestSermon(sermons[0] ?? null);
           setSermonStatus(sermons.length > 0 ? 'ready' : 'empty');
+          setNewSermonsCount(countNewSermons(sermons, loadSermonsLastVisitedAt()));
         }
       })
       .catch(() => {
@@ -387,7 +390,11 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
               Latest Sermon
             </h2>
             <article className="lane-card lane-card--sermon" data-testid="dashboard-latest-sermon">
-              <span className="lane-card__badge">New</span>
+              {newSermonsCount > 0 ? (
+                <span className="lane-card__badge" data-testid="dashboard-new-sermons-badge">
+                  {newSermonsCount === 1 ? 'New' : `${newSermonsCount} new`}
+                </span>
+              ) : null}
               <p className="lane-card__title">{latestSermon.title}</p>
               <p className="lane-card__summary">{latestSermon.summary}</p>
               <div className="lane-card__actions">
