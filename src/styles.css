@@ -2945,21 +2945,6 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255, 196, 87, 0.3), transparent);
 }
 
-/* Status strip (used in panels) */
-.holocron-status-line {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(90, 210, 230, 0.5);
-  border-bottom: 1px solid rgba(90, 210, 230, 0.1);
-  background: rgba(0, 0, 0, 0.3);
-}
-
 /* Section label */
 .holocron-label {
   font-family: var(--font-mono);
@@ -3455,29 +3440,6 @@ body {
   pointer-events: none;
 }
 
-/* --- Status strip — recessed engraved data plate feel --- */
-.holocron-status-line {
-  background: var(--hw-status-line-bg);
-  border-bottom: 1px solid var(--hw-seam);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
-  position: relative;
-  padding-left: var(--space-4);
-}
-
-.holocron-status-line::before {
-  content: '';
-  position: absolute;
-  left: var(--space-2);
-  top: 50%;
-  transform: translateY(-50%);
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--hw-led-cyan);
-  box-shadow: var(--hw-led-glow);
-  pointer-events: none;
-}
-
 /* --- Primary action panel (meditation) — instrument bay --- */
 .primary-action-panel {
   position: relative;
@@ -3948,10 +3910,6 @@ body::after {
 :root[data-theme='light'] .primary-action-panel {
   background-image:
     repeating-linear-gradient(90deg, rgba(160,142,118,0.03) 0px, transparent 1px, transparent 10px);
-}
-
-:root[data-theme='light'] .holocron-status-line {
-  color: var(--color-text-muted);
 }
 
 :root[data-theme='light'] .lane-card {
