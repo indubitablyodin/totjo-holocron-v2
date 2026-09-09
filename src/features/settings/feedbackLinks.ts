@@ -1,7 +1,13 @@
-export const APP_VERSION = 'v0.1.4';
+import { APP_BUILD } from '@/app/buildInfo';
+
+// Derived from APP_BUILD (the single source of truth for the running version) instead of a
+// separately hardcoded string — a hardcoded copy here previously drifted from Settings > About's
+// version display within one release. See docs/architecture/known-issues-and-fixes.md.
+export const APP_VERSION = `v${APP_BUILD.version}`;
 export const GITHUB_REPO = 'indubitablyodin/totjo-holocron-v2';
 export const GITHUB_BUG_REPORT_URL = `https://github.com/${GITHUB_REPO}/issues/new?template=bug_report.md&title=Bug%3A%20&labels=bug`;
-export const GITHUB_RELEASE_URL = `https://github.com/${GITHUB_REPO}/releases/tag/v0.1.4`;
+// Points at the releases index, not a specific tag, so it never goes stale on its own.
+export const GITHUB_RELEASE_URL = `https://github.com/${GITHUB_REPO}/releases`;
 
 export type FeedbackContext = {
   version: string;

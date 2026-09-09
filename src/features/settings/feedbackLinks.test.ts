@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { APP_BUILD } from '@/app/buildInfo';
 import {
   APP_VERSION,
   GITHUB_BUG_REPORT_URL,
@@ -18,8 +19,8 @@ const MOCK_CONTEXT: FeedbackContext = {
 };
 
 describe('feedbackLinks', () => {
-  it('exports app version', () => {
-    expect(APP_VERSION).toBe('v0.1.4');
+  it('exports app version derived from the single build-info source of truth', () => {
+    expect(APP_VERSION).toBe(`v${APP_BUILD.version}`);
   });
 
   it('exports GitHub bug report URL', () => {
@@ -29,9 +30,8 @@ describe('feedbackLinks', () => {
     expect(GITHUB_BUG_REPORT_URL).toContain('labels=bug');
   });
 
-  it('exports GitHub release URL', () => {
-    expect(GITHUB_RELEASE_URL).toContain('github.com');
-    expect(GITHUB_RELEASE_URL).toContain('releases/tag/v0.1.4');
+  it('exports GitHub release URL pointing at the releases index, not a specific tag', () => {
+    expect(GITHUB_RELEASE_URL).toBe('https://github.com/indubitablyodin/totjo-holocron-v2/releases');
   });
 
   it('createGitHubBugReportUrl starts with GitHub issues/new', () => {
