@@ -2,11 +2,17 @@ import { expect, test, type Page } from './base';
 
 async function openMyDocuments(page: Page) {
   await page.goto('/#/library/mydocs');
+  await expect(page.getByTestId('my-documents-form-toggle')).toBeVisible();
+}
+
+async function openPasteForm(page: Page) {
+  await openMyDocuments(page);
+  await page.getByTestId('my-documents-form-toggle').click();
   await expect(page.getByTestId('my-documents-title')).toBeVisible();
 }
 
 async function addViaForm(page: Page, title: string, body = 'A custom reading body.') {
-  await openMyDocuments(page);
+  await openPasteForm(page);
 
   await page.getByTestId('my-documents-title').fill(title);
   await page.getByTestId('my-documents-body').fill(body);
@@ -23,6 +29,7 @@ test.describe('my documents', () => {
   test('shows an empty state and adds a pasted document', async ({ page }) => {
     await expect(page.getByTestId('my-documents-empty')).toBeVisible();
 
+    await page.getByTestId('my-documents-form-toggle').click();
     await page.getByTestId('my-documents-title').fill('My Practice Journal');
     await page.getByTestId('my-documents-summary').fill('A private reflection.');
     await page.getByTestId('my-documents-body').fill('## Entry one\n\nToday I practiced.');

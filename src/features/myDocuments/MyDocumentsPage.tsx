@@ -43,6 +43,7 @@ export function MyDocumentsPage() {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isFormExpanded, setIsFormExpanded] = useState(false);
 
   const refresh = useCallback(async () => {
     setDocuments(await listMyDocuments(appDb));
@@ -77,6 +78,7 @@ export function MyDocumentsPage() {
         setErrorMessage(null);
         setStatusMessage(successMessage);
         setForm(INITIAL_FORM);
+        setIsFormExpanded(false);
         void refresh();
         return;
       }
@@ -123,6 +125,7 @@ export function MyDocumentsPage() {
         tags: result.input.tags.join(', '),
         bodyMarkdown: result.input.bodyMarkdown,
       });
+      setIsFormExpanded(true);
       setStatusMessage('File loaded. Review the fields and add it below.');
     },
     [],
@@ -159,23 +162,38 @@ export function MyDocumentsPage() {
           type="file"
         />
 
-        <button
-          className="secondary-button"
-          data-testid="my-documents-import-button"
-          onClick={() => fileInputRef.current?.click()}
-          type="button"
-        >
-          Import a file
-        </button>
+        <div className="document-actions">
+          <button
+            className="secondary-button"
+            data-testid="my-documents-import-button"
+            onClick={() => fileInputRef.current?.click()}
+            type="button"
+          >
+            Import a file
+          </button>
 
-        <form
-          className="settings-form"
-          data-testid="my-documents-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void handlePasteSubmit();
-          }}
-        >
+          <button
+            aria-expanded={isFormExpanded}
+            className="secondary-button"
+            data-testid="my-documents-form-toggle"
+            onClick={() => {
+              setIsFormExpanded((current) => !current);
+            }}
+            type="button"
+          >
+            {isFormExpanded ? 'Cancel' : 'Write one'}
+          </button>
+        </div>
+
+        {isFormExpanded ? (
+          <form
+            className="settings-form"
+            data-testid="my-documents-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void handlePasteSubmit();
+            }}
+          >
           <label className="field-card" htmlFor="my-documents-title">
             <span className="field-label">Title</span>
             <input
@@ -247,6 +265,7 @@ export function MyDocumentsPage() {
             </button>
           </div>
         </form>
+        ) : null}
 
         {statusMessage ? (
           <p className="support-copy" data-testid="my-documents-status" role="status">
