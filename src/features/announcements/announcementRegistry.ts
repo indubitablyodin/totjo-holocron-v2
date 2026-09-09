@@ -4,7 +4,7 @@ export const BUNDLED_ANNOUNCEMENTS: Announcement[] = [
   {
     id: 'welcome-totjo-holocron',
     version: 1,
-    kind: 'app',
+    kind: 'totjo',
     priority: 'normal',
     placement: 'banner',
     title: 'Welcome to TOTJO Holocron',

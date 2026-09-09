@@ -9,18 +9,25 @@ They are always available and do not require network access.
 ## How remote feed works
 
 The app can fetch announcements from a remote JSON feed.
-By default, the feed URL is `/announcements.json` (same-origin).
+By default, and currently, the feed is `public/announcements.json`, deployed as part of
+this app to the same origin the app is served from — no separate host or repo.
 
 The actual feed URL is resolved at runtime in this order:
 
 1. `public/runtime-config.json` — if present and valid, its `announcementsFeedUrl` is used.
 2. `VITE_ANNOUNCEMENTS_FEED_URL` environment variable — fallback if runtime config is absent.
-3. `/announcements.json` — final fallback if neither runtime config nor env var are available.
+3. `/announcements.json` (same-origin, base-path aware) — final fallback if neither runtime
+   config nor env var are available.
 
-The current runtime config points to:
-```
-https://syndicatedpillbug.github.io/totjo-holocron-announcements/announcements.json
-```
+`runtime-config.json` currently sets no `announcementsFeedUrl`, so the app uses the
+same-origin default. An earlier revision of this feature pointed `announcementsFeedUrl`
+at a separate repo (`SyndicatedPillbug/totjo-holocron-announcements`) specifically so
+announcements could be published without rebuilding the app. In practice that split
+repo just went stale — for a solo project with a sub-minute CI build and deploy, the
+overhead of a second repo to clone, edit, and keep a validator script in sync with
+outweighed the benefit of skipping a rebuild. The `announcementsFeedUrl` override
+mechanism itself still exists (any external feed URL still works, same-origin or not) —
+it's just unused today.
 
 On startup:
 1. Bundled announcements are loaded immediately.
@@ -31,83 +38,6 @@ On startup:
 6. If the fetch succeeds and validates, the new announcements replace the cached ones.
 7. If the fetch fails (offline, missing file, network error), the app continues with
    bundled + previously cached announcements. No error is shown.
-
-## Publishing without redeploying the app
-
-The announcement feed is hosted at a separate static URL so new announcements can be published
-without rebuilding or redeploying the app.
-
-The feed repository is at:
-```
-https://github.com/SyndicatedPillbug/totjo-holocron-announcements
-```
-
-### Publishing workflow
-
-1. Clone or open the `totjo-holocron-announcements` repository.
-2. Edit `announcements.json`.
-3. Use a new `id` for new announcements.
-4. Bump `version` to re-show a dismissed announcement.
-5. Validate the feed:
-   The feed repo includes its own validator:
-   ```sh
-   node scripts/validate.mjs
-   ```
-   Or use the app repo's standalone checker:
-   ```sh
-   node scripts/check-announcements-feed.mjs path/to/announcements.json
-   ```
-   From the app repo:
-   ```sh
-   pnpm check:announcements path/to/announcements.json
-   ```
-6. Commit and push the feed repository.
-7. The static host serves the updated JSON.
-8. Installed apps fetch the feed the next time they open.
-
-No app rebuild or redeploy is required after the feed URL is configured in `runtime-config.json`.
-
-### Feed repo validation workflow
-
-The feed repo has a local validation script (`scripts/validate.mjs`) and a staged GitHub Actions workflow (`.github/workflows/validate-announcements.yml`).
-
-The workflow file is not yet pushed to the feed repo because the current git token lacks the required `workflow` scope. To enable automated CI validation:
-
-1. Create a [classic personal access token](https://github.com/settings/tokens) with the `workflow` scope.
-2. Clone the feed repo or navigate to it:
-   ```sh
-   gh repo clone SyndicatedPillbug/totjo-holocron-announcements
-   cd totjo-holocron-announcements
-   ```
-3. Restore and push the workflow file:
-   ```sh
-   git show 73a3aae:.github/workflows/validate-announcements.yml > .github/workflows/validate-announcements.yml
-   git add .github/workflows/validate-announcements.yml
-   git commit -m "ci: validate announcements feed on push"
-   git remote set-url origin https://<YOUR_PAT>@github.com/SyndicatedPillbug/totjo-holocron-announcements.git
-   git push origin main
-   ```
-4. After push, the workflow runs on every subsequent push that changes `announcements.json`.
-
-### Operator runbook
-
-**To publish a new announcement:**
-
-1. Open the feed repository: `SyndicatedPillbug/totjo-holocron-announcements`
-2. Edit `announcements.json`.
-3. Add or update a block in the `announcements` array.
-4. Validate with the main app's checker:
-   ```sh
-   pnpm check:announcements path/to/announcements.json
-   ```
-   Or download and check the remote URL:
-   ```sh
-   curl -sSf https://syndicatedpillbug.github.io/totjo-holocron-announcements/announcements.json -o /tmp/check.json
-   pnpm check:announcements /tmp/check.json
-   ```
-5. Commit and push.
-6. Wait for GitHub Pages to deploy (usually 1–2 minutes).
-7. Open the app and verify the new announcement appears.
 
 ### Failure modes
 
