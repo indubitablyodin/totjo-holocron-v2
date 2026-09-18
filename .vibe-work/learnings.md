@@ -62,3 +62,76 @@ was spot-checked against current code during a 2026-09-09 documentation audit an
 2. **AppShell Complexity**: `AppShell.tsx` is ~500 lines with complex navigation logic. This is a candidate for splitting if it grows more.
 
 3. **Sync Merge Logic**: Profile merging in `src/lib/sync/` uses timestamp-based conflict resolution (last write wins). This is simple but may need refinement for complex merge scenarios.
+
+4. **TOTJO Website HTML Structure Drift**: The TOTJO website underwent a redesign in mid-2026, changing from a Joomla com-content-category table layout (with classes like `.com-content-category__table`, `.list-title`, `.list-author`, `.list-date`) to a markdown-style table without microdata attributes. The sermon importer (`scripts/import-totjo/import-sermons.mjs`) was updated to support both old and new formats via a dual-parsing strategy.
+
+---
+
+## 📅 Decision Log
+
+### 2026-09-18: Sermon Importer Fix for TOTJO Website Redesign
+
+**Problem**: GitHub Actions `sync-sermons` workflow began failing due to TOTJO website redesign. The HTML structure changed from:
+- **Old**: Joomla com-content-category with microdata attributes (`itemprop="headline"`, `itemprop="author"`, etc.)
+- **New**: Markdown-style tables with plain HTML and different date/author formatting
+
+**Decision**: Update `scripts/import-totjo/import-sermons.mjs` to support both formats simultaneously.
+
+**Changes Made**:
+- Added dual-format parsing strategy (try old format first, fallback to new format)
+- Added `MONTH_MAP` for parsing abbreviated month names (Jan, Feb, Aug, etc.)
+- Added `parseDateDDMMYYYY()` and `parseDateDDMonthYYYY()` for both date formats
+- Split archive parsing into `parseArchiveHtmlOld()` and `parseArchiveHtmlNew()`
+- Split detail parsing into `parseSermonDetailHtmlOld()` and `parseSermonDetailHtmlNew()`
+- Added metadata paragraph filtering to exclude "Written by:" and date paragraphs from sermon body
+- Updated test in `src/features/sermons/sermon-import.test.ts` to accept new error message format
+- Added test fixtures for new HTML structure validation
+
+**Files Modified**:
+- `scripts/import-totjo/import-sermons.mjs`
+- `src/features/sermons/sermon-import.test.ts`
+
+**New Test Fixtures**:
+- `tests/fixtures/totjo-sermons/archive-page-new.html`
+- `tests/fixtures/totjo-sermons/details/bruised-and-bleeding.html`
+
+**Result**: GitHub Actions `sync-sermons` workflow now successfully imports sermons from the live TOTJO website.
+
+**Considered and Rejected**: 
+- Updating only the test fixtures to match the new structure (would have broken backward compatibility)
+- Creating separate importers for old vs. new formats (would have duplicated code)
+- Using regex-only parsing (less maintainable, more error-prone)
+
+---
+
+### 2026-09-18: TOTJO Website Login Integration Assessment
+
+**Question**: Can the PWA integrate TOTJO website login to become a one-stop shop?
+
+**Assessment**: Not feasible without TOTJO administrative changes.
+
+**Blockers**:
+1. TOTJO uses Joomla CMS with session-based authentication (no OAuth/OIDC, no token API)
+2. Session cookies are SameSite-restricted by default, preventing cross-origin sharing
+3. No public API for authentication; tokens only accessible after web login
+4. No admin access to install Joomla plugins on TOTJO website
+
+**Workarounds Considered**:
+
+| Approach | Feasibility | Notes |
+|----------|-------------|-------|
+| **Deep Linking** | ✅ High | Rejected: Opens full website in browser tab, not mobile-optimized, users leave the app |
+| **OAuth/OIDC Plugin** | ⚠️ Medium | Requires TOTJO to install plugin (e.g., OpenID Connect for Joomla) |
+| **OAuth Bridge Service** | ⚠️ Medium-Low | Requires hosting infrastructure, complex cookie management |
+| **Iframe with SameSite=None** | ❌ Low | Requires TOTJO to modify cookie settings |
+| **Screen Scraping Proxy** | ❌ Low | Security concerns, credential handling, fragile |
+| **Reverse Proxy** | ⚠️ Medium | Requires server infrastructure, complex |
+| **Embedded Browser View** | ✅ Medium | Works for native apps; limited session persistence for PWA |
+| **Content Scraping Expansion** | ✅ High | Extend sermon importer pattern to other public content |
+
+**Recommended Path Forward**:
+1. **Phase 1 (Immediate)**: Expand content scraping to other public TOTJO content (doctrine updates, news, public forum posts)
+2. **Phase 2 (If Needed)**: For authenticated access, implement embedded browser view in native wrappers (Capacitor/Cordova)
+3. **Phase 3 (Long-term)**: Advocate for TOTJO to install open-source OAuth/OIDC plugin
+
+**Decision**: Deferred. Deep linking and content scraping expansion provide the best immediate value without TOTJO changes.

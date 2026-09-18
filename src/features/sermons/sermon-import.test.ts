@@ -93,6 +93,6 @@ describe('sermon-import importer', () => {
 
     expect(result.code).not.toBe(0);
     expect(result.stderr).toContain('TOTJO parser error');
-    expect(result.stderr).toContain('missing selector h1[itemprop="headline"]');
+    expect(result.stderr).toContain('detail broken-shape');
   });
 });

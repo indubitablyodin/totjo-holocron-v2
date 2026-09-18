@@ -79,73 +79,211 @@ function summarize(bodyMarkdown) {
   return firstParagraph.length > 180 ? `${firstParagraph.slice(0, 177)}...` : firstParagraph;
 }
 
-function parseArchiveDate(dateText, context) {
+// =============================================================================
+// Date Parsing
+// =============================================================================
+
+const MONTH_MAP = {
+  january: 1, jan: 1,
+  february: 2, feb: 2,
+  march: 3, mar: 3,
+  april: 4, apr: 4,
+  may: 5,
+  june: 6, jun: 6,
+  july: 7, jul: 7,
+  august: 8, aug: 8,
+  september: 9, sep: 9, sept: 9,
+  october: 10, oct: 10,
+  november: 11, nov: 11,
+  december: 12, dec: 12,
+};
+
+function parseDateDDMMYYYY(dateText) {
   const match = normalizeWhitespace(dateText).match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
 
   if (!match) {
-    throw new TotjoParseError(`${context}: expected archive date in DD/MM/YYYY format.`);
+    return null;
   }
 
   const [, day, month, year] = match;
   return new Date(`${year}-${month}-${day}T00:00:00.000Z`).toISOString();
 }
 
-function getRequiredElement(parent, selector, context) {
-  const element = parent.querySelector(selector);
+function parseDateDDMonthYYYY(dateText) {
+  const match = normalizeWhitespace(dateText).match(/^(\d{1,2})\s+(\w+)\s+(\d{4})$/i);
 
-  if (!element) {
-    throw new TotjoParseError(`${context}: missing selector ${selector}.`);
+  if (!match) {
+    return null;
   }
 
-  return element;
-}
+  const [, day, monthName, year] = match;
+  const monthNumber = MONTH_MAP[monthName.toLowerCase()];
 
-async function loadAuthoritySource() {
-  const raw = await readFile(CONTENT_AUTHORITY_PATH, 'utf8');
-  const parsed = JSON.parse(raw);
-  const entry = parsed.entries.find((candidate) => candidate.id === 'totjo-sermons');
-
-  if (!entry) {
-    throw new Error('Missing totjo-sermons entry in content authority policy.');
+  if (!monthNumber) {
+    return null;
   }
 
-  return {
-    sourceType: entry.sourceType,
-    sourceUrls: entry.sourceUrls,
-    attribution: entry.attribution,
-    approvalStatus: entry.approvalStatus,
-    provenanceStatus: entry.provenanceStatus,
-  };
+  const month = String(monthNumber).padStart(2, '0');
+  const dayPadded = String(parseInt(day, 10)).padStart(2, '0');
+  return new Date(`${year}-${month}-${dayPadded}T00:00:00.000Z`).toISOString();
 }
 
-function parseArchiveHtml(html, archiveUrl) {
+function parseArchiveDate(dateText, context) {
+  const result = parseDateDDMMYYYY(dateText) || parseDateDDMonthYYYY(dateText);
+
+  if (!result) {
+    throw new TotjoParseError(`${context}: unable to parse date. Expected DD/MM/YYYY or DD Month YYYY format.`);
+  }
+
+  return result;
+}
+
+// =============================================================================
+// Archive Page Parsing - Old Format (Joomla com-content-category)
+// =============================================================================
+
+function parseArchiveHtmlOld(html, archiveUrl) {
   const document = new JSDOM(html).window.document;
   const rows = Array.from(document.querySelectorAll('.com-content-category__table tbody tr'));
 
   if (rows.length === 0) {
-    throw new TotjoParseError('expected archive rows in .com-content-category__table tbody.');
+    throw new TotjoParseError('old format: expected archive rows in .com-content-category__table tbody.');
   }
 
   return rows.map((row, index) => {
-    const link = getRequiredElement(row, 'th.list-title a', `archive row ${index + 1}`);
+    const link = row.querySelector('th.list-title a');
+    if (!link) {
+      throw new TotjoParseError(`old format: missing selector th.list-title a in archive row ${index + 1}.`);
+    }
+
     const title = normalizeWhitespace(link.textContent ?? '');
     const sourceUrl = new URL(link.getAttribute('href') ?? '', archiveUrl).toString();
     const slug = sourceUrl.split('/').filter(Boolean).at(-1);
 
     if (!slug) {
-      throw new TotjoParseError(`archive row ${index + 1}: could not derive sermon slug.`);
+      throw new TotjoParseError(`old format: archive row ${index + 1}: could not derive sermon slug.`);
+    }
+
+    const authorElement = row.querySelector('.list-author');
+    const dateElement = row.querySelector('.list-date');
+
+    if (!authorElement) {
+      throw new TotjoParseError(`old format: missing .list-author in archive row ${slug}.`);
+    }
+    if (!dateElement) {
+      throw new TotjoParseError(`old format: missing .list-date in archive row ${slug}.`);
     }
 
     return {
       slug,
       title,
       sourceUrl,
-      author: normalizeWhitespace(getRequiredElement(row, '.list-author', `archive row ${slug}`).textContent ?? ''),
-      publishedAt: parseArchiveDate(getRequiredElement(row, '.list-date', `archive row ${slug}`).textContent ?? '', `archive row ${slug}`),
+      author: normalizeWhitespace(authorElement.textContent ?? ''),
+      publishedAt: parseArchiveDate(dateElement.textContent ?? '', `old format archive row ${slug}`),
       sortOrder: index,
     };
   });
 }
+
+// =============================================================================
+// Archive Page Parsing - New Format (Markdown-style table)
+// =============================================================================
+
+function parseArchiveHtmlNew(html, archiveUrl) {
+  const document = new JSDOM(html).window.document;
+  
+  // Find all tables and look for the one with sermon links
+  const tables = Array.from(document.querySelectorAll('table'));
+  
+  // Find the table that has links to /sermons/ - this is the archive table
+  let targetTable = null;
+  for (const table of tables) {
+    const rows = Array.from(table.querySelectorAll('tbody tr'));
+    const linkRows = rows.filter(row => row.querySelector('a[href*="/sermons/"]'));
+    if (linkRows.length > 0) {
+      targetTable = table;
+      break;
+    }
+  }
+
+  if (!targetTable) {
+    throw new TotjoParseError('new format: could not find sermon archive table.');
+  }
+
+  const rows = Array.from(targetTable.querySelectorAll('tbody tr'));
+
+  if (rows.length === 0) {
+    throw new TotjoParseError('new format: expected rows in archive table.');
+  }
+
+  const entries = [];
+
+  for (const row of rows) {
+    const link = row.querySelector('a[href*="/sermons/"]');
+    if (!link) {
+      continue; // Skip rows without sermon links (like headers)
+    }
+
+    const title = normalizeWhitespace(link.textContent ?? '');
+    const sourceUrl = new URL(link.getAttribute('href') ?? '', archiveUrl).toString();
+    const slug = sourceUrl.split('/').filter(Boolean).at(-1);
+
+    if (!slug) {
+      continue;
+    }
+
+    // In the new format, the date is typically in the second td
+    const cells = Array.from(row.querySelectorAll('td'));
+    const dateText = cells.length >= 2 ? normalizeWhitespace(cells[1].textContent ?? '') : '';
+    
+    // Author is not available in the new archive format - we'll get it from detail page
+    const author = '';
+    const publishedAt = dateText ? parseArchiveDate(dateText, `new format archive row ${slug}`) : '';
+
+    entries.push({
+      slug,
+      title,
+      sourceUrl,
+      author,
+      publishedAt,
+      sortOrder: entries.length,
+    });
+  }
+
+  if (entries.length === 0) {
+    throw new TotjoParseError('new format: no sermon entries found in archive table.');
+  }
+
+  return entries;
+}
+
+// =============================================================================
+// Archive Page Parsing - Main Function (tries both formats)
+// =============================================================================
+
+function parseArchiveHtml(html, archiveUrl) {
+  // Try old format first (for backward compatibility with test fixtures)
+  try {
+    const oldResults = parseArchiveHtmlOld(html, archiveUrl);
+    if (oldResults.length > 0) {
+      return oldResults;
+    }
+  } catch {
+    // Old format failed, try new format
+  }
+
+  // Try new format
+  try {
+    return parseArchiveHtmlNew(html, archiveUrl);
+  } catch (error) {
+    // If both fail, throw the new format error (or old if available)
+    throw new TotjoParseError(`Failed to parse archive page with both old and new formats: ${error.message}`);
+  }
+}
+
+// =============================================================================
+// Detail Page Parsing - Body Rendering (shared between old and new)
+// =============================================================================
 
 function renderBodyMarkdown(articleBody, context) {
   const blocks = [];
@@ -190,13 +328,33 @@ function renderBodyMarkdown(articleBody, context) {
   return blocks.join('\n\n');
 }
 
-function parseSermonDetailHtml(html, archiveEntry, importedAt, source) {
+// =============================================================================
+// Detail Page Parsing - Old Format (with microdata)
+// =============================================================================
+
+function parseSermonDetailHtmlOld(html, archiveEntry, importedAt, source) {
   const document = new JSDOM(html).window.document;
-  const context = `detail ${archiveEntry.slug}`;
-  const title = normalizeWhitespace(getRequiredElement(document, 'h1[itemprop="headline"]', context).textContent ?? '');
-  const authorElement = getRequiredElement(document, '[itemprop="author"] [itemprop="name"]', context);
-  const publishedElement = getRequiredElement(document, 'time[itemprop="datePublished"]', context);
-  const articleBody = getRequiredElement(document, '[itemprop="articleBody"]', context);
+  const context = `old format detail ${archiveEntry.slug}`;
+  
+  const titleElement = document.querySelector('h1[itemprop="headline"]');
+  const authorElement = document.querySelector('[itemprop="author"] [itemprop="name"]');
+  const publishedElement = document.querySelector('time[itemprop="datePublished"]');
+  const articleBody = document.querySelector('[itemprop="articleBody"]');
+
+  if (!titleElement) {
+    throw new TotjoParseError(`${context}: missing h1[itemprop="headline"].`);
+  }
+  if (!authorElement) {
+    throw new TotjoParseError(`${context}: missing [itemprop="author"] [itemprop="name"].`);
+  }
+  if (!publishedElement) {
+    throw new TotjoParseError(`${context}: missing time[itemprop="datePublished"].`);
+  }
+  if (!articleBody) {
+    throw new TotjoParseError(`${context}: missing [itemprop="articleBody"].`);
+  }
+
+  const title = normalizeWhitespace(titleElement.textContent ?? '');
   const author = normalizeWhitespace(authorElement.textContent ?? '');
   const publishedAt = publishedElement.getAttribute('datetime');
 
@@ -206,6 +364,11 @@ function parseSermonDetailHtml(html, archiveEntry, importedAt, source) {
 
   const bodyMarkdown = renderBodyMarkdown(articleBody, context);
   const mergedSourceUrls = Array.from(new Set([...source.sourceUrls, archiveEntry.sourceUrl]));
+  
+  // Use author from archive if available, otherwise from detail page
+  const finalAuthor = archiveEntry.author || author;
+  const finalPublishedAt = archiveEntry.publishedAt || new Date(publishedAt).toISOString();
+
   const baseDocument = {
     id: `sermon-${archiveEntry.slug}`,
     slug: archiveEntry.slug,
@@ -215,7 +378,7 @@ function parseSermonDetailHtml(html, archiveEntry, importedAt, source) {
     documentType: 'sermon',
     sourceId: 'totjo-sermons',
     bodyMarkdown,
-    tags: ['sermon', `author:${author.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`, `year:${publishedAt.slice(0, 4)}`],
+    tags: ['sermon', `author:${finalAuthor.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`, `year:${finalPublishedAt.slice(0, 4)}`],
     version: 1,
     origin: 'synced',
     source: {
@@ -223,9 +386,9 @@ function parseSermonDetailHtml(html, archiveEntry, importedAt, source) {
       sourceUrls: mergedSourceUrls,
     },
     sourceUrl: archiveEntry.sourceUrl,
-    author,
+    author: finalAuthor,
     sortOrder: archiveEntry.sortOrder,
-    publishedAt: new Date(publishedAt).toISOString(),
+    publishedAt: finalPublishedAt,
     updatedAt: importedAt,
   };
 
@@ -246,26 +409,167 @@ function parseSermonDetailHtml(html, archiveEntry, importedAt, source) {
   };
 }
 
-function toManifestDocument(detailDocument) {
-  const metadataDocument = {
-    ...detailDocument,
-    bodyMarkdown: '',
+// =============================================================================
+// Detail Page Parsing - New Format (plain HTML)
+// =============================================================================
+
+function parseSermonDetailHtmlNew(html, archiveEntry, importedAt, source) {
+  const document = new JSDOM(html).window.document;
+  const context = `new format detail ${archiveEntry.slug}`;
+  
+  // Find the main heading (h1) - should be the sermon title
+  const titleElement = document.querySelector('h1');
+  if (!titleElement) {
+    throw new TotjoParseError(`${context}: missing h1 title element.`);
+  }
+
+  const title = normalizeWhitespace(titleElement.textContent ?? '');
+
+  // Extract author from "Written by: AuthorName" text in paragraphs
+  let author = archiveEntry.author || '';
+  if (!author) {
+    const writtenByMatch = html.match(/Written\s+by:\s*([^<\n]+)/i);
+    if (writtenByMatch) {
+      author = normalizeWhitespace(writtenByMatch[1]);
+    }
+  }
+
+  // Extract date - look for various date formats in the text
+  let publishedAt = archiveEntry.publishedAt || '';
+  if (!publishedAt) {
+    // Try to find a date in the format DD Month YYYY (e.g., "28 August 2026")
+    const dateMatch = html.match(/(\d{1,2}\s+\w+\s+\d{4})/);
+    if (dateMatch) {
+      const parsed = parseDateDDMonthYYYY(dateMatch[1]);
+      if (parsed) {
+        publishedAt = parsed;
+      }
+    }
+  }
+
+  // Find the article body - look for the main content area
+  // In the new format, we need to find all <p> tags that are the actual body content
+  // and exclude metadata paragraphs like "Written by: ..." and date paragraphs
+  const allParagraphs = Array.from(document.querySelectorAll('body p'));
+  
+  // Filter out metadata paragraphs (short paragraphs that look like metadata)
+  const bodyParagraphs = allParagraphs.filter(p => {
+    const text = normalizeWhitespace(p.textContent ?? '');
+    // Exclude paragraphs that match metadata patterns
+    if (text.match(/^written\s+by:/i)) return false;
+    if (text.match(/^\d{1,2}\s+\w+\s+\d{4}$/)) return false; // Date pattern
+    if (text.length < 10) return false; // Very short paragraphs are likely metadata
+    return true;
+  });
+
+  // Create a temporary container for the body paragraphs
+  const tempBody = document.createElement('div');
+  bodyParagraphs.forEach(p => {
+    const clone = p.cloneNode(true);
+    tempBody.appendChild(clone);
+  });
+
+  // If we have body paragraphs, use them; otherwise fall back to the entire body
+  let articleBody = tempBody;
+  if (bodyParagraphs.length === 0) {
+    articleBody = document.body;
+  }
+
+  const bodyMarkdown = renderBodyMarkdown(articleBody, context);
+  const mergedSourceUrls = Array.from(new Set([...source.sourceUrls, archiveEntry.sourceUrl]));
+
+  // If we couldn't get author from archive or "Written by", try to extract from the page
+  if (!author || author === 'Unknown') {
+    const authorMatch = html.match(/Author:\s*([^\n<]+)/i) || 
+                        html.match(/by\s+([A-Z][a-z]+\s+[A-Z][a-z]+)/);
+    if (authorMatch) {
+      author = normalizeWhitespace(authorMatch[1]);
+    }
+  }
+
+  const finalAuthor = author || 'Unknown';
+  const finalPublishedAt = publishedAt || new Date().toISOString();
+
+  const baseDocument = {
+    id: `sermon-${archiveEntry.slug}`,
+    slug: archiveEntry.slug,
+    title,
+    summary: summarize(bodyMarkdown),
+    authorityClass: 'sermon',
+    documentType: 'sermon',
+    sourceId: 'totjo-sermons',
+    bodyMarkdown,
+    tags: ['sermon', `author:${finalAuthor.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`, `year:${finalPublishedAt.slice(0, 4)}`],
+    version: 1,
+    origin: 'synced',
+    source: {
+      ...source,
+      sourceUrls: mergedSourceUrls,
+    },
+    sourceUrl: archiveEntry.sourceUrl,
+    author: finalAuthor,
+    sortOrder: archiveEntry.sortOrder,
+    publishedAt: finalPublishedAt,
+    updatedAt: importedAt,
   };
 
   return {
-    ...metadataDocument,
+    ...baseDocument,
     checksum: createChecksum({
-      id: metadataDocument.id,
-      slug: metadataDocument.slug,
-      title: metadataDocument.title,
-      authorityClass: metadataDocument.authorityClass,
-      documentType: metadataDocument.documentType,
-      sourceId: metadataDocument.sourceId,
-      sourceUrl: metadataDocument.sourceUrl,
-      author: metadataDocument.author,
-      bodyMarkdown: metadataDocument.bodyMarkdown,
-      version: metadataDocument.version,
+      id: baseDocument.id,
+      slug: baseDocument.slug,
+      title: baseDocument.title,
+      authorityClass: baseDocument.authorityClass,
+      documentType: baseDocument.documentType,
+      sourceId: baseDocument.sourceId,
+      sourceUrl: baseDocument.sourceUrl,
+      author: baseDocument.author,
+      bodyMarkdown: baseDocument.bodyMarkdown,
+      version: baseDocument.version,
     }),
+  };
+}
+
+// =============================================================================
+// Detail Page Parsing - Main Function (tries both formats)
+// =============================================================================
+
+function parseSermonDetailHtml(html, archiveEntry, importedAt, source) {
+  // Try old format first (for backward compatibility with test fixtures)
+  try {
+    return parseSermonDetailHtmlOld(html, archiveEntry, importedAt, source);
+  } catch {
+    // Old format failed, try new format
+  }
+
+  // Try new format
+  try {
+    return parseSermonDetailHtmlNew(html, archiveEntry, importedAt, source);
+  } catch (error) {
+    // If both fail, throw a combined error
+    throw new TotjoParseError(`Failed to parse detail page with both old and new formats for ${archiveEntry.slug}: ${error.message}`);
+  }
+}
+
+// =============================================================================
+// Import Logic
+// =============================================================================
+
+async function loadAuthoritySource() {
+  const raw = await readFile(CONTENT_AUTHORITY_PATH, 'utf8');
+  const parsed = JSON.parse(raw);
+  const entry = parsed.entries.find((candidate) => candidate.id === 'totjo-sermons');
+
+  if (!entry) {
+    throw new Error('Missing totjo-sermons entry in content authority policy.');
+  }
+
+  return {
+    sourceType: entry.sourceType,
+    sourceUrls: entry.sourceUrls,
+    attribution: entry.attribution,
+    approvalStatus: entry.approvalStatus,
+    provenanceStatus: entry.provenanceStatus,
   };
 }
 
@@ -334,6 +638,29 @@ async function importTotjoSermons({ archiveSources, detailDir, outputDir, import
   };
 
   await writeFile(path.join(outputDir, 'index.json'), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+}
+
+function toManifestDocument(detailDocument) {
+  const metadataDocument = {
+    ...detailDocument,
+    bodyMarkdown: '',
+  };
+
+  return {
+    ...metadataDocument,
+    checksum: createChecksum({
+      id: metadataDocument.id,
+      slug: metadataDocument.slug,
+      title: metadataDocument.title,
+      authorityClass: metadataDocument.authorityClass,
+      documentType: metadataDocument.documentType,
+      sourceId: metadataDocument.sourceId,
+      sourceUrl: metadataDocument.sourceUrl,
+      author: metadataDocument.author,
+      bodyMarkdown: metadataDocument.bodyMarkdown,
+      version: metadataDocument.version,
+    }),
+  };
 }
 
 function parseArgs(argv) {
