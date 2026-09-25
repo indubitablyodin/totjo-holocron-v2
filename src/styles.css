@@ -22,6 +22,7 @@
   --transition-base: 180ms ease;
   --reading-scale: 1;
   --shell-bottom-nav-height: 5.75rem;
+  --shell-bottom-nav-clearance: var(--shell-bottom-nav-height);
   --shell-rail-width: 15rem;
 
   --page-max-width: 86rem;
@@ -236,7 +237,7 @@ a[href],
 
 html {
   background: var(--color-background);
-  scroll-padding-bottom: calc(var(--shell-bottom-nav-height) + var(--space-6));
+  scroll-padding-bottom: calc(var(--shell-bottom-nav-clearance) + var(--space-2));
 }
 
 body {
@@ -291,6 +292,7 @@ input {
   max-width: var(--page-max-width);
   margin: 0 auto;
   padding: var(--space-5);
+  --shell-bottom-nav-clearance: calc(var(--shell-bottom-nav-height) + var(--space-5));
 }
 
 .offline-banner,
@@ -1640,7 +1642,7 @@ input {
 
 @media (max-width: 55.99rem) {
   .app-shell {
-    padding: var(--space-3) var(--space-3) calc(var(--shell-bottom-nav-height) + var(--space-5));
+    padding: var(--space-3) var(--space-3) var(--shell-bottom-nav-clearance);
   }
 
   .app-update-card {
@@ -1670,6 +1672,15 @@ input {
 
   .timer-controls {
     grid-template-columns: 1fr;
+  }
+
+  .timer-display > .timer-controls {
+    order: 2;
+  }
+
+  .timer-display > .timer-advanced-toggle,
+  .timer-display > .timer-inline-controls {
+    order: 3;
   }
 }
 

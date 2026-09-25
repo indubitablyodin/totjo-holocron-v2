@@ -186,6 +186,7 @@ export function AppShell() {
   const pwaUpdate = useSyncExternalStore(subscribePwaUpdate, getPwaUpdateSnapshot, getPwaUpdateSnapshot);
   const inAppHistoryRef = useRef<string[]>([]);
   const bottomNavRef = useRef<HTMLElement | null>(null);
+  const appShellRef = useRef<HTMLDivElement | null>(null);
   const navGroups = useMemo(
     () => ({
       core: PRIMARY_PAGES.filter((page) => page.group === 'core'),
@@ -230,6 +231,7 @@ export function AppShell() {
 
   useEffect(() => {
     const nav = bottomNavRef.current;
+    const shell = appShellRef.current;
 
     if (!nav) {
       return;
@@ -243,15 +245,37 @@ export function AppShell() {
       nav.style.setProperty('--bottom-nav-fade-end', canScrollRight ? '1.5rem' : '0px');
     };
 
-    updateFade();
-    nav.addEventListener('scroll', updateFade, { passive: true });
+    const updateNavMetrics = () => {
+      updateFade();
 
-    const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateFade);
+      const navHeight = nav.getBoundingClientRect().height;
+      const navIsVisible = getComputedStyle(nav).display !== 'none' && navHeight > 0;
+
+      if (!navIsVisible) {
+        document.documentElement.style.removeProperty('--shell-bottom-nav-clearance');
+        shell?.style.removeProperty('--shell-bottom-nav-clearance');
+        return;
+      }
+
+      const clearance = Math.max(0, window.innerHeight - nav.getBoundingClientRect().top) + 16;
+      const clearanceValue = `${Math.ceil(clearance)}px`;
+      document.documentElement.style.setProperty('--shell-bottom-nav-clearance', clearanceValue);
+      shell?.style.setProperty('--shell-bottom-nav-clearance', clearanceValue);
+    };
+
+    updateNavMetrics();
+    nav.addEventListener('scroll', updateFade, { passive: true });
+    window.addEventListener('resize', updateNavMetrics);
+
+    const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateNavMetrics);
     resizeObserver?.observe(nav);
 
     return () => {
       nav.removeEventListener('scroll', updateFade);
+      window.removeEventListener('resize', updateNavMetrics);
       resizeObserver?.disconnect();
+      document.documentElement.style.removeProperty('--shell-bottom-nav-clearance');
+      shell?.style.removeProperty('--shell-bottom-nav-clearance');
     };
   }, []);
 
@@ -281,7 +305,7 @@ export function AppShell() {
   };
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" ref={appShellRef}>
       <div className="shell-status-stack">
         <div className="offline-banner" data-testid="offline-banner" hidden={isOnline} role="status">
           You’re offline. Reading and settings still work with saved content.
