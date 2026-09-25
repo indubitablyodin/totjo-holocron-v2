@@ -51,9 +51,9 @@ and don't feel obligated to "update" them; that's what makes them useful as a re
 
 ## `docs/releases/` — release notes
 
-`v0.1.0-rc.1.md` through `v0.1.1.md`. **Gap:** git tags exist for `v0.1.2`, `v0.1.3`, and `v0.1.4`
-(and ~90 commits since) with no corresponding release-notes files — nobody has written them yet.
-If you're doing release work, that's an opening to fill, not evidence those versions didn't ship.
+`v0.1.0-rc.1.md` through `v0.1.1.md`, plus the current `v0.1.7.md` release notes. **Gap:** git tags
+`v0.1.2` through `v0.1.6` have no corresponding release-notes files. If you're doing historical
+release work, that's an opening to fill, not evidence those versions didn't ship.
 
 ## `docs/ux/`
 
