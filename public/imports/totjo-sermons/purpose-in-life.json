@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-purpose-in-life",
+    "slug": "purpose-in-life",
+    "title": "Purpose in Life",
+    "summary": "The question “What's your purpose in life?” is one that I seldom hear anymore. It might be a function of my surroundings and my media diet, or it might be that questions like th...",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "The question “What's your purpose in life?” is one that I seldom hear anymore. It might be a function of my surroundings and my media diet, or it might be that questions like this just don't seem to have the same import that they maybe once did.\n\nOr maybe we all just decided that 42 might as well be the answer to that question too, and moved on with our lives.\n\nBut somewhere in the past few days, while recovering from the Plague – 0/10 btw, do not recommend – I heard someone pose that question, and I haven't been able to get it out of my brain. So, what follows is not the answer. I'm not even certain it'll be my answer by the time I'm done talking. But at least it's an answer.\n\nFirst off, what am I even talking about? “Purpose,” in this context, means the direction you feel your life should be taking. It's what you think is the reason the Force has put you here, the thing you're meant to do. A philosopher might call it your raison d'être, your reason for being.\n\nThe thing about your life's purpose is that it's necessarily personal to you. It comes from your own beliefs, your own values, and it leads you – or should do, anyway – to your own choices and direction. I can't possibly tell you what your life's purpose is, anymore than I could allow you to decide that for me. But I can give a few examples, which will hopefully illustrate how I think about this question.\n\nThere were long periods in my life when I had no real purpose. Life was something to be endured between fleeting moments of happiness. Denis Leary used to have a bit about happiness coming in small doses, then you go to sleep, you get up, you go to f’ing work. And I vibed with that for a long time. I wish i could say that i got over that in my twenties, but no, I've occasionally allowed myself to become so hollowed out even in recent years that big questions like life's purpose just seemed stupid and pointless.\n\nThen for a long time, I thought I knew exactly what my purpose was. I went to school for years to earn a law license. The Jedi Path led me to become an EMT. My purpose was simply to help people to the best of my ability, whether in a courtroom or an ambulance. But here's one problem with making this your life's purpose: you're gonna fail. Frequently. Sometimes, despite your best efforts, people go to prison and people die, and enough of those over time can really wear down your sense of purpose.\n\nWhen i was thinking about this question of purpose this week, it occurred to me that maybe purpose isn't something you can decide at the outset, but something that only becomes apparent in hindsight. And maybe there's something to that, but taken to its extreme, it's rather self-defeating. If the point of your purpose in life is to guide your decisions and give meaning to your thoughts and actions, it's pretty useless to not know your purpose until the very end, isn't it?\n\nI thought i might go looking in our Doctrine for any help with finding purpose in life, and while I did come across a few things that might bear upon the question, it was Teaching 14 that resonated with me:\n\nIt's that “how and when to offer help” that sticks with me, my old desire to help people coupled with some actual wisdom to know when I should and shouldn't. Imagine, finally knowing that I'm not a superhero.\n\nI actually have a little advice for finding your own purpose, from the research I did for this sermon. You need to identify what is important to you, the clear values that you hold dear, that can keep you pointed on the right direction. You need to know your strengths and, as I alluded to above, especially your limitations. And you need to have a vision for how to bring those things together in your daily life. Deep thinks, journaling, writing a purpose statement are all practices that can help you zero in on what you think your purpose might be.\n\nIf you have questions or advice on how to put this into practice, hit me up in the comments or over on the discord.",
+    "tags": [
+      "sermon",
+      "author:atticus",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/purpose-in-life"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/purpose-in-life",
+    "author": "Atticus",
+    "sortOrder": 0,
+    "publishedAt": "2026-09-25T00:00:00.000Z",
+    "updatedAt": "2026-09-25T12:45:02.000Z",
+    "checksum": "fnv1a-6eb611a7"
+  }
+}
