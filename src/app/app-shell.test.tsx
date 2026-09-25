@@ -36,10 +36,9 @@ describe('app-shell routes', () => {
       expect(screen.getByTestId('daily-focus-card')).toBeVisible();
     });
 
-    expect(screen.getByTestId('page-header')).toBeVisible();
+    expect(screen.queryByTestId('page-header')).not.toBeInTheDocument();
 
     expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
-    expect(screen.getByTestId('page-header')).toBeVisible();
     expect(screen.getByTestId('page-content')).toBeVisible();
     expect(screen.getByTestId('bottom-nav')).toBeVisible();
     expect(getBottomNavLabels()).toEqual(['Back', 'Focus', 'Read', 'Timer', 'Settings']);
