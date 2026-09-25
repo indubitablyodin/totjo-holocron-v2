@@ -207,6 +207,7 @@ export function AppShell() {
     };
 
     if (lastRoutePath === currentPath) {
+      setHasInAppHistory(historyStack.length > 1 && historyStack[historyStack.length - 2] !== currentPath);
       return;
     }
 

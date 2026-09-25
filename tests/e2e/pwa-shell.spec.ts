@@ -126,6 +126,10 @@ test.describe('PWA shell', () => {
 
     await page.getByTestId('bottom-nav-back').click();
     await expect(page.getByTestId('page-title')).toHaveText('Read');
+
+    await page.getByTestId('bottom-nav-back').click();
+    await expect(page.getByRole('heading', { name: "Today’s Practice" })).toBeVisible();
+    await expect(page.getByTestId('bottom-nav-back')).toBeDisabled();
   });
 
   test('mobile-nav desktop adaptation preserves labels and route reachability', async ({ page }) => {

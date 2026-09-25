@@ -71,6 +71,8 @@ describe('app-shell routes', () => {
       expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
     });
 
+    expect(screen.getByTestId('bottom-nav-back')).toBeDisabled();
+
     await user.click(screen.getByTestId('bottom-nav-library'));
 
     await waitFor(() => {
@@ -82,6 +84,8 @@ describe('app-shell routes', () => {
     await waitFor(() => {
       expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
     });
+
+    expect(screen.getByTestId('bottom-nav-back')).toBeDisabled();
   });
 
   it('keeps the in-app route stack current across consecutive navigations', async () => {
