@@ -9,7 +9,7 @@ import { normalizeDocumentRecord } from '@/content/contentTypes';
 import { createSearchCorpus } from '@/content/contentSearchIndex';
 import { searchHolocronCorpus } from './searchHolocron';
 import { searchBookmarks, searchNotes, combineUserStateResults } from './searchUserState';
-import { DEFAULT_SEARCH_SCOPES, type HolocronSearchResult, type HolocronSearchScope } from './librarySearchTypes';
+import { DEFAULT_SEARCH_SCOPES, type HolocronSearchScope } from './librarySearchTypes';
 import { LibrarySearch } from './LibrarySearch';
 import { LibraryResults } from './LibraryResults';
 import { LibrarySectionLinks } from './LibrarySectionLinks';
@@ -139,7 +139,6 @@ export function LibraryPage() {
     }));
   }, []);
 
-  const sermonCount = counts?.sermon ?? 0;
   const bookmarkSummary = `${bookmarks.length} bookmark${bookmarks.length === 1 ? '' : 's'} · ${notes.length} note${notes.length === 1 ? '' : 's'}`;
 
   return (

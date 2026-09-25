@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { PageLayout, PageSection } from '@/app/pagePrimitives';
+import { PageLayout } from '@/app/pagePrimitives';
 import { DashboardTimer } from '@/features/timer/DashboardTimer';
 import { TimerSettingsButton } from '@/features/timer/TimerSettingsButton';
 import { TimerSettingsPanel } from '@/features/timer/TimerSettingsPanel';

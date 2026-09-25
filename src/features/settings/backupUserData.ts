@@ -1,4 +1,5 @@
 import type { HolocronDatabase } from '@/lib/db';
+import { APP_BUILD } from '@/app/buildInfo';
 import { loadTimerPreferences } from '@/features/timer/timerPreferences';
 import { loadReadingSettings } from '@/features/settings/readingSettings';
 import { loadDismissedAnnouncements } from '@/features/announcements/announcementDismissal';
@@ -31,7 +32,7 @@ export async function collectUserDataBackup(database: HolocronDatabase): Promise
   return {
     schemaVersion: 1,
     exportedAt: new Date().toISOString(),
-    appVersion: '0.1.0-rc.2',
+    appVersion: APP_BUILD.version,
     data: {
       notes,
       bookmarks,

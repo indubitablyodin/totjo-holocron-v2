@@ -6,6 +6,7 @@ import {
   getVisibleAnnouncements,
   selectPrimaryAnnouncement,
   type Announcement,
+  type DismissedMap,
 } from './announcementTypes';
 import { loadDismissedAnnouncements, dismissAnnouncement } from './announcementDismissal';
 import { setAnnouncementAppBadge, clearAnnouncementAppBadge } from './appBadge';
@@ -26,9 +27,9 @@ const KIND_LABELS: Record<string, string> = {
 export function AnnouncementModal() {
   const [modalAnnouncement, setModalAnnouncement] = useState<Announcement | null>(null);
   const [remoteAnnouncements, setRemoteAnnouncements] = useState<Announcement[]>(() => loadCachedRemoteAnnouncements());
+  const [dismissedMap, setDismissedMap] = useState<DismissedMap>(() => loadDismissedAnnouncements());
   const closeRef = useRef<HTMLButtonElement>(null);
-
-  const dismissedMap = useMemo(() => loadDismissedAnnouncements(), []);
+  const announcementCardRef = useRef<HTMLDivElement>(null);
   const now = useMemo(() => new Date(), []);
 
   const allAnnouncements = useMemo(
@@ -83,6 +84,10 @@ export function AnnouncementModal() {
 
   const handleDismiss = useCallback((announcement: Announcement) => {
     dismissAnnouncement(announcement.id, announcement.version);
+    setDismissedMap((current) => ({
+      ...current,
+      [announcement.id]: { version: announcement.version, dismissedAt: new Date().toISOString() },
+    }));
     setModalAnnouncement(null);
   }, []);
 
@@ -97,11 +102,39 @@ export function AnnouncementModal() {
       return;
     }
 
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     closeRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleDismiss(modalAnnouncement);
+        return;
+      }
+
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const focusableElements = Array.from(
+        announcementCardRef.current?.querySelectorAll<HTMLElement>(
+          'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      ).filter((element) => !element.hasAttribute('disabled'));
+
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
       }
     };
 
@@ -111,14 +144,23 @@ export function AnnouncementModal() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
+      previouslyFocused?.focus();
     };
-  });
+  }, [handleDismiss, modalAnnouncement]);
 
   // Show modal for high/urgent announcements automatically
   useEffect(() => {
     if (primary && (primary.priority === 'high' || primary.priority === 'urgent') && !modalAnnouncement) {
-      setModalAnnouncement(primary);
+      const timeoutId = window.setTimeout(() => {
+        setModalAnnouncement(primary);
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+      };
     }
+
+    return undefined;
   }, [primary, modalAnnouncement]);
 
   if (modalAnnouncement) {
@@ -141,6 +183,7 @@ export function AnnouncementModal() {
           onClick={(event) => {
             event.stopPropagation();
           }}
+          ref={announcementCardRef}
         >
           <button
             className="announcement-close"

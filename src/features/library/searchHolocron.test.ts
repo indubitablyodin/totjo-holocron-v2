@@ -4,7 +4,6 @@ import { createSearchCorpusEntry, createSearchCorpus, normalizeSearchText } from
 import { searchHolocronCorpus } from './searchHolocron';
 import { DEFAULT_SEARCH_SCOPES } from './librarySearchTypes';
 import type { HolocronDocument } from '@/content/contentTypes';
-import type { HolocronSearchScope } from './librarySearchTypes';
 
 const makeDoc = (overrides: Partial<HolocronDocument>): HolocronDocument => ({
   id: 'test-doc',

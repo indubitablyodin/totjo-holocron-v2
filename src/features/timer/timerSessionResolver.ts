@@ -1,4 +1,3 @@
-import { loadTimerPreferences } from '@/features/timer/timerPreferences';
 import { loadTimerSession } from '@/features/timer/timerSessionStorage';
 import type { TimerSessionState } from '@/features/timer/timerModel';
 import type { TimerSettings } from '@/features/timer/timerSettingsStorage';

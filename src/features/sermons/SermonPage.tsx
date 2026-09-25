@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { PageLayout, PageSection } from '@/app/pagePrimitives';
-import { CompactReaderShell, ReaderMetaList, ReaderOptionGroup, ReaderSurface, type CompactReaderControl } from '@/features/reader/CompactReaderShell';
+import { PageLayout } from '@/app/pagePrimitives';
+import { CompactReaderShell, ReaderOptionGroup, ReaderSurface, type CompactReaderControl } from '@/features/reader/CompactReaderShell';
 import { DoctrineMarkdownContent } from '@/features/reader/doctrineMarkdown';
 import { ReaderUserStateSection } from '@/features/reader/ReaderUserStateSection';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
@@ -34,18 +34,6 @@ const CONTRAST_LABELS = {
   standard: 'Standard',
   high: 'High',
 } as const;
-
-function formatPublishedAt(publishedAt: string | null) {
-  if (!publishedAt) {
-    return 'Date unavailable';
-  }
-
-  return new Intl.DateTimeFormat('en', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(publishedAt));
-}
 
 function SermonAuthorityBadge() {
   return <span className="authority-badge authority-badge--sermon">TOTJO Sermon</span>;

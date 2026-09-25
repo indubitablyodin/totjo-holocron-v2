@@ -1,6 +1,5 @@
 import { getAuthorityLabel, getDocumentRoute } from '@/content/contentTypes';
 import type { HolocronSearchCorpusEntry } from '@/content/contentSearchIndex';
-import { normalizeSearchText } from '@/content/contentSearchIndex';
 import type { HolocronSearchResult, HolocronSearchScope } from './librarySearchTypes';
 
 function authorityToScope(authorityClass: string): HolocronSearchScope {

@@ -380,6 +380,17 @@ export function TimerPage() {
     },
   });
 
+  const updateTimerConfig = useCallback(
+    (updates: Parameters<typeof handleConfigUpdate>[0]) => {
+      handleConfigUpdate(updates);
+
+      if (updates.soundProfileId !== undefined) {
+        setAudioProfileId(updates.soundProfileId);
+      }
+    },
+    [handleConfigUpdate],
+  );
+
   useEffect(() => {
     completeNowRef.current = completeNow;
   });
@@ -387,7 +398,6 @@ export function TimerPage() {
   useEffect(() => {
     const nextSession = { ...session, guidedAudioFileId: selectedGuidedAudioId };
     saveTimerSession(nextSession);
-    setAudioProfileId(nextSession.soundProfileId);
   }, [session, selectedGuidedAudioId]);
 
   const primeAudio = useCallback((soundProfileId: SoundProfileId) => {
@@ -448,43 +458,43 @@ export function TimerPage() {
 
         if (guidedFile) {
           setSelectedGuidedAudioId(guidedFile.id);
-          handleConfigUpdate({ kind: 'guided', guidedAudioFileId: guidedFile.id });
+          updateTimerConfig({ kind: 'guided', guidedAudioFileId: guidedFile.id });
           setDurationMinutes(Math.ceil(guidedFile.durationSeconds) / 60);
           return;
         }
 
         setSelectedGuidedAudioId(null);
-        handleConfigUpdate({ kind: 'guided', guidedAudioFileId: null });
+        updateTimerConfig({ kind: 'guided', guidedAudioFileId: null });
         return;
       }
 
       setSelectedGuidedAudioId(null);
-      handleConfigUpdate({ kind: 'timed' });
+      updateTimerConfig({ kind: 'timed' });
     },
-    [navigate, session.kind, selectedGuidedAudioId, audioFiles, handleConfigUpdate, setDurationMinutes],
+    [navigate, session.kind, selectedGuidedAudioId, audioFiles, updateTimerConfig, setDurationMinutes],
   );
 
   const handleGuidedAudioChange = useCallback(
     (fileId: string) => {
       if (fileId.length === 0) {
         setSelectedGuidedAudioId(null);
-        handleConfigUpdate({ kind: 'timed' });
+        updateTimerConfig({ kind: 'timed' });
         return;
       }
 
       const guidedFile = audioFiles.find((file) => file.id === fileId);
       setSelectedGuidedAudioId(fileId);
-      handleConfigUpdate({ kind: 'guided', guidedAudioFileId: fileId });
+      updateTimerConfig({ kind: 'guided', guidedAudioFileId: fileId });
       setDurationMinutes((guidedFile ? Math.ceil(guidedFile.durationSeconds) : session.totalDurationSeconds) / 60);
     },
-    [audioFiles, handleConfigUpdate, setDurationMinutes, session.totalDurationSeconds],
+    [audioFiles, updateTimerConfig, setDurationMinutes, session.totalDurationSeconds],
   );
 
   const handleGuidedCueOverlayChange = useCallback(
     (checked: boolean) => {
-      handleConfigUpdate({ guidedCueOverlay: checked });
+      updateTimerConfig({ guidedCueOverlay: checked });
     },
-    [handleConfigUpdate],
+    [updateTimerConfig],
   );
 
   const handleStartSession = useCallback(() => {
@@ -683,7 +693,7 @@ export function TimerPage() {
                         disabled={!canEditSession}
                         onChange={(event) => {
                           const nextCueMode = event.target.value as TimerCueMode;
-                          handleConfigUpdate({
+                          updateTimerConfig({
                             cueMode: nextCueMode,
                             intervalSeconds: nextCueMode === 'custom' ? 60 : 0,
                           });
@@ -709,7 +719,7 @@ export function TimerPage() {
                           min={1}
                           onChange={(event) => {
                           const raw = event.target.value;
-                          handleConfigUpdate({
+                          updateTimerConfig({
                             intervalSeconds: raw,
                           });
                         }}
@@ -728,7 +738,7 @@ export function TimerPage() {
                     data-testid="timer-sound-profile"
                     disabled={!canEditSession}
                     onChange={(event) => {
-                      handleConfigUpdate({
+                          updateTimerConfig({
                         soundProfileId: event.target.value as SoundProfileId,
                       });
                     }}
@@ -760,7 +770,7 @@ export function TimerPage() {
                     data-testid="timer-record-history"
                     disabled={!canEditSession}
                     onChange={(event) => {
-                      handleConfigUpdate({
+                      updateTimerConfig({
                         recordPracticeHistory: event.target.checked,
                       });
                     }}

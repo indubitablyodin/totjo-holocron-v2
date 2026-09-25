@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -36,6 +38,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Compute build metadata
+        id: build_metadata
+        run: |
+          echo "version=$(git describe --tags --always)" >> "$GITHUB_OUTPUT"
+          echo "label=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Lint
+        run: pnpm lint
+
       - name: Test
         run: pnpm test
 
@@ -46,6 +57,14 @@ jobs:
         run: pnpm build:pages
         env:
           GITHUB_PAGES: 'true'
+          VITE_APP_VERSION: ${{ steps.build_metadata.outputs.version }}
+          VITE_APP_BUILD_LABEL: ${{ steps.build_metadata.outputs.label }}
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: End-to-end validation
+        run: pnpm test:e2e
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

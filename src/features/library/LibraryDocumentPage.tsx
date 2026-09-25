@@ -1,18 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { PageLayout, PageSection } from '@/app/pagePrimitives';
+import { PageLayout } from '@/app/pagePrimitives';
 import { usePersonalization } from '@/features/personalization/PersonalizationContext';
 import {
   createDoctrinePersonalizationModel,
   PersonalizedDoctrineContent,
 } from '@/features/personalization/personalizationOverlay';
-import { CompactReaderShell, ReaderMetaList, ReaderOptionGroup, ReaderSurface } from '@/features/reader/CompactReaderShell';
+import { CompactReaderShell, ReaderOptionGroup, ReaderSurface } from '@/features/reader/CompactReaderShell';
 import { DoctrineMarkdownContent, parseCodeView } from '@/features/reader/doctrineMarkdown';
 import { ReaderUserStateSection } from '@/features/reader/ReaderUserStateSection';
 import { useReadingSettings } from '@/features/settings/ReadingSettingsContext';
 import { CONTRAST_OPTIONS, FONT_SCALE_OPTIONS, THEME_OPTIONS } from '@/features/settings/readingSettings';
-import { doctrineLibraryEntries } from '@/lib/content';
 import { getLibraryDocumentBySlug } from '@/lib/db';
 import {
   getAuthorityPresentation,
@@ -41,22 +40,6 @@ const CONTRAST_LABELS = {
   standard: 'Standard',
   high: 'High',
 } as const;
-
-function DoctrineReaderNavigation({ currentSlug }: { currentSlug: string }) {
-  return (
-    <nav aria-label="Doctrine documents" className="reader-navigation">
-      {doctrineLibraryEntries.map((entry) => (
-        <Link
-          className={`reader-navigation__link${entry.slug === currentSlug ? ' reader-navigation__link--active' : ''}`}
-          key={entry.slug}
-          to={`/library/doctrine/${entry.slug}`}
-        >
-          {entry.title}
-        </Link>
-      ))}
-    </nav>
-  );
-}
 
 function DoctrineCodeView({ document }: { document: LibraryDocumentRecord }) {
   const codeView = useMemo(() => parseCodeView(document.bodyMarkdown), [document.bodyMarkdown]);

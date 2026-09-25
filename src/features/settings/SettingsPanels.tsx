@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { SaveToast, useSaveToast } from '@/features/settings/SaveToast';
+import { SaveToast } from '@/features/settings/SaveToast';
+import { useSaveToast } from '@/features/settings/useSaveToast';
 
 import { PageLayout, PageSection } from '@/app/pagePrimitives';
 import { TotjoBrandMark } from '@/app/TotjoBrandMark';

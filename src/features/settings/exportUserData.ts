@@ -1,4 +1,5 @@
 import type { HolocronDatabase } from '@/lib/db';
+import { APP_BUILD } from '@/app/buildInfo';
 import { loadTimerPreferences } from '@/features/timer/timerPreferences';
 import { loadReadingSettings } from '@/features/settings/readingSettings';
 
@@ -185,7 +186,7 @@ export async function collectUserDataExport(
 
   return {
     exportedAt: new Date().toISOString(),
-    appVersion: '0.1.0-rc.1',
+    appVersion: APP_BUILD.version,
     notes: notes.map((note) => ({
       documentTitle: getDocTitle(note.documentId),
       documentRoute: getDocRoute(note.documentId),

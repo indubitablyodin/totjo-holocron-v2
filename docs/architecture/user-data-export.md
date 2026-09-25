@@ -61,7 +61,7 @@ totjo-holocron-export-YYYY-MM-DD.md
 # TOTJO Holocron Export
 
 Exported: 2026-06-23
-App version: 0.1.0-rc.1
+App version: <running build version>
 
 ## Notes
 

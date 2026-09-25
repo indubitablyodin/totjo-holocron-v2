@@ -10,7 +10,7 @@ import { getSoundProfileById } from '@/features/timer/audioProfiles';
 import { loadTimerPreferences, type TimerCueMode } from '@/features/timer/timerPreferences';
 import { collectUserDataExport, formatUserDataMarkdown, createExportFilename, triggerDownload } from '@/features/settings/exportUserData';
 import { collectUserDataBackup, triggerJsonBackupDownload } from '@/features/settings/backupUserData';
-import { isStorageManagerSupported, estimateStorage, isPersistentStorageGranted, requestPersistentStorage } from '@/features/settings/storageHealth';
+import { estimateStorage, isPersistentStorageGranted, requestPersistentStorage } from '@/features/settings/storageHealth';
 import {
   loadLastUserDataExport,
   saveLastUserDataExport,
@@ -114,7 +114,13 @@ export function SettingsPage() {
         setStorageEstimate(null);
       }
     });
-    void updateFreshness();
+    const freshnessTimeoutId = window.setTimeout(() => {
+      void updateFreshness();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(freshnessTimeoutId);
+    };
   }, [updateFreshness]);
 
   const handleExport = async () => {
