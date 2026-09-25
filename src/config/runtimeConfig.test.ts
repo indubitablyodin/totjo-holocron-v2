@@ -22,6 +22,10 @@ describe('validateFeedUrl', () => {
   it('rejects data: URL', () => {
     expect(validateFeedUrl('data:text/json,...')).toBe(false);
   });
+
+  it('rejects protocol-relative external URL', () => {
+    expect(validateFeedUrl('//example.com/feed.json')).toBe(false);
+  });
 });
 
 describe('validateRuntimeConfig', () => {
@@ -46,6 +50,14 @@ describe('validateRuntimeConfig', () => {
     const config = validateRuntimeConfig({
       schemaVersion: 1,
       announcementsFeedUrl: 'http://example.com/feed.json',
+    });
+    expect(config?.announcementsFeedUrl).toBeUndefined();
+  });
+
+  it('rejects protocol-relative external feed URL', () => {
+    const config = validateRuntimeConfig({
+      schemaVersion: 1,
+      announcementsFeedUrl: '//example.com/feed.json',
     });
     expect(config?.announcementsFeedUrl).toBeUndefined();
   });

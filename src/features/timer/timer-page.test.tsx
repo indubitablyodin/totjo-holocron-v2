@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTestRouter } from '@/App';
 import { saveTimerPreferences } from '@/features/timer/timerPreferences';
-import { clearTimerSessionStorage } from '@/features/timer/timerSessionStorage';
+import { clearTimerSessionStorage, saveTimerSession } from '@/features/timer/timerSessionStorage';
 
 describe('timer page layout', () => {
   beforeEach(() => {
@@ -136,5 +136,31 @@ describe('timer page layout', () => {
     render(<AppTestRouter initialEntries={['/timer']} />);
 
     expect(await screen.findByTestId('timer-remaining', {}, { timeout: 3000 })).toBeVisible();
+  });
+
+  it('resumes an active saved session after the timer page remounts', async () => {
+    const now = Date.now();
+
+    saveTimerSession({
+      kind: 'timed',
+      phase: 'running',
+      totalDurationSeconds: 300,
+      remainingSeconds: 300,
+      cueMode: 'end-only',
+      intervalSeconds: 0,
+      soundProfileId: 'silent',
+      recordPracticeHistory: true,
+      targetEndAtMs: now + 300_000,
+      lastIntervalIndex: 0,
+      historyRecorded: false,
+      completedAtMs: null,
+      guidedAudioFileId: null,
+      guidedCueOverlay: true,
+    });
+
+    render(<AppTestRouter initialEntries={['/timer']} />);
+
+    expect(await screen.findByTestId('timer-pause')).toBeVisible();
+    expect(screen.getByTestId('timer-status')).toHaveTextContent('Running');
   });
 });

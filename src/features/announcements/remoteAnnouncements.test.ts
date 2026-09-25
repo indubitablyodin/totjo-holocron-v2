@@ -77,6 +77,10 @@ describe('isValidAnnouncementAction', () => {
     expect(isValidAnnouncementAction({ label: 'x', href: '/library/sermons' })).toBe(true);
   });
 
+  it('rejects protocol-relative external path', () => {
+    expect(isValidAnnouncementAction({ label: 'x', href: '//example.com/announcement' })).toBe(false);
+  });
+
   it('accepts https URL', () => {
     expect(isValidAnnouncementAction({ label: 'x', href: 'https://totjo.org/announcement' })).toBe(true);
   });

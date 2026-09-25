@@ -4,12 +4,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
 import { TimerCore, type TimerCoreProps } from './TimerCore';
+import { clearTimerPreferencesStorage, DEFAULT_TIMER_PREFERENCES, saveTimerPreferences } from './timerPreferences';
 
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
+  clearTimerPreferencesStorage();
 });
 
 afterEach(() => {
+  clearTimerPreferencesStorage();
   vi.useRealTimers();
 });
 
@@ -162,5 +165,22 @@ describe('TimerCore dashboard mode', () => {
     await waitFor(() => {
       expect(onComplete).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('does not fire onComplete when history recording is disabled', async () => {
+    const onComplete = vi.fn();
+
+    saveTimerPreferences({ ...DEFAULT_TIMER_PREFERENCES, recordPracticeHistory: false });
+    renderTimerCore({ defaultDurationMinutes: 5, onComplete });
+
+    await userEvent.setup({ advanceTimers: vi.advanceTimersByTimeAsync })
+      .click(screen.getByTestId('meditation-preset-5'));
+
+    await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 1000);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('timer-complete')).toBeVisible();
+    });
+    expect(onComplete).not.toHaveBeenCalled();
   });
 });

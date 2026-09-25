@@ -18,7 +18,7 @@ export type ReadingSettings = {
 
 export const DEFAULT_READING_SETTINGS: ReadingSettings = {
   fontScale: 'standard',
-  theme: 'dark',
+  theme: 'system',
   contrast: 'standard',
 };
 

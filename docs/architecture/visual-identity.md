@@ -57,7 +57,7 @@ An inline `<script>` in `index.html` reads the stored preference before React mo
 
 The resolved (actual) theme is always `dark` or `light` on `document.documentElement.dataset.theme`. The raw preference is stored in `data-theme-preference` (`system`, `dark`, or `light`).
 
-### Dark mode (default)
+### Dark mode
 
 Deep navy/black background with cyan/amber terminal accents. Hardware shadows use strong dark insets (0.6 alpha black). See `--hw-*` CSS variables in `:root` / `:root[data-theme='dark']`.
 

@@ -19,15 +19,17 @@ function toSectionId(title: string) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
-export function PageLayout({ title, headerBadge, headerActions, children, }: PageLayoutProps) {
+export function PageLayout({ eyebrow, title, description, headerBadge, headerActions, children }: PageLayoutProps) {
   return (
     <article className="page-layout">
       <header className="page-header" data-testid="page-header">
         <div className="page-header-row">
           <div className="page-header-text">
+            {eyebrow ? <p className="page-eyebrow">{eyebrow}</p> : null}
             <h1 className="page-title" data-testid="page-title">
               {title}
             </h1>
+            {description ? <p className="page-description">{description}</p> : null}
             {headerBadge ? <div className="page-header-badge">{headerBadge}</div> : null}
           </div>
           {headerActions ? <div className="page-header-actions">{headerActions}</div> : null}

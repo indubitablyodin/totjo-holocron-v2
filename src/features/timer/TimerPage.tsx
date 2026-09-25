@@ -336,7 +336,7 @@ export function TimerPage() {
     initialDurationSeconds: selectedGuidedAudio
       ? Math.ceil(selectedGuidedAudio.durationSeconds)
       : initialDurationSeconds,
-    initialSession: isActiveSession ? savedSession : undefined,
+    initialSession: isActiveSession && !urlDuration ? savedSession : undefined,
     onComplete: async (event) => {
       await recordMeditationPractice({
         completedAt: event.completedAt,

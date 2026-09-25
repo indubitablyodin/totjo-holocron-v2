@@ -9,7 +9,7 @@ export type ResolvedFeedUrl = {
 };
 
 function isHttpsOrSameOrigin(href: string): boolean {
-  if (href.startsWith('/')) {
+  if (href.startsWith('/') && !href.startsWith('//')) {
     return true;
   }
 

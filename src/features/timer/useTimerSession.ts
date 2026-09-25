@@ -7,6 +7,7 @@ import {
   applyEditableTimerConfig,
   completeTimerSession,
   formatTimerClock,
+  hydrateStoredTimerSession,
   pauseTimerSession,
   resetTimerSession,
   resumeTimerSession,
@@ -60,17 +61,21 @@ export function useTimerSession({
     const resolvedDefaultMinutes = defaultDurationMinutes ?? preferences.defaultDurationSeconds / 60;
     const seconds = initialDurationSeconds ?? resolvedDefaultMinutes * 60;
 
+    if (initialSession) {
+      return hydrateStoredTimerSession(initialSession, preferences);
+    }
+
     return {
-      kind: initialSession?.kind ?? (preferences.defaultGuidedAudioFileId ? 'guided' : 'timed'),
+      kind: preferences.defaultGuidedAudioFileId ? 'guided' : 'timed',
       phase: 'idle',
       totalDurationSeconds: seconds,
       remainingSeconds: seconds,
-      cueMode: initialSession?.cueMode ?? preferences.defaultCueMode,
-      intervalSeconds: initialSession?.intervalSeconds ?? preferences.defaultIntervalSeconds,
-      soundProfileId: initialSession?.soundProfileId ?? preferences.defaultSoundProfileId,
-      recordPracticeHistory: initialSession?.recordPracticeHistory ?? preferences.recordPracticeHistory,
-      guidedAudioFileId: initialSession?.guidedAudioFileId ?? preferences.defaultGuidedAudioFileId,
-      guidedCueOverlay: initialSession?.guidedCueOverlay ?? preferences.guidedCueOverlay,
+      cueMode: preferences.defaultCueMode,
+      intervalSeconds: preferences.defaultIntervalSeconds,
+      soundProfileId: preferences.defaultSoundProfileId,
+      recordPracticeHistory: preferences.recordPracticeHistory,
+      guidedAudioFileId: preferences.defaultGuidedAudioFileId,
+      guidedCueOverlay: preferences.guidedCueOverlay,
       targetEndAtMs: null,
       lastIntervalIndex: 0,
       historyRecorded: false,
@@ -89,10 +94,12 @@ export function useTimerSession({
         return;
       }
 
-      await onComplete?.({
-        durationSeconds: completedSession.totalDurationSeconds,
-        completedAt: new Date(completedSession.completedAtMs ?? Date.now()).toISOString(),
-      });
+      if (completedSession.recordPracticeHistory) {
+        await onComplete?.({
+          durationSeconds: completedSession.totalDurationSeconds,
+          completedAt: new Date(completedSession.completedAtMs ?? Date.now()).toISOString(),
+        });
+      }
 
       sessionRef.current = { ...sessionRef.current, historyRecorded: true };
 

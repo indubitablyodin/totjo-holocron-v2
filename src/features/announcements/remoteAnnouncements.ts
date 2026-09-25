@@ -24,7 +24,7 @@ function isSafeHref(href: unknown): boolean {
   }
 
   // Allow internal paths starting with /
-  if (href.startsWith('/')) {
+  if (href.startsWith('/') && !href.startsWith('//')) {
     return true;
   }
 
