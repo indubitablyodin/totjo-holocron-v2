@@ -148,6 +148,7 @@ export function MyDocumentsPage() {
     <PageLayout
       description="Keep preferred or personal readings that are not part of the Order's canon."
       eyebrow="Library"
+      pageClassName="page-layout--catalog"
       title="My Documents"
     >
       <PageSection description="Paste text or upload a Markdown, text, or JSON file. Documents are stored on this device." title="Add a document">

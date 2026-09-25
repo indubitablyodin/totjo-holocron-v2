@@ -5,6 +5,7 @@ type PageLayoutBaseProps = {
   description?: string;
   headerBadge?: ReactNode;
   headerActions?: ReactNode;
+  pageClassName?: string;
   children: ReactNode;
 };
 
@@ -22,9 +23,9 @@ function toSectionId(title: string) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
-export function PageLayout({ eyebrow, title, description, headerBadge, headerActions, headerless = false, children }: PageLayoutProps) {
+export function PageLayout({ eyebrow, title, description, headerBadge, headerActions, headerless = false, pageClassName, children }: PageLayoutProps) {
   return (
-    <article className="page-layout">
+    <article className={`page-layout${pageClassName ? ` ${pageClassName}` : ''}`}>
       {headerless ? null : (
         <header className="page-header" data-testid="page-header">
           <div className="page-header-row">

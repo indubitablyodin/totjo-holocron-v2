@@ -142,7 +142,7 @@ export function LibraryPage() {
   const bookmarkSummary = `${bookmarks.length} bookmark${bookmarks.length === 1 ? '' : 's'} · ${notes.length} note${notes.length === 1 ? '' : 's'}`;
 
   return (
-    <PageLayout description="" eyebrow="" title="Read">
+    <PageLayout description="" eyebrow="" pageClassName="page-layout--catalog" title="Read">
       <PageSection>
         <LibrarySearch
           query={query}

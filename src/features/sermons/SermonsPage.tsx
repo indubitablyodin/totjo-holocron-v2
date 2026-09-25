@@ -163,8 +163,21 @@ export function SermonsPage() {
     [cacheStates, sermons],
   );
 
+  const visibleSyncMessage =
+    pageStatus === 'loading'
+      ? 'Loading sermons…'
+      : syncStatus.kind === 'syncing'
+        ? syncStatus.message
+        : syncStatus.kind === 'error'
+          ? syncStatus.message
+        : !isOnline && sermons.length === 0
+          ? 'Connect to browse sermons.'
+          : pageStatus === 'ready' && sermons.length === 0
+            ? 'No sermons are cached yet. Refresh to load the archive.'
+            : syncStatus.message;
+
   return (
-    <PageLayout title="Sermons">
+    <PageLayout pageClassName="page-layout--catalog" title="Sermons">
       <PageSection>
         <div className="document-actions">
           <button
@@ -185,7 +198,7 @@ export function SermonsPage() {
           data-testid="sermon-sync-status"
           role="status"
         >
-          {!isOnline && sermons.length === 0 ? 'Connect to browse sermons.' : syncStatus.message}
+          {visibleSyncMessage}
         </p>
       </PageSection>
 
@@ -205,7 +218,9 @@ export function SermonsPage() {
 
       <PageSection title="All sermons">
         {sermons.length === 0 && pageStatus !== 'error' ? (
-          <p className="support-copy">No sermons are ready yet. Connect and refresh to browse the archive.</p>
+          <p className="support-copy">
+            {isOnline ? 'No sermons are cached yet. Refresh to load the archive.' : 'Connect to browse sermons.'}
+          </p>
         ) : null}
 
         {sermons.length > 0 ? (

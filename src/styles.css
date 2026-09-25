@@ -1638,6 +1638,22 @@ input {
   .settings-index {
     grid-template-columns: 1fr;
   }
+
+  .page-layout--catalog .page-content-stack {
+    width: min(100%, 72rem);
+    margin-inline: auto;
+  }
+
+  .timer-display > .timer-mode-toggle,
+  .timer-display > .guided-audio-select-block,
+  .timer-display > .timer-preset-group,
+  .timer-display > .timer-advanced-toggle,
+  .timer-display > .timer-inline-controls,
+  .timer-display > .timer-controls,
+  .timer-display > .panel-toggle-block {
+    width: min(100%, 60rem);
+    margin-inline: auto;
+  }
 }
 
 @media (max-width: 55.99rem) {

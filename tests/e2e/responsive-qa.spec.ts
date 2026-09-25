@@ -98,6 +98,73 @@ test.describe('responsive QA matrix', () => {
     await expect(page.getByTestId('bottom-nav-settings')).toBeVisible();
   });
 
+  test('timer primary action stays clear of the dock at phone and tablet-like widths', async ({ page }, testInfo) => {
+    requirePhoneProject(testInfo);
+
+    for (const viewport of [
+      { width: 320, height: 568 },
+      { width: 695, height: 734 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/#/timer');
+      await page.waitForLoadState('networkidle');
+      await page.getByTestId('timer-start').scrollIntoViewIfNeeded();
+
+      const geometry = await page.evaluate(() => {
+        const start = document.querySelector('[data-testid="timer-start"]');
+        const nav = document.querySelector('[data-testid="bottom-nav"]');
+
+        if (!start || !nav) {
+          throw new Error('Expected Timer primary action and mobile dock to exist.');
+        }
+
+        const startRect = start.getBoundingClientRect();
+        const navRect = nav.getBoundingClientRect();
+
+        return {
+          startBottom: startRect.bottom,
+          startTop: startRect.top,
+          navBottom: navRect.bottom,
+          navLeft: navRect.left,
+          navRight: navRect.right,
+          navTop: navRect.top,
+        };
+      });
+
+      expect(geometry.startTop).toBeGreaterThanOrEqual(0);
+      expect(geometry.startBottom).toBeLessThanOrEqual(geometry.navTop - 4);
+      expect(geometry.navLeft).toBeGreaterThanOrEqual(-1);
+      expect(geometry.navRight).toBeLessThanOrEqual(viewport.width + 1);
+      expect(geometry.navBottom).toBeLessThanOrEqual(viewport.height + 1);
+    }
+  });
+
+  test('reader navigation can be scrolled fully above the mobile dock', async ({ page }, testInfo) => {
+    requirePhoneProject(testInfo);
+
+    await page.setViewportSize({ width: 695, height: 734 });
+    await page.goto('/#/library/doctrine/three-tenets');
+    await page.waitForLoadState('networkidle');
+
+    const readerNavigation = page.getByRole('navigation', { name: 'Doctrine documents' });
+    await readerNavigation.scrollIntoViewIfNeeded();
+
+    const geometry = await page.evaluate(() => {
+      const reader = document.querySelector('.reader-navigation');
+      const nav = document.querySelector('[data-testid="bottom-nav"]');
+
+      if (!reader || !nav) {
+        throw new Error('Expected reader navigation and mobile dock to exist.');
+      }
+
+      const readerRect = reader.getBoundingClientRect();
+      const navRect = nav.getBoundingClientRect();
+      return { readerBottom: readerRect.bottom, navTop: navRect.top };
+    });
+
+    expect(geometry.readerBottom).toBeLessThanOrEqual(geometry.navTop - 4);
+  });
+
   test('mobile-nav desktop matrix keeps the larger-screen rail labeled and route-complete', async ({ page }, testInfo) => {
     requireDesktopProject(testInfo);
 
@@ -148,6 +215,39 @@ test.describe('responsive QA matrix', () => {
     await expect(page.getByTestId('page-title')).toHaveText('Settings');
 
     await page.screenshot({ path: '.sisyphus/evidence/task-8-mobile-nav-desktop.png' });
+  });
+
+  test('catalog and Timer control density stay bounded on a 1440px desktop', async ({ page }, testInfo) => {
+    requireDesktopProject(testInfo);
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/#/library');
+    await page.waitForLoadState('networkidle');
+
+    const catalogMetrics = await page.locator('.page-layout--catalog .page-content-stack').evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, width: rect.width };
+    });
+
+    expect(catalogMetrics.width).toBeLessThanOrEqual(1152);
+    expect(catalogMetrics.left).toBeGreaterThanOrEqual(0);
+    await page.screenshot({ path: '.sisyphus/evidence/ux-catalog-desktop-1440.png' });
+
+    await page.goto('/#/timer');
+    await page.waitForLoadState('networkidle');
+
+    const timerMetrics = await page.locator('[data-testid="timer-panel"]').evaluate((element) => {
+      const controls = element.querySelector('[data-testid="timer-mode-toggle"]');
+
+      if (!controls) {
+        throw new Error('Expected the Timer control cluster to exist.');
+      }
+
+      return { width: controls.getBoundingClientRect().width };
+    });
+
+    expect(timerMetrics.width).toBeLessThanOrEqual(960);
+    await page.screenshot({ path: '.sisyphus/evidence/ux-timer-desktop-1440.png' });
   });
 
   test('reader-mobile phone matrix keeps large text, contrast, and reader actions usable under keyboard pressure', async ({ page }, testInfo) => {

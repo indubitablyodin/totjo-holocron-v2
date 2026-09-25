@@ -164,6 +164,65 @@ afterEach(async () => {
 });
 
 describe('sync-fallback sermon reading', () => {
+  it('explains empty online, offline, successful, and failed archive states', async () => {
+    const user = userEvent.setup();
+    window.sessionStorage.setItem('totjo:sermons:auto-sync-attempted', 'true');
+
+    const emptyOnlineView = render(<SermonTestRouter initialEntries={['/library/sermons']} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('sermon-sync-status')).toHaveTextContent('No sermons are cached yet. Refresh to load the archive.');
+    });
+
+    emptyOnlineView.unmount();
+    setNavigatorOnline(false);
+    const emptyOfflineView = render(<SermonTestRouter initialEntries={['/library/sermons']} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('sermon-sync-status')).toHaveTextContent('Connect to browse sermons.');
+    });
+
+    emptyOfflineView.unmount();
+    setNavigatorOnline(true);
+    const fetchMock = vi.fn(async (input: string | URL | Request) => {
+      const url = String(input);
+
+      if (url.endsWith('/imports/totjo-sermons/index.json')) {
+        return createJsonResponse(manifest);
+      }
+
+      if (url.endsWith('/imports/totjo-sermons/the-force-works-all-things-out.json')) {
+        return createJsonResponse({ document: cachedSermon });
+      }
+
+      if (url.endsWith('/imports/totjo-sermons/resilience-and-integration-of-practice.json')) {
+        return createJsonResponse({ document: uncachedSermon });
+      }
+
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const successfulSyncView = render(<SermonTestRouter initialEntries={['/library/sermons']} />);
+    await user.click(await screen.findByTestId('sermon-sync-button'));
+    await waitFor(() => {
+      expect(screen.getByTestId('sermon-sync-status')).toHaveTextContent('Updated 2 sermons.');
+    });
+
+    successfulSyncView.unmount();
+    await clearAppDatabase();
+    resetBootstrapState();
+    window.sessionStorage.setItem('totjo:sermons:auto-sync-attempted', 'true');
+    vi.stubGlobal('fetch', vi.fn(async () => {
+      throw new Error('offline fixture');
+    }));
+    render(<SermonTestRouter initialEntries={['/library/sermons']} />);
+    await user.click(await screen.findByTestId('sermon-sync-button'));
+    await waitFor(() => {
+      expect(screen.getByTestId('sermon-sync-status')).toHaveTextContent('Could not update sermons. Reconnect and try again.');
+    });
+  });
+
   it('keeps a saved sermon readable offline and shows a fallback for unsaved sermons', async () => {
     const user = userEvent.setup();
     const fetchMock = vi.fn(async (input: string | URL | Request) => {
@@ -192,6 +251,7 @@ describe('sync-fallback sermon reading', () => {
     await waitFor(() => {
       expect(screen.getByTestId('sermon-card-the-force-works-all-things-out')).toBeVisible();
       expect(screen.getByTestId('sermon-card-resilience-and-integration-of-practice')).toBeVisible();
+      expect(screen.getByTestId('sermon-sync-status')).toHaveTextContent('Updated 2 sermons.');
     });
 
     await user.click(screen.getByRole('link', { name: 'The Force Works All Things Out' }));

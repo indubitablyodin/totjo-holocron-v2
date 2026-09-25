@@ -127,6 +127,7 @@ export function BookmarksPage() {
   return (
     <PageLayout
       description="Open your saved sermons, bookmarks, and notes."
+      pageClassName="page-layout--catalog"
       
       title="Bookmarks"
     >
