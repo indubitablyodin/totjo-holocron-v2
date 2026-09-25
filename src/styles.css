@@ -1913,6 +1913,17 @@ input {
   background: var(--color-surface-soft);
 }
 
+.bottom-nav__back:disabled {
+  color: var(--color-text-muted);
+  cursor: default;
+  opacity: 0.55;
+}
+
+.bottom-nav__back:disabled:hover {
+  color: var(--color-text-muted);
+  background: transparent;
+}
+
 .bottom-nav__back + .bottom-nav__link {
   margin-left: var(--space-1);
   padding-left: var(--space-3);

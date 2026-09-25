@@ -183,8 +183,10 @@ export function AppShell() {
   const location = useLocation();
   const navigate = useNavigate();
   const navigationType = useNavigationType();
+  const currentPath = `${location.pathname}${location.search}${location.hash}`;
   const pwaUpdate = useSyncExternalStore(subscribePwaUpdate, getPwaUpdateSnapshot, getPwaUpdateSnapshot);
   const inAppHistoryRef = useRef<string[]>([]);
+  const [hasInAppHistory, setHasInAppHistory] = useState(false);
   const bottomNavRef = useRef<HTMLElement | null>(null);
   const appShellRef = useRef<HTMLDivElement | null>(null);
   const navGroups = useMemo(
@@ -198,8 +200,11 @@ export function AppShell() {
 
   useEffect(() => {
     const historyStack = inAppHistoryRef.current;
-    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     const lastRoutePath = historyStack[historyStack.length - 1];
+    const commitHistory = (nextHistoryStack: string[]) => {
+      inAppHistoryRef.current = nextHistoryStack;
+      setHasInAppHistory(nextHistoryStack.length > 1 && nextHistoryStack[nextHistoryStack.length - 2] !== currentPath);
+    };
 
     if (lastRoutePath === currentPath) {
       return;
@@ -208,17 +213,17 @@ export function AppShell() {
     if (navigationType === 'POP') {
       const existingIndex = historyStack.lastIndexOf(currentPath);
 
-      inAppHistoryRef.current = existingIndex >= 0 ? historyStack.slice(0, existingIndex + 1) : [currentPath];
+      commitHistory(existingIndex >= 0 ? historyStack.slice(0, existingIndex + 1) : [currentPath]);
       return;
     }
 
     if (navigationType === 'REPLACE') {
-      inAppHistoryRef.current = historyStack.length > 0 ? [...historyStack.slice(0, -1), currentPath] : [currentPath];
+      commitHistory(historyStack.length > 0 ? [...historyStack.slice(0, -1), currentPath] : [currentPath]);
       return;
     }
 
-    inAppHistoryRef.current = [...historyStack, currentPath].slice(-IN_APP_HISTORY_LIMIT);
-  }, [navigationType]);
+    commitHistory([...historyStack, currentPath].slice(-IN_APP_HISTORY_LIMIT));
+  }, [currentPath, navigationType]);
 
   useEffect(() => {
     if (location.hash) {
@@ -290,18 +295,21 @@ export function AppShell() {
 
   const showUpdatePrompt = pwaUpdate.updateAvailable && !pwaUpdate.dismissed;
   const bottomNavPages = navGroups.core;
+  const canNavigateBack = hasInAppHistory || currentPath !== FALLBACK_BACK_PATH;
 
   const handleBottomNavBack = () => {
-    const historyStack = inAppHistoryRef.current;
-    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    const previousRoutePath = historyStack.length > 1 ? historyStack[historyStack.length - 2] : null;
+    const latestHistoryStack = inAppHistoryRef.current;
+    const latestPreviousRoutePath = latestHistoryStack.length > 1 ? latestHistoryStack[latestHistoryStack.length - 2] : null;
 
-    if (previousRoutePath && previousRoutePath !== currentPath) {
-      void navigate(-1);
+    if (latestPreviousRoutePath && latestPreviousRoutePath !== currentPath) {
+      inAppHistoryRef.current = latestHistoryStack.slice(0, -1);
+      void navigate(latestPreviousRoutePath, { replace: true });
       return;
     }
 
-    void navigate(FALLBACK_BACK_PATH, { replace: true });
+    if (currentPath !== FALLBACK_BACK_PATH) {
+      void navigate(FALLBACK_BACK_PATH, { replace: true });
+    }
   };
 
   return (
@@ -347,7 +355,15 @@ export function AppShell() {
       </div>
 
       <nav aria-label="Quick destinations" className="bottom-nav" data-testid="bottom-nav" ref={bottomNavRef}>
-        <button className="bottom-nav__back" data-testid="bottom-nav-back" onClick={handleBottomNavBack} type="button">
+        <button
+          aria-label={canNavigateBack ? 'Back' : 'Back (no previous page)'}
+          className="bottom-nav__back"
+          data-testid="bottom-nav-back"
+          disabled={!canNavigateBack}
+          onClick={handleBottomNavBack}
+          title={canNavigateBack ? undefined : 'No previous page'}
+          type="button"
+        >
           <span aria-hidden="true" className="bottom-nav__back-icon" data-icon={BOTTOM_NAV_BACK_ICON} />
           <span>Back</span>
         </button>

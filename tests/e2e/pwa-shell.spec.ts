@@ -103,6 +103,31 @@ test.describe('PWA shell', () => {
     await expectBottomNavDoesNotCover(page, 'timer-reset');
   });
 
+  test('mobile Back follows in-app route history and disables at the Daily root', async ({ page }) => {
+    test.skip(test.info().project.name !== 'phone-chromium', 'The Back dock control is mobile-only.');
+
+    await page.goto('/#/daily');
+    await page.waitForLoadState('networkidle');
+
+    await expect(page.getByTestId('bottom-nav-back')).toBeDisabled();
+    await expect(page.getByTestId('bottom-nav-back')).toHaveAttribute('aria-label', 'Back (no previous page)');
+
+    await page.getByTestId('bottom-nav-library').click();
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
+
+    await page.getByTestId('bottom-nav-timer').click();
+    await expect(page.getByTestId('page-title')).toHaveText('Timer');
+
+    await page.getByTestId('bottom-nav-settings').click();
+    await expect(page.getByTestId('page-title')).toHaveText('Settings');
+
+    await page.getByTestId('bottom-nav-back').click();
+    await expect(page.getByTestId('page-title')).toHaveText('Timer');
+
+    await page.getByTestId('bottom-nav-back').click();
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
+  });
+
   test('mobile-nav desktop adaptation preserves labels and route reachability', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1024 });
     await page.goto('/#/library');

@@ -84,6 +84,52 @@ describe('app-shell routes', () => {
     });
   });
 
+  it('keeps the in-app route stack current across consecutive navigations', async () => {
+    const user = userEvent.setup();
+
+    render(<AppTestRouter />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
+    });
+
+    await user.click(screen.getByTestId('bottom-nav-library'));
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+    });
+
+    await user.click(screen.getByTestId('bottom-nav-timer'));
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Timer');
+    });
+
+    await user.click(screen.getByTestId('bottom-nav-settings'));
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Settings');
+    });
+
+    await user.click(screen.getByTestId('bottom-nav-back'));
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Timer');
+    });
+
+    await user.click(screen.getByTestId('bottom-nav-back'));
+    await waitFor(() => {
+      expect(screen.getByTestId('page-title')).toHaveTextContent('Read');
+    });
+  });
+
+  it('disables Back on Daily when no previous in-app route exists', async () => {
+    render(<AppTestRouter />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
+    });
+
+    expect(screen.getByTestId('bottom-nav-back')).toBeDisabled();
+    expect(screen.getByTestId('bottom-nav-back')).toHaveAccessibleName('Back (no previous page)');
+  });
+
   it('falls Back to Daily Focus when no useful in-app route is known', async () => {
     const user = userEvent.setup();
 
