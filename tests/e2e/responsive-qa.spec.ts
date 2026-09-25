@@ -108,7 +108,6 @@ test.describe('responsive QA matrix', () => {
       await page.setViewportSize(viewport);
       await page.goto('/#/timer');
       await page.waitForLoadState('networkidle');
-      await page.getByTestId('timer-start').scrollIntoViewIfNeeded();
 
       const geometry = await page.evaluate(() => {
         const start = document.querySelector('[data-testid="timer-start"]');

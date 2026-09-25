@@ -1690,13 +1690,27 @@ input {
     grid-template-columns: 1fr;
   }
 
+  .timer-display > .timer-readout {
+    order: 1;
+  }
+
   .timer-display > .timer-controls {
     order: 2;
   }
 
+  .timer-display > .timer-mode-toggle,
+  .timer-display > .guided-audio-select-block,
+  .timer-display > .timer-preset-group {
+    order: 3;
+  }
+
   .timer-display > .timer-advanced-toggle,
   .timer-display > .timer-inline-controls {
-    order: 3;
+    order: 4;
+  }
+
+  .timer-display > .panel-toggle-block {
+    order: 5;
   }
 }
 
