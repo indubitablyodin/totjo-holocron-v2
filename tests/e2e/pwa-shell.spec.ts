@@ -1,6 +1,6 @@
 import { expect, test, type Page } from './base';
 
-const EXPECTED_BOTTOM_NAV_LABELS = ['Focus', 'Library', 'Sermons', 'Timer', 'Settings'];
+const EXPECTED_BOTTOM_NAV_LABELS = ['Focus', 'Read', 'Timer', 'Settings'];
 
 async function expectBottomNavLabels(page: Page) {
   const bottomNav = page.getByTestId('bottom-nav');
@@ -60,7 +60,7 @@ test.describe('PWA shell', () => {
     await expect(page.getByTestId('bottom-nav')).toBeVisible();
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
     await expect(page.getByTestId('app-nav')).toBeHidden();
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
     await expect(page.getByTestId('page-content')).toBeVisible();
     await expect(page.getByTestId('offline-banner')).toHaveCount(1);
 
@@ -109,13 +109,12 @@ test.describe('PWA shell', () => {
     await page.waitForLoadState('networkidle');
 
     await expect(page.getByTestId('app-nav-daily')).toHaveText('Focus');
-    await expect(page.getByTestId('app-nav-library')).toHaveText('Library');
-    await expect(page.getByTestId('app-nav-sermons')).toHaveText('Sermons');
+    await expect(page.getByTestId('app-nav-library')).toHaveText('Read');
     await expect(page.getByTestId('app-nav-timer')).toHaveText('Timer');
     await expect(page.getByTestId('app-nav-settings')).toHaveText('Settings');
     await expectBottomNavLabels(page);
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
 
     const navBox = await page.getByTestId('app-nav').boundingBox();
     const mainBox = await page.getByTestId('shell-main').boundingBox();
@@ -136,7 +135,7 @@ test.describe('PWA shell', () => {
 
     await page.getByTestId('app-nav-library').click();
     await expect(page).toHaveURL(/\/library$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
 
     await page.getByTestId('app-nav-timer').click();
     await expect(page).toHaveURL(/\/timer$/);
@@ -149,7 +148,7 @@ test.describe('PWA shell', () => {
     await expect(page.getByTestId('settings-group-reading-display')).toBeVisible();
 
     await page.getByTestId('app-nav-library').click();
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
     await page.screenshot({ path: '.sisyphus/evidence/task-2-mobile-nav-desktop.png' });
   });
 
@@ -218,7 +217,7 @@ test.describe('PWA shell', () => {
 
     await expect(page.locator('body')).toHaveClass(/large-reading/);
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
 
     await page.goto('/#/settings/reading-display');
     await expect(page.getByTestId('setting-font-scale')).toHaveValue('large');
@@ -241,7 +240,7 @@ test.describe('PWA shell', () => {
     await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
     await expect(page.getByRole('heading', { name: 'Doctrine' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Supplemental' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Sermons' })).toBeVisible();

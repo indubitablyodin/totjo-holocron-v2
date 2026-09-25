@@ -1,6 +1,6 @@
 import { expect, test, type Page, type TestInfo } from './base';
 
-const EXPECTED_BOTTOM_NAV_LABELS = ['Focus', 'Library', 'Sermons', 'Timer', 'Settings'];
+const EXPECTED_BOTTOM_NAV_LABELS = ['Focus', 'Read', 'Timer', 'Settings'];
 
 function requirePhoneProject(testInfo: TestInfo) {
   test.skip(!testInfo.project.name.startsWith('phone-'), 'Phone viewport matrix only runs in the phone project.');
@@ -31,7 +31,7 @@ test.describe('responsive QA matrix', () => {
     await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
     await expect(page.locator('[data-testid="bottom-nav"] .bottom-nav__link')).toHaveText(EXPECTED_BOTTOM_NAV_LABELS);
     await expect(page.getByTestId('bottom-nav')).toHaveCSS('position', 'fixed');
     await expect(page.getByTestId('app-nav')).toBeHidden();
@@ -73,7 +73,7 @@ test.describe('responsive QA matrix', () => {
     await page.goto('/#/library');
     await page.waitForLoadState('networkidle');
 
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
 
     const navMetrics = await page.evaluate(() => {
       const nav = document.querySelector('[data-testid="app-nav"]');
@@ -106,7 +106,7 @@ test.describe('responsive QA matrix', () => {
 
     await page.getByTestId('app-nav-library').click();
     await expect(page).toHaveURL(/\/library$/);
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
 
     await page.getByTestId('app-nav-timer').click();
     await expect(page).toHaveURL(/\/timer$/);

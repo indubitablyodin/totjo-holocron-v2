@@ -4107,6 +4107,23 @@ body::after {
    ========================================================================== */
 
 @media (forced-colors: active) {
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  :root {
+    --hw-shadow-recessed: none;
+    --hw-shadow-raised: none;
+    --hw-shadow-button-pressed: none;
+    --hw-shadow-tab-active: none;
+    --hw-screw-shadow: none;
+    --hw-led-glow: none;
+    --hw-glow-cyan: none;
+  }
+
   .holocron-frame::before,
   .holocron-frame::after,
   .holocron-divider,
@@ -4121,5 +4138,17 @@ body::after {
 
   .bottom-nav__link--active {
     border: 2px solid Highlight;
+  }
+
+  .bottom-nav,
+  .app-nav,
+  .holocron-panel,
+  .holocron-frame,
+  .primary-action-panel,
+  .library-card,
+  .settings-link-card {
+    background: Canvas;
+    color: CanvasText;
+    border-color: ButtonText;
   }
 }

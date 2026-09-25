@@ -23,7 +23,7 @@ test.describe('auth account', () => {
     await expect(page.getByTestId('account-status')).toHaveCount(0);
 
     await page.goto('/#/library');
-    await expect(page.getByTestId('page-title')).toHaveText('Library');
+    await expect(page.getByTestId('page-title')).toHaveText('Read');
     await page.screenshot({ fullPage: true, path: '.sisyphus/evidence/task-10-auth-hidden-callback.png' });
   });
 });
