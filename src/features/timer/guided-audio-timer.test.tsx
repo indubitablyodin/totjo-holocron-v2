@@ -147,8 +147,6 @@ describe('guided meditation timer', () => {
 
     const guidedAudioElement = createdAudioElements.find((element) => element.src.startsWith('blob:'));
 
-    console.log('DEBUG2 created:', createdAudioElements.length, createdAudioElements.map((el) => el.src));
-
     expect(guidedAudioElement).toBeDefined();
 
     fireEvent(guidedAudioElement as HTMLAudioElement, new Event('ended'));

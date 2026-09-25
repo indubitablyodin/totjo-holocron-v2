@@ -67,6 +67,37 @@ test.describe('responsive QA matrix', () => {
     await page.screenshot({ path: '.sisyphus/evidence/task-8-mobile-nav-phone.png' });
   });
 
+  test('mobile-nav still shows every destination at the 320px baseline', async ({ page }, testInfo) => {
+    requirePhoneProject(testInfo);
+
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto('/#/library');
+    await page.waitForLoadState('networkidle');
+
+    const navMetrics = await page.getByTestId('bottom-nav').evaluate((element) => ({
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+    }));
+    expect(navMetrics.scrollWidth).toBeLessThanOrEqual(navMetrics.clientWidth);
+
+    const navBox = await page.getByTestId('bottom-nav').boundingBox();
+    const linkBoxes = await page.locator('[data-testid="bottom-nav"] .bottom-nav__link').evaluateAll((elements) =>
+      elements.map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { left: rect.left, right: rect.right };
+      }),
+    );
+
+    expect(navBox).not.toBeNull();
+    if (!navBox) {
+      throw new Error('Expected the mobile navigation bounds to be available.');
+    }
+
+    expect(linkBoxes).toHaveLength(4);
+    expect(linkBoxes.every((box) => box.left >= navBox.x - 1 && box.right <= navBox.x + navBox.width + 1)).toBe(true);
+    await expect(page.getByTestId('bottom-nav-settings')).toBeVisible();
+  });
+
   test('mobile-nav desktop matrix keeps the larger-screen rail labeled and route-complete', async ({ page }, testInfo) => {
     requireDesktopProject(testInfo);
 

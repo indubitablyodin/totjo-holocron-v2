@@ -89,12 +89,9 @@ Settings > About & Legal shows the current build version and label, read from `A
 `VITE_APP_BUILD_LABEL` env vars with hardcoded fallbacks). This is meant to be the simplest way to
 confirm which build the browser is actually running.
 
-**Known issue:** `.github/workflows/deploy-pages.yml` never sets `VITE_APP_VERSION` or
-`VITE_APP_BUILD_LABEL`, so every production deploy has shown the hardcoded fallback
-(`0.1.0-rc.4-dev` · `local`) since it was introduced (`b8efd67`, 2026-06-26) — through v0.1.0
-via v0.1.4 and everything since. The version shown in Settings has never reflected what's actually
-deployed. See `docs/architecture/known-issues-and-fixes.md` for the suggested fix (inject
-`git describe --tags` and the short SHA as build-time env vars in the deploy workflow).
+The Pages workflow injects `git describe --tags --always` as the version and the short commit SHA
+as the build label. Local builds still use the documented fallback values unless environment
+variables are supplied explicitly.
 
 ## Check for update (manual)
 
