@@ -94,6 +94,8 @@ describe('daily focus selection and front page', () => {
         expect(screen.getByText(/Today.?.s Practice/)).toBeVisible();
       });
 
+      expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+      expect(screen.getByRole('heading', { level: 1, name: /Today.?.s Practice/ })).toBeVisible();
       expect(screen.getByText('Jediism is a religion based on the observance of the Force. We believe:')).toBeVisible();
       expect(screen.getByTestId('daily-focus-source')).toHaveTextContent('Jedi Believe #1');
       expect(screen.getByTestId('daily-focus-card')).not.toHaveTextContent('Daily Focus');

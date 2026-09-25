@@ -15,4 +15,16 @@ describe('PageLayout', () => {
     expect(screen.getByText('Local settings stay on this device.')).toBeVisible();
     expect(screen.getByTestId('page-title')).toHaveTextContent('About');
   });
+
+  it('supports a headerless page without adding an empty heading', () => {
+    render(
+      <PageLayout headerless>
+        <h1>Today’s Practice</h1>
+      </PageLayout>,
+    );
+
+    expect(screen.queryByTestId('page-header')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole('heading', { name: 'Today’s Practice' })).toBeVisible();
+  });
 });

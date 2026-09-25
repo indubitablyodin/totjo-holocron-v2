@@ -515,7 +515,18 @@ export function TimerPage() {
       description=""
       eyebrow="Meditation timer"
       title="Timer"
-      headerActions={<Link aria-label="Open timer defaults in settings" className="gear-link" data-testid="timer-gear-link" to="/settings/timer-defaults" title="Timer defaults">⏳</Link>}
+      headerActions={
+        <Link
+          aria-label="Open timer defaults in settings"
+          className="gear-link timer-defaults-link"
+          data-testid="timer-gear-link"
+          to="/settings/timer-defaults"
+          title="Timer defaults"
+        >
+          <span aria-hidden="true">⏳</span>
+          <span>Timer defaults</span>
+        </Link>
+      }
     >
       <PageSection description="" title="Start a session">
         <div className="timer-grid">

@@ -300,7 +300,7 @@ export function DailyPracticePage({ now, timeZone, database = appDb }: DailyPrac
   }, [database, resolvedTimeZone]);
 
   return (
-    <PageLayout description="" eyebrow="" title="">
+    <PageLayout headerless>
       <div className="home-dashboard">
         <section
           className="dashboard-region daily-practice-hero"

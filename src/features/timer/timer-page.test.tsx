@@ -24,6 +24,8 @@ describe('timer page layout', () => {
     expect(screen.getByTestId('timer-cancel')).toHaveTextContent('Cancel');
     expect(screen.getByTestId('timer-advanced-toggle')).toBeVisible();
     expect(screen.getByTestId('timer-gear-link')).toBeVisible();
+    expect(screen.getByTestId('timer-gear-link')).toHaveTextContent('Timer defaults');
+    expect(screen.getByTestId('timer-gear-link')).toHaveAttribute('href', '/settings/timer-defaults');
 
     await user.click(screen.getByTestId('timer-advanced-toggle'));
     expect(screen.getByTestId('timer-cue-mode')).toBeVisible();
