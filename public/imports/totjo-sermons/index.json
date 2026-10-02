@@ -1,7 +1,40 @@
 {
-  "importedAt": "2026-10-01T14:26:27.000Z",
-  "checksum": "fnv1a-a7c463f9",
+  "importedAt": "2026-10-02T13:50:18.000Z",
+  "checksum": "fnv1a-11ab4d91",
   "documents": [
+    {
+      "id": "sermon-may-the-wut-do-wut-now",
+      "slug": "may-the-wut-do-wut-now",
+      "title": "May the Wut Do Wut Now?",
+      "summary": "I can still be surprised after more than sixteen years on this Jedi Path.",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:atticus",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/may-the-wut-do-wut-now"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/may-the-wut-do-wut-now",
+      "author": "Atticus",
+      "sortOrder": 0,
+      "publishedAt": "2026-10-02T00:00:00.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
+      "checksum": "fnv1a-2ea7fe93"
+    },
     {
       "id": "sermon-purpose-in-life",
       "slug": "purpose-in-life",
@@ -30,9 +63,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/purpose-in-life",
       "author": "Atticus",
-      "sortOrder": 0,
+      "sortOrder": 1,
       "publishedAt": "2026-09-25T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
       "checksum": "fnv1a-c03279c7"
     },
     {
@@ -63,9 +96,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/bruised-and-bleeding",
       "author": "Morkano",
-      "sortOrder": 1,
+      "sortOrder": 2,
       "publishedAt": "2026-08-28T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
       "checksum": "fnv1a-6e79f09d"
     },
     {
@@ -96,9 +129,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/vocabulario-vocabulary",
       "author": "ChaotishRabe",
-      "sortOrder": 2,
+      "sortOrder": 3,
       "publishedAt": "2026-08-22T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
       "checksum": "fnv1a-9e2ebaab"
     },
     {
@@ -129,9 +162,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sliced-black-olives",
       "author": "ChaotishRabe",
-      "sortOrder": 3,
+      "sortOrder": 4,
       "publishedAt": "2026-08-14T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
       "checksum": "fnv1a-a40c82a3"
     },
     {
@@ -162,9 +195,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/small-meditation",
       "author": "Serenity Amyntas",
-      "sortOrder": 4,
+      "sortOrder": 5,
       "publishedAt": "2026-08-07T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
       "checksum": "fnv1a-1b097938"
     },
     {
@@ -195,9 +228,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/ahsoka",
       "author": "Morkano",
-      "sortOrder": 5,
+      "sortOrder": 6,
       "publishedAt": "2026-07-31T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
       "checksum": "fnv1a-5e5a6a81"
     },
     {
@@ -228,9 +261,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/a-journey-of-becoming",
       "author": "Master Zero",
-      "sortOrder": 6,
+      "sortOrder": 7,
       "publishedAt": "2026-07-24T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
       "checksum": "fnv1a-1b0cb2cf"
     },
     {
@@ -261,9 +294,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-bake-for-good",
       "author": "ChaotishRabe",
-      "sortOrder": 7,
+      "sortOrder": 8,
       "publishedAt": "2026-07-03T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
       "checksum": "fnv1a-87cfb27b"
     },
     {
@@ -294,43 +327,10 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/ignorance-yet-knowledge",
       "author": "Serenity Amyntas",
-      "sortOrder": 8,
-      "publishedAt": "2026-06-21T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
-      "checksum": "fnv1a-07606218"
-    },
-    {
-      "id": "sermon-persistence",
-      "slug": "persistence",
-      "title": "Persistence",
-      "summary": "There was a saying in the recovery community that used to drive me crazy: “Don't give up five minutes before the miracle.” I mean, I understand the idea behind it. But it sort o...",
-      "authorityClass": "sermon",
-      "documentType": "sermon",
-      "sourceId": "totjo-sermons",
-      "bodyMarkdown": "",
-      "tags": [
-        "sermon",
-        "author:atticus",
-        "year:2026"
-      ],
-      "version": 1,
-      "origin": "synced",
-      "source": {
-        "sourceType": "public-totjo-page",
-        "sourceUrls": [
-          "https://templeofthejediorder.org/sermons",
-          "https://templeofthejediorder.org/sermons/persistence"
-        ],
-        "attribution": "Temple of the Jedi Order",
-        "approvalStatus": "review-required",
-        "provenanceStatus": "recorded"
-      },
-      "sourceUrl": "https://templeofthejediorder.org/sermons/persistence",
-      "author": "Atticus",
       "sortOrder": 9,
-      "publishedAt": "2026-06-12T00:00:00.000Z",
-      "updatedAt": "2026-10-01T14:26:27.000Z",
-      "checksum": "fnv1a-64742175"
+      "publishedAt": "2026-06-21T00:00:00.000Z",
+      "updatedAt": "2026-10-02T13:50:18.000Z",
+      "checksum": "fnv1a-07606218"
     }
   ]
 }

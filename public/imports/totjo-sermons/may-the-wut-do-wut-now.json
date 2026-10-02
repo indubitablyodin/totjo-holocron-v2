@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-may-the-wut-do-wut-now",
+    "slug": "may-the-wut-do-wut-now",
+    "title": "May the Wut Do Wut Now?",
+    "summary": "I can still be surprised after more than sixteen years on this Jedi Path.",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "I can still be surprised after more than sixteen years on this Jedi Path.\n\nA while back, I heard someone say that they had an issue with the phrase, “May the Force be with you.” Like, the Force just is. Nothing I say is going to change the fundamental structure of the universe.\n\nSaying MTFBWY is like wishing someone the gift of gravity.\n\nOkay, I get that. But let me take us on a closer look at this sentence.\n\nFor a very long time, i believed that everything important to Jediism could be found in Yoda's lines in The Empire Strikes Back. That could be where my blind spot to MTFBWY comes from, because Yoda doesn't use that sentence until the prequels.\n\n“May the Force be with you” was a marketing line from the original Star Wars movie. With that in mind, you might think it comes from Obi-Wan, the character who introduces Luke (and us, the audience) to the Force. But Obi-Wan doesn't say that line. He tells Luke, “The Force will be with you. Always. “ And that's more in line with how I view the Force.\n\nGravity will be with you. Always.\n\nYou know who does use the line? Han Solo. The guy who doesn't believe in the Force, who says that “Hokey religions and ancient weapons are no match for a good blaster at your side, kid.” When this hardened skeptic wishes the Force's favor on his new friend Luke, even though he doesn't believe, it is an emotional moment that makes us love that nerf herder even more.\n\nBut he doesn't understand the Force. He just wants to encourage his friend, who he really believes is about to go on a suicide run against an armored space station.\n\nAnd that's the thing. I can't get mad at people using MTFBWY, because I know that in this community, as in the gear-up scene before the Battle of Yavin, it comes from a place of love, of sincere good wishes.\n\nI still won't be using it, though. I'll stick with what Obi-Wan taught me:\n\nThe Force will be with you. Always.",
+    "tags": [
+      "sermon",
+      "author:atticus",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/may-the-wut-do-wut-now"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/may-the-wut-do-wut-now",
+    "author": "Atticus",
+    "sortOrder": 0,
+    "publishedAt": "2026-10-02T00:00:00.000Z",
+    "updatedAt": "2026-10-02T13:50:18.000Z",
+    "checksum": "fnv1a-50064e05"
+  }
+}
