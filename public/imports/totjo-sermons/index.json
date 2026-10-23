@@ -1,7 +1,40 @@
 {
-  "importedAt": "2026-10-22T12:57:03.000Z",
-  "checksum": "fnv1a-b574db3b",
+  "importedAt": "2026-10-23T12:36:07.000Z",
+  "checksum": "fnv1a-c10f6ad9",
   "documents": [
+    {
+      "id": "sermon-the-price-of-knowing-a-fools-sacrifice-to-become-wise",
+      "slug": "the-price-of-knowing-a-fools-sacrifice-to-become-wise",
+      "title": "The Price of Knowing: A Fool's Sacrifice to Become Wise",
+      "summary": "There are a few classic examples of those who have been a Fool but sacrificed to become the Wise and it did not cost them more than they had to give.",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:greybeard",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/the-price-of-knowing-a-fools-sacrifice-to-become-wise"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/the-price-of-knowing-a-fools-sacrifice-to-become-wise",
+      "author": "Greybeard",
+      "sortOrder": 0,
+      "publishedAt": "2026-10-23T00:00:00.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
+      "checksum": "fnv1a-c2ce235f"
+    },
     {
       "id": "sermon-are-you-making-coffee-or-wine",
       "slug": "are-you-making-coffee-or-wine",
@@ -30,9 +63,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/are-you-making-coffee-or-wine",
       "author": "ChaotishRabe",
-      "sortOrder": 0,
+      "sortOrder": 1,
       "publishedAt": "2026-10-16T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
       "checksum": "fnv1a-24077f53"
     },
     {
@@ -63,9 +96,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/may-the-wut-do-wut-now",
       "author": "Atticus",
-      "sortOrder": 1,
+      "sortOrder": 2,
       "publishedAt": "2026-10-02T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
       "checksum": "fnv1a-2ea7fe93"
     },
     {
@@ -96,9 +129,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/purpose-in-life",
       "author": "Atticus",
-      "sortOrder": 2,
+      "sortOrder": 3,
       "publishedAt": "2026-09-25T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
       "checksum": "fnv1a-c03279c7"
     },
     {
@@ -129,9 +162,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/bruised-and-bleeding",
       "author": "Morkano",
-      "sortOrder": 3,
+      "sortOrder": 4,
       "publishedAt": "2026-08-28T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
       "checksum": "fnv1a-6e79f09d"
     },
     {
@@ -162,9 +195,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/vocabulario-vocabulary",
       "author": "ChaotishRabe",
-      "sortOrder": 4,
+      "sortOrder": 5,
       "publishedAt": "2026-08-22T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
       "checksum": "fnv1a-9e2ebaab"
     },
     {
@@ -195,9 +228,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sliced-black-olives",
       "author": "ChaotishRabe",
-      "sortOrder": 5,
+      "sortOrder": 6,
       "publishedAt": "2026-08-14T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
       "checksum": "fnv1a-a40c82a3"
     },
     {
@@ -228,9 +261,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/small-meditation",
       "author": "Serenity Amyntas",
-      "sortOrder": 6,
+      "sortOrder": 7,
       "publishedAt": "2026-08-07T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
       "checksum": "fnv1a-1b097938"
     },
     {
@@ -261,9 +294,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/ahsoka",
       "author": "Morkano",
-      "sortOrder": 7,
+      "sortOrder": 8,
       "publishedAt": "2026-07-31T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
       "checksum": "fnv1a-5e5a6a81"
     },
     {
@@ -294,43 +327,10 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/a-journey-of-becoming",
       "author": "Master Zero",
-      "sortOrder": 8,
-      "publishedAt": "2026-07-24T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
-      "checksum": "fnv1a-1b0cb2cf"
-    },
-    {
-      "id": "sermon-sermon-from-the-stove-bake-for-good",
-      "slug": "sermon-from-the-stove-bake-for-good",
-      "title": "Sermon From the Stove: Bake for Good",
-      "summary": "The Sermons from the Stove series are sermons, inspirations, and insights ChaotishRabe gained while cooking in his kitchen at home.",
-      "authorityClass": "sermon",
-      "documentType": "sermon",
-      "sourceId": "totjo-sermons",
-      "bodyMarkdown": "",
-      "tags": [
-        "sermon",
-        "author:chaotishrabe",
-        "year:2026"
-      ],
-      "version": 1,
-      "origin": "synced",
-      "source": {
-        "sourceType": "public-totjo-page",
-        "sourceUrls": [
-          "https://templeofthejediorder.org/sermons",
-          "https://templeofthejediorder.org/sermons/sermon-from-the-stove-bake-for-good"
-        ],
-        "attribution": "Temple of the Jedi Order",
-        "approvalStatus": "review-required",
-        "provenanceStatus": "recorded"
-      },
-      "sourceUrl": "https://templeofthejediorder.org/sermons/sermon-from-the-stove-bake-for-good",
-      "author": "ChaotishRabe",
       "sortOrder": 9,
-      "publishedAt": "2026-07-03T00:00:00.000Z",
-      "updatedAt": "2026-10-22T12:57:03.000Z",
-      "checksum": "fnv1a-87cfb27b"
+      "publishedAt": "2026-07-24T00:00:00.000Z",
+      "updatedAt": "2026-10-23T12:36:07.000Z",
+      "checksum": "fnv1a-1b0cb2cf"
     }
   ]
 }
