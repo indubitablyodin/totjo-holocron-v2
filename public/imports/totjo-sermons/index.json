@@ -1,7 +1,40 @@
 {
-  "importedAt": "2026-10-30T14:05:22.000Z",
-  "checksum": "fnv1a-c10f6ad9",
+  "importedAt": "2026-10-31T13:37:53.000Z",
+  "checksum": "fnv1a-10021e82",
   "documents": [
+    {
+      "id": "sermon-happy-samhain-halloween",
+      "slug": "happy-samhain-halloween",
+      "title": "Happy Samhain / Halloween",
+      "summary": "The predecessor of Halloween called Samhain was celebrated over 2,000 years ago, in Ireland, parts of Scotland, Wales, and the north of France. Pagans today still celebrate Samh...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:serenity-amyntas",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/happy-samhain-halloween"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/happy-samhain-halloween",
+      "author": "Serenity Amyntas",
+      "sortOrder": 0,
+      "publishedAt": "2026-10-30T00:00:00.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
+      "checksum": "fnv1a-248df549"
+    },
     {
       "id": "sermon-the-price-of-knowing-a-fools-sacrifice-to-become-wise",
       "slug": "the-price-of-knowing-a-fools-sacrifice-to-become-wise",
@@ -30,9 +63,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/the-price-of-knowing-a-fools-sacrifice-to-become-wise",
       "author": "Greybeard",
-      "sortOrder": 0,
+      "sortOrder": 1,
       "publishedAt": "2026-10-23T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
       "checksum": "fnv1a-c2ce235f"
     },
     {
@@ -63,9 +96,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/are-you-making-coffee-or-wine",
       "author": "ChaotishRabe",
-      "sortOrder": 1,
+      "sortOrder": 2,
       "publishedAt": "2026-10-16T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
       "checksum": "fnv1a-24077f53"
     },
     {
@@ -96,9 +129,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/may-the-wut-do-wut-now",
       "author": "Atticus",
-      "sortOrder": 2,
+      "sortOrder": 3,
       "publishedAt": "2026-10-02T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
       "checksum": "fnv1a-2ea7fe93"
     },
     {
@@ -129,9 +162,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/purpose-in-life",
       "author": "Atticus",
-      "sortOrder": 3,
+      "sortOrder": 4,
       "publishedAt": "2026-09-25T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
       "checksum": "fnv1a-c03279c7"
     },
     {
@@ -162,9 +195,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/bruised-and-bleeding",
       "author": "Morkano",
-      "sortOrder": 4,
+      "sortOrder": 5,
       "publishedAt": "2026-08-28T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
       "checksum": "fnv1a-6e79f09d"
     },
     {
@@ -195,9 +228,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/vocabulario-vocabulary",
       "author": "ChaotishRabe",
-      "sortOrder": 5,
+      "sortOrder": 6,
       "publishedAt": "2026-08-22T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
       "checksum": "fnv1a-9e2ebaab"
     },
     {
@@ -228,9 +261,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sliced-black-olives",
       "author": "ChaotishRabe",
-      "sortOrder": 6,
+      "sortOrder": 7,
       "publishedAt": "2026-08-14T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
       "checksum": "fnv1a-a40c82a3"
     },
     {
@@ -261,9 +294,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/small-meditation",
       "author": "Serenity Amyntas",
-      "sortOrder": 7,
+      "sortOrder": 8,
       "publishedAt": "2026-08-07T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
       "checksum": "fnv1a-1b097938"
     },
     {
@@ -294,43 +327,10 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/ahsoka",
       "author": "Morkano",
-      "sortOrder": 8,
-      "publishedAt": "2026-07-31T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
-      "checksum": "fnv1a-5e5a6a81"
-    },
-    {
-      "id": "sermon-a-journey-of-becoming",
-      "slug": "a-journey-of-becoming",
-      "title": "A Journey of Becoming",
-      "summary": "There comes a moment in many of our lives when achievement no longer feels sufficient. I spent 15 years in the army, and those years were filled with accomplishments: 6 rank pro...",
-      "authorityClass": "sermon",
-      "documentType": "sermon",
-      "sourceId": "totjo-sermons",
-      "bodyMarkdown": "",
-      "tags": [
-        "sermon",
-        "author:master-zero",
-        "year:2026"
-      ],
-      "version": 1,
-      "origin": "synced",
-      "source": {
-        "sourceType": "public-totjo-page",
-        "sourceUrls": [
-          "https://templeofthejediorder.org/sermons",
-          "https://templeofthejediorder.org/sermons/a-journey-of-becoming"
-        ],
-        "attribution": "Temple of the Jedi Order",
-        "approvalStatus": "review-required",
-        "provenanceStatus": "recorded"
-      },
-      "sourceUrl": "https://templeofthejediorder.org/sermons/a-journey-of-becoming",
-      "author": "Master Zero",
       "sortOrder": 9,
-      "publishedAt": "2026-07-24T00:00:00.000Z",
-      "updatedAt": "2026-10-30T14:05:22.000Z",
-      "checksum": "fnv1a-1b0cb2cf"
+      "publishedAt": "2026-07-31T00:00:00.000Z",
+      "updatedAt": "2026-10-31T13:37:53.000Z",
+      "checksum": "fnv1a-5e5a6a81"
     }
   ]
 }

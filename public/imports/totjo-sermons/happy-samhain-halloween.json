@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-happy-samhain-halloween",
+    "slug": "happy-samhain-halloween",
+    "title": "Happy Samhain / Halloween",
+    "summary": "The predecessor of Halloween called Samhain was celebrated over 2,000 years ago, in Ireland, parts of Scotland, Wales, and the north of France. Pagans today still celebrate Samh...",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "The predecessor of Halloween called Samhain was celebrated over 2,000 years ago, in Ireland, parts of Scotland, Wales, and the north of France. Pagans today still celebrate Samhain with all of their wonderful traditions, but for many what began as a serious pagan and religious celebration changed over centuries, becoming more secular as the religious features mostly disappeared in modern times. Today Halloween is mostly a holiday of spooky fun. Children go from door to door and there are fun parties where everyone dresses up and enjoys themselves. A sign that traditions and celebrations change over time.\n\nAs the Christian beliefs gained traction some of the Pagan traditions honouring the dead were integrated and adapted into All Hallows eve, which was an echo of Samhain. Showing us how we can honour the beliefs of our ancestors, and borrowing from the ancient knowledge, adapting it to our own views. The Jedi are no different; we borrow, adapt, make our own traditions and are tolerant of many different world views. And when we look at the history of religions we see that nearly all major world religions contain some degree of syncretism due to how they evolved over time. Even if the philosophies seem to clash at first.\n\nFor instance, Jedi philosophy and the symbolism of Halloween seem worlds apart. The former centers on inner peace, discipline, and light, while the latter revolves around the macabre, death, and the embrace of the shadows. But, on a philosophical level, they do seem to complement each other. When we examine Jedi philosophy alongside the psychology of Halloween, we uncover an interesting dynamic between the Light and Dark. They both seem to confront a part of us that might seem dark at first but is to be studied and accepted as part of ourselves to become whole again.\n\nSyncretism in my opinion holds a key to accepting each other as we are , honouring different belief systems without losing one's whole identity to the herd. It's wonderful to realize that in the Temple of the Jedi Order we have so many belief systems and just as many other philosophies we can learn from. A Jedi carries forward an openness and respect for all traditions. Regardless of faith or background, every individual can find a place here where all beliefs are welcomed with compassion.\n\nSo for you all, I hope that you are encouraged to get to know each other, accept and learn from each other.\n\nHave a Happy Samhain/Halloween.",
+    "tags": [
+      "sermon",
+      "author:serenity-amyntas",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/happy-samhain-halloween"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/happy-samhain-halloween",
+    "author": "Serenity Amyntas",
+    "sortOrder": 0,
+    "publishedAt": "2026-10-30T00:00:00.000Z",
+    "updatedAt": "2026-10-31T13:37:53.000Z",
+    "checksum": "fnv1a-ed0a1e3c"
+  }
+}
