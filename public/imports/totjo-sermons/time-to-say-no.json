@@ -1,0 +1,35 @@
+{
+  "document": {
+    "id": "sermon-time-to-say-no",
+    "slug": "time-to-say-no",
+    "title": "Time to Say No",
+    "summary": "A few years ago I had an idea for a big initiative I wanted to start, and I asked a mentor on the faculty to be the faculty advisor. My excitement was quickly halted as she sat ...",
+    "authorityClass": "sermon",
+    "documentType": "sermon",
+    "sourceId": "totjo-sermons",
+    "bodyMarkdown": "A few years ago I had an idea for a big initiative I wanted to start, and I asked a mentor on the faculty to be the faculty advisor. My excitement was quickly halted as she sat me down and explained that she knew how busy I was and that I did not have time for this initiative. She also did not have time to pick it up and make it happen after I inevitably failed to find the time for it so she gave me an ultimatum: if I wanted to do this, I had to give up something else. Years later I couldn’t tell you what the exciting idea I had was, but the lesson that came from it has stuck with me: everything in life is a trade off, and in order to say yes to one thing, you must say no to something else.\n\nThe first tenet in our doctrine is focus, which is described in our doctrine as “the art of pruning the irrelevant and pouring the best of your mind into what you are doing.” When we think of improving focus, we often think of finding ways to make the desired object of our focus bigger or more prominent, but the first step is “the art of pruning the irrelevant.”\n\nIt’s not always a question of what’s most important. Often it’s a question of what isn’t as important but is still getting in the way. It’s one thing to be dedicated to the path and determined to complete our IP/degree/apprenticeship/seminary lessons. It’s another thing to recognize that in order to have time for that we have to take that time from somewhere else. We need to learn to say no to something else before we can truly say yes to the thing that is important.\n\nIt’s easy to say yes. There’s a million things we want to say yes to, and the challenge is that usually they are genuinely good things. Even playing a video game from time to time is a good thing if it helps us relax and unwind. At a certain point, however, we have to face the reality that we cannot say yes to everything and still have space for what is most important.\n\nI’m facing this right now. I’m pursuing a masters degree in nutrition. It’s a good thing. It’ll allow me to help my patients in a more significant way than I already can and fills a gap that I was recognizing. Unfortunately, this masters degree has been all consuming for me, and instead of adding an additional tool that I can bring to my patients, what it’s really doing is keeping me from treating patients at all. It’s also keeping me from progressing in my studies here in the temple. It was a noble idea, but it has become a distraction from my higher priorities. It is time to say no to that distraction, to prune the irrelevant by dropping out of that program.\n\nAt the same time, I want to encourage all of you reading this to look at your own life. What do you want your focus to be? What else in your life are you saying yes to that is getting in the way? It might be something that is genuinely a good thing, or something you didn’t even realize you were saying yes to. Take a step back and figure out what you need to prune in order to allow your true priorities to grow.",
+    "tags": [
+      "sermon",
+      "author:an-minglong",
+      "year:2026"
+    ],
+    "version": 1,
+    "origin": "synced",
+    "source": {
+      "sourceType": "public-totjo-page",
+      "sourceUrls": [
+        "https://templeofthejediorder.org/sermons",
+        "https://templeofthejediorder.org/sermons/time-to-say-no"
+      ],
+      "attribution": "Temple of the Jedi Order",
+      "approvalStatus": "review-required",
+      "provenanceStatus": "recorded"
+    },
+    "sourceUrl": "https://templeofthejediorder.org/sermons/time-to-say-no",
+    "author": "An MingLong",
+    "sortOrder": 0,
+    "publishedAt": "2026-11-13T00:00:00.000Z",
+    "updatedAt": "2026-11-13T15:21:44.000Z",
+    "checksum": "fnv1a-19913543"
+  }
+}

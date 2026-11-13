@@ -1,7 +1,40 @@
 {
-  "importedAt": "2026-11-12T15:57:19.000Z",
-  "checksum": "fnv1a-10021e82",
+  "importedAt": "2026-11-13T15:21:44.000Z",
+  "checksum": "fnv1a-ed2acfd8",
   "documents": [
+    {
+      "id": "sermon-time-to-say-no",
+      "slug": "time-to-say-no",
+      "title": "Time to Say No",
+      "summary": "A few years ago I had an idea for a big initiative I wanted to start, and I asked a mentor on the faculty to be the faculty advisor. My excitement was quickly halted as she sat ...",
+      "authorityClass": "sermon",
+      "documentType": "sermon",
+      "sourceId": "totjo-sermons",
+      "bodyMarkdown": "",
+      "tags": [
+        "sermon",
+        "author:an-minglong",
+        "year:2026"
+      ],
+      "version": 1,
+      "origin": "synced",
+      "source": {
+        "sourceType": "public-totjo-page",
+        "sourceUrls": [
+          "https://templeofthejediorder.org/sermons",
+          "https://templeofthejediorder.org/sermons/time-to-say-no"
+        ],
+        "attribution": "Temple of the Jedi Order",
+        "approvalStatus": "review-required",
+        "provenanceStatus": "recorded"
+      },
+      "sourceUrl": "https://templeofthejediorder.org/sermons/time-to-say-no",
+      "author": "An MingLong",
+      "sortOrder": 0,
+      "publishedAt": "2026-11-13T00:00:00.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
+      "checksum": "fnv1a-6b895f55"
+    },
     {
       "id": "sermon-happy-samhain-halloween",
       "slug": "happy-samhain-halloween",
@@ -30,9 +63,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/happy-samhain-halloween",
       "author": "Serenity Amyntas",
-      "sortOrder": 0,
+      "sortOrder": 1,
       "publishedAt": "2026-10-30T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
       "checksum": "fnv1a-248df549"
     },
     {
@@ -63,9 +96,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/the-price-of-knowing-a-fools-sacrifice-to-become-wise",
       "author": "Greybeard",
-      "sortOrder": 1,
+      "sortOrder": 2,
       "publishedAt": "2026-10-23T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
       "checksum": "fnv1a-c2ce235f"
     },
     {
@@ -96,9 +129,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/are-you-making-coffee-or-wine",
       "author": "ChaotishRabe",
-      "sortOrder": 2,
+      "sortOrder": 3,
       "publishedAt": "2026-10-16T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
       "checksum": "fnv1a-24077f53"
     },
     {
@@ -129,9 +162,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/may-the-wut-do-wut-now",
       "author": "Atticus",
-      "sortOrder": 3,
+      "sortOrder": 4,
       "publishedAt": "2026-10-02T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
       "checksum": "fnv1a-2ea7fe93"
     },
     {
@@ -162,9 +195,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/purpose-in-life",
       "author": "Atticus",
-      "sortOrder": 4,
+      "sortOrder": 5,
       "publishedAt": "2026-09-25T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
       "checksum": "fnv1a-c03279c7"
     },
     {
@@ -195,9 +228,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/bruised-and-bleeding",
       "author": "Morkano",
-      "sortOrder": 5,
+      "sortOrder": 6,
       "publishedAt": "2026-08-28T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
       "checksum": "fnv1a-6e79f09d"
     },
     {
@@ -228,9 +261,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/vocabulario-vocabulary",
       "author": "ChaotishRabe",
-      "sortOrder": 6,
+      "sortOrder": 7,
       "publishedAt": "2026-08-22T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
       "checksum": "fnv1a-9e2ebaab"
     },
     {
@@ -261,9 +294,9 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/sliced-black-olives",
       "author": "ChaotishRabe",
-      "sortOrder": 7,
+      "sortOrder": 8,
       "publishedAt": "2026-08-14T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
       "checksum": "fnv1a-a40c82a3"
     },
     {
@@ -294,43 +327,10 @@
       },
       "sourceUrl": "https://templeofthejediorder.org/sermons/small-meditation",
       "author": "Serenity Amyntas",
-      "sortOrder": 8,
-      "publishedAt": "2026-08-07T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
-      "checksum": "fnv1a-1b097938"
-    },
-    {
-      "id": "sermon-ahsoka",
-      "slug": "ahsoka",
-      "title": "Ahsoka",
-      "summary": "In my time here at the Temple, I have shared how I resonate deeply with Ahsoka Tano. Even my name is a combination of her name and Morai (the bird that begins to follow her duri...",
-      "authorityClass": "sermon",
-      "documentType": "sermon",
-      "sourceId": "totjo-sermons",
-      "bodyMarkdown": "",
-      "tags": [
-        "sermon",
-        "author:morkano",
-        "year:2026"
-      ],
-      "version": 1,
-      "origin": "synced",
-      "source": {
-        "sourceType": "public-totjo-page",
-        "sourceUrls": [
-          "https://templeofthejediorder.org/sermons",
-          "https://templeofthejediorder.org/sermons/ahsoka"
-        ],
-        "attribution": "Temple of the Jedi Order",
-        "approvalStatus": "review-required",
-        "provenanceStatus": "recorded"
-      },
-      "sourceUrl": "https://templeofthejediorder.org/sermons/ahsoka",
-      "author": "Morkano",
       "sortOrder": 9,
-      "publishedAt": "2026-07-31T00:00:00.000Z",
-      "updatedAt": "2026-11-12T15:57:19.000Z",
-      "checksum": "fnv1a-5e5a6a81"
+      "publishedAt": "2026-08-07T00:00:00.000Z",
+      "updatedAt": "2026-11-13T15:21:44.000Z",
+      "checksum": "fnv1a-1b097938"
     }
   ]
 }
